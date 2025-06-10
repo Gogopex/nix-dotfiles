@@ -5,9 +5,7 @@ let
   cfg    = ../../cfg;
 in {
   home.stateVersion              = "25.05";
-  # home.backupFileExtension = "bak";
 
-  # ── Raw dot-dirs we still manage as files ───────────────────────────────
   xdg.configFile."nvim".source              = cfg + "/nvim";
   xdg.configFile."helix".source             = cfg + "/helix";
   xdg.configFile."zellij/config.kdl".source = cfg + "/zellij/config.kdl";
@@ -18,7 +16,7 @@ in {
   # ── Ghostty -------------------------------------------------------------
   programs.ghostty = {
     enable               = true;
-    package              = null;        # keep signed macOS binary
+    package              = null;        
     clearDefaultKeybinds = true;
 
     settings = {
@@ -53,7 +51,6 @@ in {
     };
   };
 
-  # ── Tmux / Helix / Neovim / Yazi ---------------------------------------
   programs.tmux = {
     enable = true;
     extraConfig = ''
@@ -95,6 +92,15 @@ in {
   };
 
   programs.zoxide.enable = true;
+
+  xdg.configFile."jj/config.toml".text = ''
+    [ui]
+    default-command = "log"
+    
+    [user]
+    name = "ludwig"
+    email = "gogopex@gmail.com"
+  '';
   
   home.packages = with pkgs; [
     jujutsu
@@ -110,31 +116,26 @@ in {
     wget
     direnv
     zellij
-    delta  # Better git diffs
+    delta  
     zig
     zls
     odin
     go
-    # Rust toolchain
     rustc
     cargo
     rustfmt
     rust-analyzer
-    # Haskell toolchain
     ghc
     cabal-install
     stack
     haskell-language-server
-    # Nix development
     nixfmt-rfc-style
     nil
-    # Node.js toolchain
     volta
   ];
 
   programs.go.enable = true;
 
-  # ── Fish (everything now declarative) -----------------------------------
   programs.fish = {
     enable = true;
 
@@ -214,7 +215,6 @@ in {
     ];
   };
 
-  # ── Misc programs -------------------------------------------------------
   programs.git = {
     enable = true;
     userName  = "ludwig";
