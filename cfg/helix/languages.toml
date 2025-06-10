@@ -1,0 +1,2 @@
+[language-server.zls]
+command = "/Users/ludovicpouey/dev/zls/zig-out/bin/zls"
