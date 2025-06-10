@@ -1,6 +1,6 @@
 { pkgs, ... }:
 
-let mod = "ctrl-space";
+let mod = "alt";
 in {
   age.secrets = {
     anthropic-api-key.file = ../../secrets/anthropic-api-key.age;
@@ -51,19 +51,27 @@ in {
       mode = {
         main = {
           binding = {
-            "ctrl-space" = "mode move";   # leader
+            "${mod}-h" = "focus left";
+            "${mod}-j" = "focus down";
+            "${mod}-k" = "focus up";
+            "${mod}-l" = "focus right";
 
-            h          = "focus left";
-            j          = "focus down";
-            k          = "focus up";
-            l          = "focus right";
+            "${mod}-shift-h" = "move left";
+            "${mod}-shift-j" = "move down";
+            "${mod}-shift-k" = "move up";
+            "${mod}-shift-l" = "move right";
 
-            "shift-h"  = "move left";
-            "shift-j"  = "move down";
-            "shift-k"  = "move up";
-            "shift-l"  = "move right";
-
-            f = "fullscreen";
+            "${mod}-f" = "fullscreen";
+            "${mod}-m" = "mode move";
+          };
+        };
+        move = {
+          binding = {
+            h = "move left";
+            j = "move down";
+            k = "move up";
+            l = "move right";
+            esc = "mode main";
           };
         };
       };
