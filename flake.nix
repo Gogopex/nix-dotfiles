@@ -2,56 +2,194 @@
   description = "macOS dev environment";
 
   inputs = {
-    nixpkgs.url        = "github:NixOS/nixpkgs/nixos-25.05";
-    ghosttySrc.url     = "github:ghostty-org/ghostty";
-
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    nix-darwin.url   = "github:LnL7/nix-darwin";
-    flake-utils.url  = "github:numtide/flake-utils";
-    
-    agenix = {
-      url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nixpkgs.url      = "github:NixOS/nixpkgs/nixpkgs-25.05-darwin";
+    nix-darwin.url   = "github:LnL7/nix-darwin/nix-darwin-25.05";
+    home-manager.url = "github:nix-community/home-manager/release-25.05";
+    ghosttySrc.url   = "github:ghostty-org/ghostty";
+    agenix.url       = "github:ryantm/agenix";
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager
-            , flake-utils, ghosttySrc, agenix, ... }:
+  outputs = { self, nixpkgs, nix-darwin, home-manager, agenix, ghosttySrc, ... }:
+  let
+    system = "aarch64-darwin";
+    pkgs   = import nixpkgs { inherit system; };
+  in
+  {
+    packages.default = pkgs.hello;
 
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs { inherit system; };
-      in
-      {
-        packages.default = pkgs.hello;
-      })
-    // {
+    darwinConfigurations.macbook = nix-darwin.lib.darwinSystem {
+      inherit system pkgs;
 
-      darwinConfigurations.macbook = nix-darwin.lib.darwinSystem {
-        system = "aarch64-darwin";
+      modules = [
+        ./hosts/macbook/darwin.nix
+        home-manager.darwinModules.home-manager
+        agenix.darwinModules.default
 
-        modules = [
-          ./hosts/macbook/darwin.nix
-          home-manager.darwinModules.home-manager
-          agenix.darwinModules.default
-
-          {
+        ({ config, pkgs, ghosttySrc, ... }: let
+            leader = "C-Space";
+            cfg    = ./cfg;                
+          in {
+            # glue: make HM see the host-level pkgs & args
             users.users.ludwig.home = "/Users/ludwig";
-
-            # pass extra args into every HM module
-            home-manager.extraSpecialArgs = { inherit ghosttySrc; };
-
             home-manager.useGlobalPkgs   = true;
             home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = { inherit ghosttySrc; };
 
-            home-manager.users.ludwig =
-              import ./hosts/macbook/home.nix;
-          }
-        ];
-      };
+            home-manager.users.ludwig = { pkgs, ... }: {
+              home.stateVersion = "25.05";
+
+              xdg.configFile."nvim".source              = cfg + "/nvim";
+              xdg.configFile."helix".source             = cfg + "/helix";
+              xdg.configFile."zellij/config.kdl".source = cfg + "/zellij/config.kdl";
+
+              programs.ghostty = {
+                enable = true;
+                package = null;
+                clearDefaultKeybinds = true;
+                settings = {
+                  theme                    = "GruvboxDark";
+                  font-family              = "TX-02-Regular";
+                  window-title-font-family = "TX-02";
+                  font-size                = 16;
+                  shell-integration        = "fish";
+                  confirm-close-surface    = false;
+                  macos-titlebar-style     = "tabs";
+                  window-save-state        = "always";
+                  auto-update              = "off";
+                  keybind = [
+                    "ctrl+space=toggle_fullscreen"
+                    "ctrl+h=goto_split:left"   "ctrl+j=goto_split:down"
+                    "ctrl+k=goto_split:up"     "ctrl+l=goto_split:right"
+                    "cmd+h=previous_tab"       "cmd+l=next_tab"
+                    "super+ctrl+h=resize_split:left,10"
+                    "super+ctrl+j=resize_split:down,10"
+                    "super+ctrl+k=resize_split:up,10"
+                    "super+ctrl+l=resize_split:right,10"
+                    "global:shift+opt+t=toggle_quick_terminal"
+                  ];
+                };
+              };
+
+              programs.tmux = {
+                enable = true;
+                extraConfig = ''
+                  set -g prefix ${leader}
+                  bind ${leader} send-prefix
+                  set -g mouse on
+                  bind ${leader} split-window -v
+                '';
+              };
+
+              programs.helix = {
+                enable = true;
+                settings = {
+                  theme = "gruvbox";
+                  keys.normal."${leader}" = ":w";
+                };
+              };
+
+              programs.neovim = {
+                enable  = true;
+                viAlias = true;
+                extraConfig = /* vim */ ''
+                  let mapleader="\<Space>"
+                  nnoremap <leader>w :w<CR>
+                '';
+                plugins = with pkgs.vimPlugins; [ telescope-nvim nvim-treesitter ];
+              };
+
+              programs.yazi = {
+                enable = true;
+                settings = {
+                  log.enabled = false;
+                  manager = { show_hidden = true; sort_by = "mtime"; };
+                  keymap.normal."${leader}" = "toggle_preview";
+                };
+              };
+
+              programs.zoxide.enable = true;
+
+              programs.jujutsu = {
+                enable = true;
+                settings = {
+                  ui.default-command = "log";
+                  user.name  = "ludwig";
+                  user.email = "gogopex@gmail.com";
+                };
+              };
+
+              home.packages = with pkgs; [
+                bandwhich zoxide fzf ripgrep bat fd eza git curl wget direnv
+                zellij delta zig zls odin go rustc cargo rustfmt rust-analyzer
+                ghc cabal-install stack haskell-language-server
+                nixfmt-rfc-style nil volta maven openjdk wiki-tui
+              ];
+
+              programs.go.enable = true;
+
+              programs.fish = {
+                enable = true;
+                shellAliases = {
+                  ll = "ls -alh";
+                  dr = "sudo darwin-rebuild switch --flake .#macbook";
+                  ingest = "~/go/bin/ingest";
+                };
+                shellInit = /* fish */ ''
+                  if status is-interactive
+                    fish_add_path -g ~/.nix-profile/bin
+                    fish_add_path -g /etc/profiles/per-user/$USER/bin
+                    fish_add_path -g /run/current-system/sw/bin
+                    fish_add_path -g /nix/var/nix/profiles/default/bin
+                    fish_add_path ~/.npm-global/bin
+                    fish_add_path ~/.local/bin ~/.modular/bin \
+                                   /Applications/WezTerm.app/Contents/MacOS \
+                                   $HOME/.cache/lm-studio/bin
+                  end
+
+                  for key in anthropic openai gemini deepseek
+                    if test -f /run/agenix/$key-api-key
+                      set -gx (string upper $key)_API_KEY (cat /run/agenix/$key-api-key)
+                    end
+                  end
+                '';
+                interactiveShellInit = ''
+                  set -gx EDITOR hx
+                  theme_gruvbox dark
+                  if set -q GHOSTTY_RESOURCES_DIR
+                    source $GHOSTTY_RESOURCES_DIR/shell-integration/fish/vendor_conf.d/ghostty-shell-integration.fish
+                  end
+                  zoxide init fish | source
+                  source ~/.orbstack/shell/init2.fish 2>/dev/null || true
+                '';
+                functions = {
+                  ssh_tt = ''
+                    function ssh_tt
+                      ssh user@38.97.6.9 -p 56501 -t "tmux new -s main || tmux attach -t main"
+                    end
+                  '';
+                  fish_greeting = ''echo "What is impossible for you is not impossible for me."'';
+                };
+                plugins = [
+                  { name = "grc";     src = pkgs.fishPlugins.grc; }
+                  { name = "z";       src = pkgs.fishPlugins.z; }
+                  { name = "hydro";   src = pkgs.fishPlugins.hydro; }
+                  { name = "gruvbox"; src = pkgs.fishPlugins.gruvbox; }
+                ];
+              };
+
+              programs.git = {
+                enable = true;
+                userName  = "ludwig";
+                userEmail = "gogopex@gmail.com";
+              };
+
+              programs.btop = {
+                enable = true;
+                settings.color_theme = "gruvbox_dark";
+              };
+            };
+          })
+      ];
     };
+  };
 }
