@@ -132,6 +132,9 @@ in {
     nixfmt-rfc-style
     nil
     volta
+    maven
+    openjdk
+    wiki-tui
   ];
 
   programs.go.enable = true;
