@@ -144,11 +144,7 @@ in {
 
     shellAliases = {
       ll = "ls -alh";
-      dr = ''
-        sudo -E env PATH=$PATH HOME=/var/root \
-          nix run github:LnL7/nix-darwin#darwin-rebuild \
-          -- switch --flake ~/dev/dotfiles#macbook
-      '';
+      dr = "sudo darwin-rebuild switch --flake .#macbook";
       ingest = "~/go/bin/ingest";
     };
 
