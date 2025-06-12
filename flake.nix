@@ -122,7 +122,7 @@
                 bandwhich zoxide fzf ripgrep bat fd eza git curl wget direnv
                 zellij delta zig zls odin go rustc cargo rustfmt rust-analyzer
                 ghc cabal-install stack haskell-language-server
-                nixfmt-rfc-style nil volta maven openjdk wiki-tui
+                nixfmt-rfc-style nil volta maven openjdk wiki-tui tokei
               ];
 
               programs.go.enable = true;
