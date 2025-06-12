@@ -21,6 +21,11 @@ if status is-interactive
         source ~/.orbstack/shell/init2.fish
     end
     
+    # Zellij auto-start for Ghostty
+    if test "$TERM" = "xterm-ghostty"
+        eval (zellij setup --generate-auto-start fish | string collect)
+    end
+    
     # Fisher and plugins
     if not functions -q fisher
         # Install fisher if not present

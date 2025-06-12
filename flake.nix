@@ -123,6 +123,7 @@
                 zellij delta zig zls odin go rustc cargo rustfmt rust-analyzer
                 ghc cabal-install stack haskell-language-server
                 nixfmt-rfc-style nil volta maven openjdk wiki-tui tokei
+                mutagen mutagen-compose
               ];
 
               programs.go.enable = true;

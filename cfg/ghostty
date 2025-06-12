@@ -8,18 +8,23 @@ macos-titlebar-style = tabs
 window-save-state = always
 
 # keybinds
-keybind = ctrl+h=goto_split:left
-keybind = ctrl+j=goto_split:bottom
-keybind = ctrl+k=goto_split:top
-keybind = ctrl+l=goto_split:right
+# Unbind pane navigation to let Zellij handle it
+keybind = ctrl+h=unbind
+keybind = ctrl+j=unbind
+keybind = ctrl+k=unbind
+keybind = ctrl+l=unbind
 
-keybind = cmd+h=previous_tab
-keybind = cmd+l=next_tab
+# Unbind tab navigation to let Zellij handle it
+keybind = cmd+h=unbind
+keybind = cmd+l=unbind
+keybind = cmd+t=unbind
+keybind = cmd+w=unbind
 
-keybind = super+ctrl+h=resize_split:left,10
-keybind = super+ctrl+j=resize_split:down,10
-keybind = super+ctrl+k=resize_split:up,10
-keybind = super+ctrl+l=resize_split:right,10
+# Unbind pane resizing to let Zellij handle it
+keybind = super+ctrl+h=unbind
+keybind = super+ctrl+j=unbind
+keybind = super+ctrl+k=unbind
+keybind = super+ctrl+l=unbind
 
 
 auto-update = off

@@ -21,7 +21,7 @@ in {
   homebrew = {
     enable          = true;
     global.brewfile = true;
-    casks           = [ "raycast" ];
+    casks           = [ "raycast" "orbstack" ];
   };
 
   system.defaults = {
