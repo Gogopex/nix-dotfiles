@@ -2,9 +2,11 @@
   description = "macOS dev environment";
 
   inputs = {
-    nixpkgs.url      = "github:NixOS/nixpkgs/nixpkgs-25.05-darwin";
-    nix-darwin.url   = "github:LnL7/nix-darwin/nix-darwin-25.05";
-    home-manager.url = "github:nix-community/home-manager/release-25.05";
+    nixpkgs.url      = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nix-darwin.url   = "github:LnL7/nix-darwin/master";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager.url = "github:nix-community/home-manager/master";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
     ghosttySrc.url   = "github:ghostty-org/ghostty";
     agenix.url       = "github:ryantm/agenix";
   };
@@ -123,7 +125,7 @@
                 zellij delta zig zls odin go rustc cargo rustfmt rust-analyzer
                 ghc cabal-install stack haskell-language-server
                 nixfmt-rfc-style nil volta maven openjdk wiki-tui tokei
-                mutagen mutagen-compose
+                mutagen mutagen-compose agenix.packages.${system}.default
               ];
 
               programs.go.enable = true;
@@ -169,6 +171,7 @@
                     end
                   '';
                   fish_greeting = ''echo "What is impossible for you is not impossible for me."'';
+                  cc = ''$argv | pbcopy'';
                 };
                 plugins = [
                   { name = "grc";     src = pkgs.fishPlugins.grc; }
