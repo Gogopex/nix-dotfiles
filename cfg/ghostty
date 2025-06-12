@@ -26,6 +26,14 @@ keybind = super+ctrl+j=unbind
 keybind = super+ctrl+k=unbind
 keybind = super+ctrl+l=unbind
 
+# Ensure copy/paste works
+keybind = cmd+c=copy_to_clipboard
+keybind = cmd+v=paste_from_clipboard
+
+# Ghostty window/tab management (using cmd+shift since cmd alone goes to zellij)
+keybind = cmd+shift+t=new_tab
+keybind = cmd+shift+w=close_surface
+
 
 auto-update = off
 

@@ -1,10 +1,10 @@
 keybinds clear-defaults=true {
     normal {
         // Tab navigation (matching current Ghostty keybinds)
-        bind "Cmd h" { GoToPreviousTab; }
-        bind "Cmd l" { GoToNextTab; }
-        bind "Cmd t" { NewTab; }
-        bind "Cmd w" { CloseTab; }
+        bind "Super h" { GoToPreviousTab; }
+        bind "Super l" { GoToNextTab; }
+        bind "Super t" { NewTab; }
+        bind "Super w" { CloseTab; }
         
         // Pane navigation (matching current Ghostty keybinds)
         bind "Ctrl h" { MoveFocus "Left"; }
@@ -13,15 +13,15 @@ keybinds clear-defaults=true {
         bind "Ctrl l" { MoveFocus "Right"; }
         
         // Pane resizing (matching current Ghostty keybinds)
-        bind "Cmd Ctrl h" { Resize "Increase Left"; }
-        bind "Cmd Ctrl j" { Resize "Increase Down"; }
-        bind "Cmd Ctrl k" { Resize "Increase Up"; }
-        bind "Cmd Ctrl l" { Resize "Increase Right"; }
+        bind "Super Ctrl h" { Resize "Increase Left"; }
+        bind "Super Ctrl j" { Resize "Increase Down"; }
+        bind "Super Ctrl k" { Resize "Increase Up"; }
+        bind "Super Ctrl l" { Resize "Increase Right"; }
         
         // Pane management
-        bind "Cmd d" { NewPane "Right"; }
-        bind "Cmd Shift d" { NewPane "Down"; }
-        bind "Cmd Shift w" { CloseFocus; }
+        bind "Super d" { NewPane "Right"; }
+        bind "Super Shift d" { NewPane "Down"; }
+        bind "Super Shift w" { CloseFocus; }
         
         // Mode switching
         bind "Ctrl a" { SwitchToMode "Tmux"; }
@@ -29,7 +29,7 @@ keybinds clear-defaults=true {
         // Essential shortcuts
         bind "Ctrl q" { Quit; }
         bind "Ctrl g" { SwitchToMode "Locked"; }
-        bind "Ctrl s" { SwitchToMode "Scroll"; }
+        bind "Ctrl ;" { SwitchToMode "Scroll"; }
     }
     locked {
         bind "Ctrl g" { SwitchToMode "Normal"; }
@@ -65,7 +65,7 @@ keybinds clear-defaults=true {
         bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0;}
     }
     move {
-        bind "Ctrl h" { SwitchToMode "Normal"; }
+        bind "Ctrl m" { SwitchToMode "Normal"; }
         bind "n" "Tab" { MovePane; }
         bind "p" { MovePaneBackwards; }
         bind "h" "Left" { MovePane "Left"; }
@@ -96,7 +96,7 @@ keybinds clear-defaults=true {
         bind "Tab" { ToggleTab; }
     }
     scroll {
-        bind "Ctrl s" { SwitchToMode "Normal"; }
+        bind "Ctrl ;" { SwitchToMode "Normal"; }
         bind "e" { EditScrollback; SwitchToMode "Normal"; }
         bind "s" { SwitchToMode "EnterSearch"; SearchInput 0; }
         bind "Ctrl c" { ScrollToBottom; SwitchToMode "Normal"; }
@@ -110,7 +110,7 @@ keybinds clear-defaults=true {
         // bind "Alt c" { Copy; }
     }
     search {
-        bind "Ctrl s" { SwitchToMode "Normal"; }
+        bind "Ctrl ;" { SwitchToMode "Normal"; }
         bind "Ctrl c" { ScrollToBottom; SwitchToMode "Normal"; }
         bind "j" "Down" { ScrollDown; }
         bind "k" "Up" { ScrollUp; }
@@ -138,7 +138,7 @@ keybinds clear-defaults=true {
     }
     session {
         bind "Ctrl o" { SwitchToMode "Normal"; }
-        bind "Ctrl s" { SwitchToMode "Scroll"; }
+        bind "Ctrl ;" { SwitchToMode "Scroll"; }
         bind "d" { Detach; }
         bind "w" {
             LaunchOrFocusPlugin "session-manager" {
@@ -196,7 +196,7 @@ keybinds clear-defaults=true {
         bind "Ctrl n" { SwitchToMode "Resize"; }
     }
     shared_except "scroll" "locked" {
-        bind "Ctrl s" { SwitchToMode "Scroll"; }
+        bind "Ctrl ;" { SwitchToMode "Scroll"; }
     }
     shared_except "session" "locked" {
         bind "Ctrl o" { SwitchToMode "Session"; }
@@ -205,7 +205,7 @@ keybinds clear-defaults=true {
         bind "Ctrl t" { SwitchToMode "Tab"; }
     }
     shared_except "move" "locked" {
-        bind "Ctrl h" { SwitchToMode "Move"; }
+        bind "Ctrl m" { SwitchToMode "Move"; }
     }
     shared_except "tmux" "locked" {
         bind "Ctrl b" { SwitchToMode "Tmux"; }

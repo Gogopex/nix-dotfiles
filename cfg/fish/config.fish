@@ -22,8 +22,8 @@ if status is-interactive
     end
     
     # Zellij auto-start for Ghostty
-    if test "$TERM" = "xterm-ghostty"
-        eval (zellij setup --generate-auto-start fish | string collect)
+    if test "$TERM" = "xterm-ghostty"; and test -z "$ZELLIJ"
+        exec zellij
     end
     
     # Fisher and plugins
