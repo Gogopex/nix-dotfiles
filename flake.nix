@@ -45,9 +45,10 @@
               darwinOnly = lib.mkIf pkgs.stdenv.isDarwin;
             in {
               home.stateVersion = "25.05";
+              home.file.".hammerspoon".source = cfg + "/hammerspoon";
 
               xdg.configFile."nvim".source              = cfg + "/nvim";
-              # aerospace config is now provided by home-manager module, no manual file needed
+              
 
               programs.ghostty = {
                 enable = true;
@@ -540,7 +541,7 @@
                   ghc cabal-install stack haskell-language-server
                   nixfmt-rfc-style nil volta maven openjdk wiki-tui tokei
                   mutagen mutagen-compose agenix.packages.${system}.default
-                  obsidian
+                  obsidian uutils-coreutils-noprefix
                 ] ++ lib.optionals pkgs.stdenv.isDarwin [ zotero ]
               );
 
@@ -615,6 +616,10 @@
                 enable = true;
                 userName  = "ludwig";
                 userEmail = "gogopex@gmail.com";
+                extraConfig = {
+                  pull.rebase = false;
+                  init.defaultBranch = "main";
+                };
               };
 
 

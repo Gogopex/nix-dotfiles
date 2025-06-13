@@ -1,0 +1,20 @@
+[mode.main.binding]
+
+# focus navigation around tree
+"cmd-opt-h" = "focus left"
+"cmd-opt-j" = "focus down"
+"cmd-opt-k" = "focus up"
+"cmd-opt-l" = "focus right"
+
+# move the focused window within layout
+"cmd-opt-shift-h" = "move left"
+"cmd-opt-shift-j" = "move down"
+"cmd-opt-shift-k" = "move up"
+"cmd-opt-shift-l" = "move right"
+
+# quick splits for current window
+"cmd-opt-v"       = "join-with right" # vertical side by side
+"cmd-opt-b"       = "join-with down"  # horizontal stacked
+
+# instant toggle between last two focused windows
+"cmd-opt-tab"     = "focus-back-and-forth" 
