@@ -1,0 +1,101 @@
+" Leader key
+let mapleader = " "
+
+" Basic vim settings
+set clipboard=unnamed
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+set relativenumber
+set number
+set scrolloff=8
+set ideajoin
+
+" Navigation and view centering
+nnoremap <C-j> <C-d>zz
+nnoremap <C-k> <C-u>zz
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+" Clipboard operations (system clipboard)
+xnoremap <leader>p "_dP
+nnoremap <leader>y "+y
+vnoremap <leader>y "+y
+nnoremap <leader>Y "+Y
+nnoremap <leader>d "_d
+vnoremap <leader>d "_d
+
+" Line manipulation
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+
+" Navigation shortcuts
+nnoremap gh 0
+vnoremap gh 0
+nnoremap gl $
+vnoremap gl $
+
+" Tab navigation (matching Zellij/terminal)
+nnoremap <D-h> :action PreviousTab<CR>
+nnoremap <D-l> :action NextTab<CR>
+nnoremap <D-t> :action NewFile<CR>
+nnoremap <D-w> :action CloseContent<CR>
+
+" Pane navigation (Alt+hjkl - matching other editors)
+nnoremap <A-h> <C-w>h
+nnoremap <A-j> <C-w>j
+nnoremap <A-k> <C-w>k
+nnoremap <A-l> <C-w>l
+
+" Pane splitting (matching Zellij)
+nnoremap <D-d> :action SplitVertically<CR>
+nnoremap <D-S-d> :action SplitHorizontally<CR>
+nnoremap <D-S-w> :action Unsplit<CR>
+
+" Indentation in visual mode
+vnoremap < <gv
+vnoremap > >gv
+
+" Clear search highlighting
+nnoremap <leader>h :nohlsearch<CR>
+
+" IntelliJ specific actions
+" File explorer (cmd+e)
+nnoremap <D-e> :action ActivateProjectToolWindow<CR>
+" LLM/AI Assistant (cmd+i) - adjust action name based on your IntelliJ plugins
+nnoremap <D-i> :action ActivateAIAssistantToolWindow<CR>
+
+" Additional IntelliJ vim actions
+nnoremap <leader>r :action RenameElement<CR>
+nnoremap <leader>f :action GotoFile<CR>
+nnoremap <leader>s :action GotoSymbol<CR>
+nnoremap <leader>g :action FindInPath<CR>
+nnoremap <leader>b :action RecentFiles<CR>
+
+" Go to definition/declaration
+nnoremap gd :action GotoDeclaration<CR>
+nnoremap gy :action GotoTypeDeclaration<CR>
+nnoremap gi :action GotoImplementation<CR>
+nnoremap gr :action FindUsages<CR>
+
+" Code navigation
+nnoremap ]e :action GotoNextError<CR>
+nnoremap [e :action GotoPreviousError<CR>
+nnoremap ]m :action MethodDown<CR>
+nnoremap [m :action MethodUp<CR>
+
+" Refactoring
+vnoremap <leader>em :action ExtractMethod<CR>
+vnoremap <leader>ev :action IntroduceVariable<CR>
+nnoremap <leader>im :action ImplementMethods<CR>
+nnoremap <leader>om :action OverrideMethods<CR>
+
+" Code formatting
+nnoremap <leader>cf :action ReformatCode<CR>
+nnoremap <leader>ci :action OptimizeImports<CR>
+
+" Debug actions
+nnoremap <leader>db :action ToggleLineBreakpoint<CR>
+nnoremap <leader>dc :action Debug<CR>
+nnoremap <leader>dr :action Run<CR>

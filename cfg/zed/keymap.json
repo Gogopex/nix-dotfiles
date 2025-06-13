@@ -1,0 +1,43 @@
+[
+  {
+    "context": "Editor && VimControl && !VimWaiting && !menu",
+    "bindings": {
+      "g h": ["vim::StartOfLine"],
+      "g l": ["vim::EndOfLine"],
+      "space y": ["editor::Copy"],
+      "space d": ["vim::Substitute", {"target": "Selected"}, "d", "\"_d"],
+      "space h": ["search::ClearSearchResults"]
+    }
+  },
+  {
+    "context": "Editor && vim_mode == visual && !VimWaiting && !menu",
+    "bindings": {
+      "shift-j": ["editor::MoveLineDown"],
+      "shift-k": ["editor::MoveLineUp"],
+      "<": ["editor::Outdent"],
+      ">": ["editor::Indent"],
+      "g h": ["vim::StartOfLine"],
+      "g l": ["vim::EndOfLine"],
+      "space y": ["editor::Copy"],
+      "space d": ["vim::Substitute", {"target": "Selected"}, "d", "\"_d"]
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-e": ["workspace::ToggleLeftDock"],
+      "cmd-i": ["assistant::ToggleFocus"],
+      "cmd-h": ["pane::ActivatePrevItem"],
+      "cmd-l": ["pane::ActivateNextItem"],
+      "cmd-t": ["workspace::NewFile"],
+      "cmd-w": ["pane::CloseActiveItem"],
+      "alt-h": ["workspace::ActivatePaneInDirection", "Left"],
+      "alt-j": ["workspace::ActivatePaneInDirection", "Down"],
+      "alt-k": ["workspace::ActivatePaneInDirection", "Up"],
+      "alt-l": ["workspace::ActivatePaneInDirection", "Right"],
+      "cmd-d": ["workspace::NewPane"],
+      "cmd-shift-d": ["workspace::NewPane"],
+      "cmd-shift-w": ["pane::ClosePane"]
+    }
+  }
+]
