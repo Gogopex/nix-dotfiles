@@ -14,7 +14,10 @@
   outputs = { self, nixpkgs, nix-darwin, home-manager, agenix, ghosttySrc, ... }:
   let
     system = "aarch64-darwin";
-    pkgs   = import nixpkgs { inherit system; };
+    pkgs   = import nixpkgs { 
+      inherit system; 
+      config.allowUnfree = true;
+    };
   in
   {
     packages.default = pkgs.hello;
@@ -61,26 +64,26 @@
                   auto-update              = "off";
                   keybind = [
                     "ctrl+space=toggle_fullscreen"
-                    # Ghostty tab management
+                    # ghostty tab management
                     "cmd+shift+t=new_tab"
-                    # Pass through to Zellij for pane navigation
+                    # pass through to Zellij for pane navigation
                     "ctrl+h=unbind"   "ctrl+j=unbind"
                     "ctrl+k=unbind"   "ctrl+l=unbind"
-                    # Pass through to Zellij for tab navigation
+                    # pass through to Zellij for tab navigation
                     "cmd+h=unbind"    "cmd+l=unbind"
                     "cmd+t=unbind"    "cmd+w=unbind"
-                    # Pass through to Zellij for pane splitting
+                    # pass through to Zellij for pane splitting
                     "cmd+d=unbind"    "cmd+shift+d=unbind"
                     "cmd+shift+w=unbind"
-                    # Pass through to Zellij for pane resizing
+                    # pass through to Zellij for pane resizing
                     "cmd+ctrl+h=unbind"
                     "cmd+ctrl+j=unbind"
                     "cmd+ctrl+k=unbind"
                     "cmd+ctrl+l=unbind"
-                    # Tab movement (Ghostty owns arrow combos, letters go to Zellij)
+                    # tab movement (Ghostty owns arrow combos, letters go to Zellij)
                     "cmd+ctrl+shift+left=move_tab:-1"
                     "cmd+ctrl+shift+right=move_tab:1"
-                    # Pass through to Zellij for tab re-ordering
+                    # pass through to Zellij for tab re-ordering
                     "cmd+ctrl+shift+h=unbind"
                     "cmd+ctrl+shift+l=unbind"
                     "global:shift+opt+t=toggle_quick_terminal"
@@ -99,51 +102,80 @@
                   copy_on_select = true;
                   keybinds = {
                     normal = {
-                      # Tab navigation (matching Ghostty keybinds)
+                      # tab navigation (matching Ghostty keybinds)
                       "bind \"Super h\"" = { GoToPreviousTab = {}; };
                       "bind \"Super l\"" = { GoToNextTab = {}; };
                       "bind \"Super t\"" = { NewTab = {}; };
                       "bind \"Super w\"" = { CloseTab = {}; };
                       
-                      # Pane navigation (matching Ghostty keybinds)
+                      # pane navigation (matching Ghostty keybinds)
                       "bind \"Ctrl h\"" = { MoveFocus = "Left"; };
                       "bind \"Ctrl j\"" = { MoveFocus = "Down"; };
                       "bind \"Ctrl k\"" = { MoveFocus = "Up"; };
                       "bind \"Ctrl l\"" = { MoveFocus = "Right"; };
                       
-                      # Pane resizing (matching Ghostty keybinds)
+                      # pane resizing (matching Ghostty keybinds)
                       "bind \"Super Ctrl h\"" = { Resize = "Increase Left"; };
                       "bind \"Super Ctrl j\"" = { Resize = "Increase Down"; };
                       "bind \"Super Ctrl k\"" = { Resize = "Increase Up"; };
                       "bind \"Super Ctrl l\"" = { Resize = "Increase Right"; };
                       
-                      # Pane management
+                      # pane management
                       "bind \"Super d\"" = { NewPane = "Right"; };
                       "bind \"Super Shift d\"" = { NewPane = "Down"; };
                       "bind \"Super Shift w\"" = { CloseFocus = {}; };
                       
-                      # Pane movement
+                      # pane movement
                       "bind \"Super Shift h\"" = { MovePane = "Left"; };
                       "bind \"Super Shift j\"" = { MovePane = "Down"; };
                       "bind \"Super Shift k\"" = { MovePane = "Up"; };
                       "bind \"Super Shift l\"" = { MovePane = "Right"; };
                       
-                      # Pane stacking and fullscreen
+                      # pane stacking and fullscreen
                       "bind \"Super f\"" = { ToggleFocusFullscreen = {}; };
                       "bind \"Super z\"" = { TogglePaneFrames = {}; };
                       
-                      # Tab movement
+                      # tab movement
                       "bind \"Super Ctrl Shift h\"" = { MoveTab = "Left"; };
                       "bind \"Super Ctrl Shift l\"" = { MoveTab = "Right"; };
                       
-                      # Mode switching
+                      # mode switching
                       "bind \"Ctrl a\"" = { SwitchToMode = "Tmux"; };
                       
-                      # Essential shortcuts
+                      # essential shortcuts
                       "bind \"Ctrl q\"" = { Quit = {}; };
                       "bind \"Ctrl g\"" = { SwitchToMode = "Locked"; };
                       "bind \"Ctrl ;\"" = { SwitchToMode = "Scroll"; };
                     };
+                    layouts = {
+                       dev = {
+                        panes = [
+                          { run = "hx"; }
+                          {
+                            direction = "Right";
+                            size = "35%";
+                            panes = [
+                              { }
+                              { }
+                            ];
+                          }
+                        ];
+                      };
+                       tt-evolve = {
+                        panes = [
+                          { run = "hx"; }
+                          {
+                            direction = "Right";
+                            size = "35%";
+                            panes = [
+                              { run = "cd tui/ttop; cargo run"; }
+                              { run = "cd tui/ttop; cargo watch"; }
+                            ];
+                          }
+                        ];
+                      };
+                    };
+
                     locked = {
                       "bind \"Ctrl g\"" = { SwitchToMode = "Normal"; };
                     };
@@ -163,6 +195,16 @@
 
               programs.helix = {
                 enable = true;
+                languages = {
+                  language = [
+                    {
+                      name = "nix";
+                      formatter = {
+                        command = "nixfmt-rfc-style";
+                      };
+                    }
+                  ];
+                };
                 settings = {
                   theme = "gruvbox";
                   editor = {
@@ -195,21 +237,18 @@
                   };
                   keys = {
                     normal = {
-                      # Quick iteration on config changes
+                      # quick iteration on config changes
                       "C-o" = ":config-open";
                       "C-r" = ":config-reload";
                       
-                      # Some nice Helix stuff
                       "C-h" = "select_prev_sibling";
                       "C-j" = "shrink_selection";
                       "C-k" = "expand_selection";
                       "C-l" = "select_next_sibling";
                       
-                      # Personal preference
                       o = ["open_below" "normal_mode"];
                       O = ["open_above" "normal_mode"];
                       
-                      # Muscle memory
                       "{" = ["goto_prev_paragraph" "collapse_selection"];
                       "}" = ["goto_next_paragraph" "collapse_selection"];
                       "0" = "goto_line_start";
@@ -231,7 +270,6 @@
                       ];
                       S = "surround_add";
                       
-                      # Clipboards over registers
                       x = "delete_selection";
                       p = ["paste_clipboard_after" "collapse_selection"];
                       P = ["paste_clipboard_before" "collapse_selection"];
@@ -241,7 +279,6 @@
                         "collapse_selection"
                       ];
                       
-                      # Vim-like word movement
                       w = ["move_next_word_start" "move_char_right" "collapse_selection"];
                       W = ["move_next_long_word_start" "move_char_right" "collapse_selection"];
                       e = ["move_next_word_end" "collapse_selection"];
@@ -249,17 +286,13 @@
                       b = ["move_prev_word_start" "collapse_selection"];
                       B = ["move_prev_long_word_start" "collapse_selection"];
                       
-                      # Insert/append with collapsed selection
                       i = ["insert_mode" "collapse_selection"];
                       a = ["append_mode" "collapse_selection"];
                       
-                      # Undo with collapsed selection
                       u = ["undo" "collapse_selection"];
                       
-                      # Escape behavior
                       esc = ["collapse_selection" "keep_primary_selection"];
                       
-                      # Search for word under cursor
                       "*" = [
                         "move_char_right"
                         "move_prev_word_start"
@@ -275,11 +308,9 @@
                         "search_prev"
                       ];
                       
-                      # Vim-like j/k movement
                       j = "move_line_down";
                       k = "move_line_up";
                       
-                      # Delete commands
                       d = {
                         d = [
                           "extend_to_line_bounds"
@@ -352,7 +383,6 @@
                         ];
                       };
                       
-                      # Yank commands
                       y = {
                         y = [
                           "extend_to_line_bounds"
@@ -428,7 +458,6 @@
                       esc = ["collapse_selection" "normal_mode"];
                     };
                     select = {
-                      # Muscle memory
                       "{" = ["extend_to_line_bounds" "goto_prev_paragraph"];
                       "}" = ["extend_to_line_bounds" "goto_next_paragraph"];
                       "0" = "goto_line_start";
@@ -442,19 +471,15 @@
                       u = ["switch_to_lowercase" "collapse_selection" "normal_mode"];
                       U = ["switch_to_uppercase" "collapse_selection" "normal_mode"];
                       
-                      # Visual-mode specific
                       i = "select_textobject_inner";
                       a = "select_textobject_around";
                       
-                      # Insert/append in select mode
                       tab = ["insert_mode" "collapse_selection"];
                       "C-a" = ["append_mode" "collapse_selection"];
                       
-                      # Line selection
                       k = ["extend_line_up" "extend_to_line_bounds"];
                       j = ["extend_line_down" "extend_to_line_bounds"];
                       
-                      # Clipboard operations
                       d = ["yank_main_selection_to_clipboard" "delete_selection"];
                       x = ["yank_main_selection_to_clipboard" "delete_selection"];
                       y = [
@@ -473,7 +498,6 @@
                       p = "replace_selections_with_clipboard";
                       P = "paste_clipboard_before";
                       
-                      # Escape behavior
                       esc = ["collapse_selection" "keep_primary_selection" "normal_mode"];
                     };
                   };
