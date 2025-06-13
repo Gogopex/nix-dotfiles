@@ -42,6 +42,7 @@
               home.stateVersion = "25.05";
 
               xdg.configFile."nvim".source              = cfg + "/nvim";
+              xdg.configFile."aerospace".source         = cfg + "/aerospace";
 
               programs.ghostty = {
                 enable = true;
@@ -513,6 +514,9 @@
                 ghc cabal-install stack haskell-language-server
                 nixfmt-rfc-style nil volta maven openjdk wiki-tui tokei
                 mutagen mutagen-compose agenix.packages.${system}.default
+                pkgs.legacyPackages.${system}.zotero
+                obsidian
+                aerospace
               ];
 
               programs.go.enable = true;
