@@ -19,6 +19,8 @@ keybind = cmd+h=unbind
 keybind = cmd+l=unbind
 keybind = cmd+t=unbind
 keybind = cmd+w=unbind
+keybind = cmd+d=unbind
+keybind = cmd+shift+d=unbind
 
 # Unbind pane resizing to let Zellij handle it
 keybind = super+ctrl+h=unbind

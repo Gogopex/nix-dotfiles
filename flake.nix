@@ -58,14 +58,28 @@
                   auto-update              = "off";
                   keybind = [
                     "ctrl+space=toggle_fullscreen"
-                    "ctrl+h=goto_split:left"   "ctrl+j=goto_split:down"
-                    "ctrl+k=goto_split:up"     "ctrl+l=goto_split:right"
-                    "cmd+h=previous_tab"       "cmd+l=next_tab"
-                    "cmd+shift+w=close_tab"
-                    "super+ctrl+h=resize_split:left,10"
-                    "super+ctrl+j=resize_split:down,10"
-                    "super+ctrl+k=resize_split:up,10"
-                    "super+ctrl+l=resize_split:right,10"
+                    # Ghostty tab management
+                    "cmd+shift+t=new_tab"
+                    # Pass through to Zellij for pane navigation
+                    "ctrl+h=unbind"   "ctrl+j=unbind"
+                    "ctrl+k=unbind"   "ctrl+l=unbind"
+                    # Pass through to Zellij for tab navigation
+                    "cmd+h=unbind"    "cmd+l=unbind"
+                    "cmd+t=unbind"    "cmd+w=unbind"
+                    # Pass through to Zellij for pane splitting
+                    "cmd+d=unbind"    "cmd+shift+d=unbind"
+                    "cmd+shift+w=unbind"
+                    # Pass through to Zellij for pane resizing
+                    "cmd+ctrl+h=unbind"
+                    "cmd+ctrl+j=unbind"
+                    "cmd+ctrl+k=unbind"
+                    "cmd+ctrl+l=unbind"
+                    # Tab movement (Ghostty owns arrow combos, letters go to Zellij)
+                    "cmd+ctrl+shift+left=move_tab:-1"
+                    "cmd+ctrl+shift+right=move_tab:1"
+                    # Pass through to Zellij for tab re-ordering
+                    "cmd+ctrl+shift+h=unbind"
+                    "cmd+ctrl+shift+l=unbind"
                     "global:shift+opt+t=toggle_quick_terminal"
                   ];
                 };
@@ -104,6 +118,20 @@
                       "bind \"Super d\"" = { NewPane = "Right"; };
                       "bind \"Super Shift d\"" = { NewPane = "Down"; };
                       "bind \"Super Shift w\"" = { CloseFocus = {}; };
+                      
+                      # Pane movement
+                      "bind \"Super Shift h\"" = { MovePane = "Left"; };
+                      "bind \"Super Shift j\"" = { MovePane = "Down"; };
+                      "bind \"Super Shift k\"" = { MovePane = "Up"; };
+                      "bind \"Super Shift l\"" = { MovePane = "Right"; };
+                      
+                      # Pane stacking and fullscreen
+                      "bind \"Super f\"" = { ToggleFocusFullscreen = {}; };
+                      "bind \"Super z\"" = { TogglePaneFrames = {}; };
+                      
+                      # Tab movement
+                      "bind \"Super Ctrl Shift h\"" = { MoveTab = "Left"; };
+                      "bind \"Super Ctrl Shift l\"" = { MoveTab = "Right"; };
                       
                       # Mode switching
                       "bind \"Ctrl a\"" = { SwitchToMode = "Tmux"; };
@@ -559,6 +587,7 @@
                 userName  = "ludwig";
                 userEmail = "gogopex@gmail.com";
               };
+
 
               programs.btop = {
                 enable = true;
