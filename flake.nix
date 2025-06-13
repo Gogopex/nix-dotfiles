@@ -662,13 +662,11 @@
                   br = "branch";
                   l = "log --oneline --graph --decorate";
                   la = "log --oneline --graph --decorate --all";
-                  ll = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'";
                   d = "diff";
                   dc = "diff --cached";
                   a = "add";
                   c = "commit";
                   ca = "commit -a";
-                  cam = "commit -am";
                   unstage = "reset HEAD --";
                   last = "log -1 HEAD";
                   visual = "!gitk";
