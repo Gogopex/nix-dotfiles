@@ -42,7 +42,7 @@
               home.stateVersion = "25.05";
 
               xdg.configFile."nvim".source              = cfg + "/nvim";
-              xdg.configFile."aerospace".source         = cfg + "/aerospace";
+              # aerospace config is now provided by home-manager module, no manual file needed
 
               programs.ghostty = {
                 enable = true;
@@ -516,7 +516,6 @@
                 mutagen mutagen-compose agenix.packages.${system}.default
                 pkgs.legacyPackages.${system}.zotero
                 obsidian
-                aerospace
               ];
 
               programs.go.enable = true;
@@ -662,6 +661,37 @@
                   selected_battery = "Auto";
                   show_battery_watts = true;
                   log_level = "WARNING";
+                };
+              };
+
+              programs.aerospace = {
+                enable = true;
+                # settings converted from previous darwin services block
+                userSettings = {
+                  default-root-container-layout = "tiles";
+                  default-root-container-orientation = "auto";
+                  accordion-padding = 0;
+                  automatically-unhide-macos-hidden-apps = true;
+                  gaps.inner.horizontal = 0;
+                  gaps.inner.vertical   = 0;
+                  gaps.outer = {
+                    left = 0; right = 0;
+                    top  = 0; bottom = 0;
+                  };
+
+                  mode.main.binding = {
+                    "cmd-opt-h" = "focus left";
+                    "cmd-opt-j" = "focus down";
+                    "cmd-opt-k" = "focus up";
+                    "cmd-opt-l" = "focus right";
+                    "cmd-opt-shift-h" = "move left";
+                    "cmd-opt-shift-j" = "move down";
+                    "cmd-opt-shift-k" = "move up";
+                    "cmd-opt-shift-l" = "move right";
+                    "cmd-opt-v" = "join-with right";
+                    "cmd-opt-b" = "join-with down";
+                    "cmd-opt-tab" = "focus-back-and-forth";
+                  };
                 };
               };
             };
