@@ -108,7 +108,6 @@
                       "bind \"Super l\"" = { GoToNextTab = {}; };
                       "bind \"Super t\"" = { NewTab = {}; };
                       "bind \"Super w\"" = { CloseTab = {}; };
-                      "bind \"Super s\"" = { SwitchToMode = "Session"; };
                       
                       # pane navigation (matching Ghostty keybinds)
                       "bind \"Ctrl h\"" = { MoveFocus = "Left"; };

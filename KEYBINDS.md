@@ -94,6 +94,9 @@ stack view = borders hidden so panes appear overlapped
 - `Cmd + Ctrl + Shift + Left/Right`: Move Ghostty tab left/right (handled by Ghostty)
 - `Cmd + Ctrl + Shift + h/l`: Move Zellij tab left/right (passed through to Zellij)
 
+#### Session Management
+- `Ctrl + o` + `w`: Open session-manager
+
 #### Mode Switching
 - `Ctrl + a`: Switch to Tmux mode
 - `Ctrl + g`: Switch to Locked mode
@@ -127,5 +130,15 @@ cmd+opt+b                   join-with down    # stacked
 
 # Toggle last two focused windows
 cmd+opt+tab                 focus-back-and-forth
+```
+
+## Hammerspoon (App Switching)
+
+```
+# Quick app switching
+ctrl+shift+1                Ghostty
+ctrl+shift+2                Arc
+ctrl+shift+3                Obsidian
+ctrl+shift+4                Sublime Text
 ```
 
