@@ -35,19 +35,17 @@
             users.users.ludwig.home = "/Users/ludwig";
             home-manager.useGlobalPkgs   = true;
             home-manager.useUserPackages = true;
+            home-manager.backupFileExtension = "backup";
             home-manager.extraSpecialArgs = { inherit ghosttySrc; };
 
             home-manager.users.ludwig = { pkgs, ... }: {
               home.stateVersion = "25.05";
 
               xdg.configFile."nvim".source              = cfg + "/nvim";
-              xdg.configFile."helix".source             = cfg + "/helix";
-              xdg.configFile."zellij/config.kdl".source = cfg + "/zellij/config.kdl";
 
               programs.ghostty = {
                 enable = true;
                 package = null;
-                clearDefaultKeybinds = true;
                 settings = {
                   theme                    = "GruvboxDark";
                   font-family              = "TX-02-Regular";
@@ -63,12 +61,62 @@
                     "ctrl+h=goto_split:left"   "ctrl+j=goto_split:down"
                     "ctrl+k=goto_split:up"     "ctrl+l=goto_split:right"
                     "cmd+h=previous_tab"       "cmd+l=next_tab"
+                    "cmd+shift+w=close_tab"
                     "super+ctrl+h=resize_split:left,10"
                     "super+ctrl+j=resize_split:down,10"
                     "super+ctrl+k=resize_split:up,10"
                     "super+ctrl+l=resize_split:right,10"
                     "global:shift+opt+t=toggle_quick_terminal"
                   ];
+                };
+              };
+
+              programs.zellij = {
+                enable = true;
+                settings = {
+                  simplified_ui = true;
+                  default_shell = "fish";
+                  theme = "gruvbox-dark";
+                  default_layout = "compact";
+                  copy_command = "pbcopy";
+                  copy_on_select = true;
+                  keybinds = {
+                    normal = {
+                      # Tab navigation (matching Ghostty keybinds)
+                      "bind \"Super h\"" = { GoToPreviousTab = {}; };
+                      "bind \"Super l\"" = { GoToNextTab = {}; };
+                      "bind \"Super t\"" = { NewTab = {}; };
+                      "bind \"Super w\"" = { CloseTab = {}; };
+                      
+                      # Pane navigation (matching Ghostty keybinds)
+                      "bind \"Ctrl h\"" = { MoveFocus = "Left"; };
+                      "bind \"Ctrl j\"" = { MoveFocus = "Down"; };
+                      "bind \"Ctrl k\"" = { MoveFocus = "Up"; };
+                      "bind \"Ctrl l\"" = { MoveFocus = "Right"; };
+                      
+                      # Pane resizing (matching Ghostty keybinds)
+                      "bind \"Super Ctrl h\"" = { Resize = "Increase Left"; };
+                      "bind \"Super Ctrl j\"" = { Resize = "Increase Down"; };
+                      "bind \"Super Ctrl k\"" = { Resize = "Increase Up"; };
+                      "bind \"Super Ctrl l\"" = { Resize = "Increase Right"; };
+                      
+                      # Pane management
+                      "bind \"Super d\"" = { NewPane = "Right"; };
+                      "bind \"Super Shift d\"" = { NewPane = "Down"; };
+                      "bind \"Super Shift w\"" = { CloseFocus = {}; };
+                      
+                      # Mode switching
+                      "bind \"Ctrl a\"" = { SwitchToMode = "Tmux"; };
+                      
+                      # Essential shortcuts
+                      "bind \"Ctrl q\"" = { Quit = {}; };
+                      "bind \"Ctrl g\"" = { SwitchToMode = "Locked"; };
+                      "bind \"Ctrl ;\"" = { SwitchToMode = "Scroll"; };
+                    };
+                    locked = {
+                      "bind \"Ctrl g\"" = { SwitchToMode = "Normal"; };
+                    };
+                  };
                 };
               };
 
@@ -86,7 +134,318 @@
                 enable = true;
                 settings = {
                   theme = "gruvbox";
-                  keys.normal."${leader}" = ":w";
+                  editor = {
+                    line-number = "relative";
+                    mouse = false;
+                    cursor-shape = {
+                      insert = "bar";
+                      normal = "block";
+                      select = "underline";
+                    };
+                    file-picker.hidden = false;
+                    statusline = {
+                      left = ["mode" "spinner"];
+                      center = ["file-name"];
+                      right = [
+                        "diagnostics"
+                        "selections"
+                        "position"
+                        "file-encoding"
+                        "file-line-ending"
+                        "file-type"
+                      ];
+                      separator = "│";
+                      mode = {
+                        normal = "NORMAL";
+                        insert = "INSERT";
+                        select = "SELECT";
+                      };
+                    };
+                  };
+                  keys = {
+                    normal = {
+                      # Quick iteration on config changes
+                      "C-o" = ":config-open";
+                      "C-r" = ":config-reload";
+                      
+                      # Some nice Helix stuff
+                      "C-h" = "select_prev_sibling";
+                      "C-j" = "shrink_selection";
+                      "C-k" = "expand_selection";
+                      "C-l" = "select_next_sibling";
+                      
+                      # Personal preference
+                      o = ["open_below" "normal_mode"];
+                      O = ["open_above" "normal_mode"];
+                      
+                      # Muscle memory
+                      "{" = ["goto_prev_paragraph" "collapse_selection"];
+                      "}" = ["goto_next_paragraph" "collapse_selection"];
+                      "0" = "goto_line_start";
+                      "$" = "goto_line_end";
+                      "^" = "goto_first_nonwhitespace";
+                      G = "goto_file_end";
+                      "%" = "match_brackets";
+                      V = ["select_mode" "extend_to_line_bounds"];
+                      C = [
+                        "extend_to_line_end"
+                        "yank_main_selection_to_clipboard"
+                        "delete_selection"
+                        "insert_mode"
+                      ];
+                      D = [
+                        "extend_to_line_end"
+                        "yank_main_selection_to_clipboard"
+                        "delete_selection"
+                      ];
+                      S = "surround_add";
+                      
+                      # Clipboards over registers
+                      x = "delete_selection";
+                      p = ["paste_clipboard_after" "collapse_selection"];
+                      P = ["paste_clipboard_before" "collapse_selection"];
+                      Y = [
+                        "extend_to_line_end"
+                        "yank_main_selection_to_clipboard"
+                        "collapse_selection"
+                      ];
+                      
+                      # Vim-like word movement
+                      w = ["move_next_word_start" "move_char_right" "collapse_selection"];
+                      W = ["move_next_long_word_start" "move_char_right" "collapse_selection"];
+                      e = ["move_next_word_end" "collapse_selection"];
+                      E = ["move_next_long_word_end" "collapse_selection"];
+                      b = ["move_prev_word_start" "collapse_selection"];
+                      B = ["move_prev_long_word_start" "collapse_selection"];
+                      
+                      # Insert/append with collapsed selection
+                      i = ["insert_mode" "collapse_selection"];
+                      a = ["append_mode" "collapse_selection"];
+                      
+                      # Undo with collapsed selection
+                      u = ["undo" "collapse_selection"];
+                      
+                      # Escape behavior
+                      esc = ["collapse_selection" "keep_primary_selection"];
+                      
+                      # Search for word under cursor
+                      "*" = [
+                        "move_char_right"
+                        "move_prev_word_start"
+                        "move_next_word_end"
+                        "search_selection"
+                        "search_next"
+                      ];
+                      "#" = [
+                        "move_char_right"
+                        "move_prev_word_start"
+                        "move_next_word_end"
+                        "search_selection"
+                        "search_prev"
+                      ];
+                      
+                      # Vim-like j/k movement
+                      j = "move_line_down";
+                      k = "move_line_up";
+                      
+                      # Delete commands
+                      d = {
+                        d = [
+                          "extend_to_line_bounds"
+                          "yank_main_selection_to_clipboard"
+                          "delete_selection"
+                        ];
+                        t = ["extend_till_char"];
+                        s = ["surround_delete"];
+                        i = ["select_textobject_inner"];
+                        a = ["select_textobject_around"];
+                        j = [
+                          "select_mode"
+                          "extend_to_line_bounds"
+                          "extend_line_below"
+                          "yank_main_selection_to_clipboard"
+                          "delete_selection"
+                          "normal_mode"
+                        ];
+                        down = [
+                          "select_mode"
+                          "extend_to_line_bounds"
+                          "extend_line_below"
+                          "yank_main_selection_to_clipboard"
+                          "delete_selection"
+                          "normal_mode"
+                        ];
+                        k = [
+                          "select_mode"
+                          "extend_to_line_bounds"
+                          "extend_line_above"
+                          "yank_main_selection_to_clipboard"
+                          "delete_selection"
+                          "normal_mode"
+                        ];
+                        up = [
+                          "select_mode"
+                          "extend_to_line_bounds"
+                          "extend_line_above"
+                          "yank_main_selection_to_clipboard"
+                          "delete_selection"
+                          "normal_mode"
+                        ];
+                        G = [
+                          "select_mode"
+                          "extend_to_line_bounds"
+                          "goto_last_line"
+                          "extend_to_line_bounds"
+                          "yank_main_selection_to_clipboard"
+                          "delete_selection"
+                          "normal_mode"
+                        ];
+                        w = [
+                          "move_next_word_start"
+                          "yank_main_selection_to_clipboard"
+                          "delete_selection"
+                        ];
+                        W = [
+                          "move_next_long_word_start"
+                          "yank_main_selection_to_clipboard"
+                          "delete_selection"
+                        ];
+                        g.g = [
+                          "select_mode"
+                          "extend_to_line_bounds"
+                          "goto_file_start"
+                          "extend_to_line_bounds"
+                          "yank_main_selection_to_clipboard"
+                          "delete_selection"
+                          "normal_mode"
+                        ];
+                      };
+                      
+                      # Yank commands
+                      y = {
+                        y = [
+                          "extend_to_line_bounds"
+                          "yank_main_selection_to_clipboard"
+                          "normal_mode"
+                          "collapse_selection"
+                        ];
+                        j = [
+                          "select_mode"
+                          "extend_to_line_bounds"
+                          "extend_line_below"
+                          "yank_main_selection_to_clipboard"
+                          "collapse_selection"
+                          "normal_mode"
+                        ];
+                        down = [
+                          "select_mode"
+                          "extend_to_line_bounds"
+                          "extend_line_below"
+                          "yank_main_selection_to_clipboard"
+                          "collapse_selection"
+                          "normal_mode"
+                        ];
+                        k = [
+                          "select_mode"
+                          "extend_to_line_bounds"
+                          "extend_line_above"
+                          "yank_main_selection_to_clipboard"
+                          "collapse_selection"
+                          "normal_mode"
+                        ];
+                        up = [
+                          "select_mode"
+                          "extend_to_line_bounds"
+                          "extend_line_above"
+                          "yank_main_selection_to_clipboard"
+                          "collapse_selection"
+                          "normal_mode"
+                        ];
+                        G = [
+                          "select_mode"
+                          "extend_to_line_bounds"
+                          "goto_last_line"
+                          "extend_to_line_bounds"
+                          "yank_main_selection_to_clipboard"
+                          "collapse_selection"
+                          "normal_mode"
+                        ];
+                        w = [
+                          "move_next_word_start"
+                          "yank_main_selection_to_clipboard"
+                          "collapse_selection"
+                          "normal_mode"
+                        ];
+                        W = [
+                          "move_next_long_word_start"
+                          "yank_main_selection_to_clipboard"
+                          "collapse_selection"
+                          "normal_mode"
+                        ];
+                        g.g = [
+                          "select_mode"
+                          "extend_to_line_bounds"
+                          "goto_file_start"
+                          "extend_to_line_bounds"
+                          "yank_main_selection_to_clipboard"
+                          "collapse_selection"
+                          "normal_mode"
+                        ];
+                      };
+                    };
+                    insert = {
+                      esc = ["collapse_selection" "normal_mode"];
+                    };
+                    select = {
+                      # Muscle memory
+                      "{" = ["extend_to_line_bounds" "goto_prev_paragraph"];
+                      "}" = ["extend_to_line_bounds" "goto_next_paragraph"];
+                      "0" = "goto_line_start";
+                      "$" = "goto_line_end";
+                      "^" = "goto_first_nonwhitespace";
+                      G = "goto_file_end";
+                      D = ["extend_to_line_bounds" "delete_selection" "normal_mode"];
+                      C = ["goto_line_start" "extend_to_line_bounds" "change_selection"];
+                      "%" = "match_brackets";
+                      S = "surround_add";
+                      u = ["switch_to_lowercase" "collapse_selection" "normal_mode"];
+                      U = ["switch_to_uppercase" "collapse_selection" "normal_mode"];
+                      
+                      # Visual-mode specific
+                      i = "select_textobject_inner";
+                      a = "select_textobject_around";
+                      
+                      # Insert/append in select mode
+                      tab = ["insert_mode" "collapse_selection"];
+                      "C-a" = ["append_mode" "collapse_selection"];
+                      
+                      # Line selection
+                      k = ["extend_line_up" "extend_to_line_bounds"];
+                      j = ["extend_line_down" "extend_to_line_bounds"];
+                      
+                      # Clipboard operations
+                      d = ["yank_main_selection_to_clipboard" "delete_selection"];
+                      x = ["yank_main_selection_to_clipboard" "delete_selection"];
+                      y = [
+                        "yank_main_selection_to_clipboard"
+                        "normal_mode"
+                        "flip_selections"
+                        "collapse_selection"
+                      ];
+                      Y = [
+                        "extend_to_line_bounds"
+                        "yank_main_selection_to_clipboard"
+                        "goto_line_start"
+                        "collapse_selection"
+                        "normal_mode"
+                      ];
+                      p = "replace_selections_with_clipboard";
+                      P = "paste_clipboard_before";
+                      
+                      # Escape behavior
+                      esc = ["collapse_selection" "keep_primary_selection" "normal_mode"];
+                    };
+                  };
                 };
               };
 
@@ -140,7 +499,7 @@
                 shellInit = /* fish */ ''
                   if status is-interactive
                     fish_add_path -g ~/.nix-profile/bin
-                    fish_add_path -g /etc/profiles/per-user/$USER/bin
+                    fish_add_path -g /etc/profiles/per-user/bin
                     fish_add_path -g /run/current-system/sw/bin
                     fish_add_path -g /nix/var/nix/profiles/default/bin
                     fish_add_path ~/.npm-global/bin
@@ -157,12 +516,26 @@
                 '';
                 interactiveShellInit = ''
                   set -gx EDITOR hx
+                  set -gx PHP_VERSION 8.3
+                  set -gx GHCUP_INSTALL_BASE_PREFIX $HOME
+                  
                   theme_gruvbox dark
                   if set -q GHOSTTY_RESOURCES_DIR
                     source $GHOSTTY_RESOURCES_DIR/shell-integration/fish/vendor_conf.d/ghostty-shell-integration.fish
                   end
                   zoxide init fish | source
                   source ~/.orbstack/shell/init2.fish 2>/dev/null || true
+                  
+                  # Zellij auto-start for Ghostty
+                  if test "$TERM" = "xterm-ghostty"; and test -z "$ZELLIJ"
+                    exec zellij
+                  end
+                  
+                  # Fisher and plugins
+                  if not functions -q fisher
+                    # Install fisher if not present
+                    curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
+                  end
                 '';
                 functions = {
                   ssh_tt = ''
@@ -189,7 +562,74 @@
 
               programs.btop = {
                 enable = true;
-                settings.color_theme = "gruvbox_dark";
+                settings = {
+                  color_theme = "Default";
+                  theme_background = true;
+                  truecolor = true;
+                  force_tty = false;
+                  presets = "cpu:1:default,proc:0:default cpu:0:default,mem:0:default,net:0:default cpu:0:block,net:0:tty";
+                  vim_keys = false;
+                  rounded_corners = true;
+                  graph_symbol = "braille";
+                  graph_symbol_cpu = "default";
+                  graph_symbol_mem = "default";
+                  graph_symbol_net = "default";
+                  graph_symbol_proc = "default";
+                  shown_boxes = "cpu mem proc net";
+                  update_ms = 2000;
+                  proc_sorting = "memory";
+                  proc_reversed = false;
+                  proc_tree = false;
+                  proc_colors = true;
+                  proc_gradient = true;
+                  proc_per_core = false;
+                  proc_mem_bytes = true;
+                  proc_cpu_graphs = true;
+                  proc_info_smaps = false;
+                  proc_left = false;
+                  proc_filter_kernel = false;
+                  proc_aggregate = false;
+                  cpu_graph_upper = "Auto";
+                  cpu_graph_lower = "Auto";
+                  cpu_invert_lower = true;
+                  cpu_single_graph = false;
+                  cpu_bottom = false;
+                  show_uptime = true;
+                  check_temp = true;
+                  cpu_sensor = "Auto";
+                  show_coretemp = true;
+                  cpu_core_map = "";
+                  temp_scale = "celsius";
+                  base_10_sizes = false;
+                  show_cpu_freq = true;
+                  clock_format = "%X";
+                  background_update = true;
+                  custom_cpu_name = "";
+                  disks_filter = "";
+                  mem_graphs = true;
+                  mem_below_net = false;
+                  zfs_arc_cached = true;
+                  show_swap = true;
+                  swap_disk = true;
+                  show_disks = true;
+                  only_physical = true;
+                  use_fstab = true;
+                  zfs_hide_datasets = false;
+                  disk_free_priv = false;
+                  show_io_stat = true;
+                  io_mode = false;
+                  io_graph_combined = false;
+                  io_graph_speeds = "";
+                  net_download = 100;
+                  net_upload = 100;
+                  net_auto = true;
+                  net_sync = false;
+                  net_iface = "";
+                  show_battery = true;
+                  selected_battery = "Auto";
+                  show_battery_watts = true;
+                  log_level = "WARNING";
+                };
               };
             };
           })
