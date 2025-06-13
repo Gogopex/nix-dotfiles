@@ -38,7 +38,9 @@
             home-manager.backupFileExtension = "backup";
             home-manager.extraSpecialArgs = { inherit ghosttySrc; };
 
-            home-manager.users.ludwig = { pkgs, ... }: {
+            home-manager.users.ludwig = { pkgs, lib, ... }: let
+              darwinOnly = lib.mkIf pkgs.stdenv.isDarwin;
+            in {
               home.stateVersion = "25.05";
 
               xdg.configFile."nvim".source              = cfg + "/nvim";
@@ -664,9 +666,8 @@
                 };
               };
 
-              programs.aerospace = {
+              programs.aerospace = darwinOnly {
                 enable = true;
-                # settings converted from previous darwin services block
                 userSettings = {
                   default-root-container-layout = "tiles";
                   default-root-container-orientation = "auto";
