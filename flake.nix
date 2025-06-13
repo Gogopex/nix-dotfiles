@@ -555,6 +555,7 @@
                   nixfmt-rfc-style nil volta maven openjdk wiki-tui tokei
                   mutagen mutagen-compose agenix.packages.${system}.default
                   obsidian uutils-coreutils-noprefix
+                  dust hyperfine just tldr glow lazygit procs
                 ] ++ lib.optionals pkgs.stdenv.isDarwin [ zotero ]
               );
 
@@ -566,6 +567,14 @@
                   ll = "ls -alh";
                   dr = "sudo darwin-rebuild switch --flake .#macbook";
                   ingest = "~/go/bin/ingest";
+                  cat = "bat";
+                  ps = "procs";
+                  du = "dust";
+                  top = "btop";
+                  help = "tldr";
+                  md = "glow";
+                  lg = "lazygit";
+                  bench = "hyperfine";
                 };
                 shellInit = /* fish */ ''
                   if status is-interactive
@@ -632,6 +641,37 @@
                 extraConfig = {
                   pull.rebase = false;
                   init.defaultBranch = "main";
+                  push.autoSetupRemote = true;
+                  merge.conflictstyle = "diff3";
+                  rebase.autosquash = true;
+                  core.pager = "delta";
+                  interactive.diffFilter = "delta --color-only";
+                  delta = {
+                    navigate = true;
+                    light = false;
+                    line-numbers = true;
+                    side-by-side = false;
+                    syntax-theme = "gruvbox-dark";
+                  };
+                  merge.conflictStyle = "diff3";
+                  diff.colorMoved = "default";
+                };
+                aliases = {
+                  st = "status";
+                  co = "checkout"; 
+                  br = "branch";
+                  l = "log --oneline --graph --decorate";
+                  la = "log --oneline --graph --decorate --all";
+                  ll = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'";
+                  d = "diff";
+                  dc = "diff --cached";
+                  a = "add";
+                  c = "commit";
+                  ca = "commit -a";
+                  cam = "commit -am";
+                  unstage = "reset HEAD --";
+                  last = "log -1 HEAD";
+                  visual = "!gitk";
                 };
               };
 
