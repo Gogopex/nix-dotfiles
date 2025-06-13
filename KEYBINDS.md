@@ -87,8 +87,6 @@ keybind = cmd+ctrl+shift+l=unbind
 zoom = focused pane takes full tab size but layout is preserved
 stack view = borders hidden so panes appear overlapped
 
-## Expected Behavior
-
 - `Cmd + Shift + t`: New Ghostty tab (handled by Ghostty)
 - `Cmd + t`: New Zellij tab/session (passed through to Zellij)
 - `Cmd + d`: New Zellij pane split right (passed through to Zellij)
@@ -100,11 +98,6 @@ stack view = borders hidden so panes appear overlapped
 - `Ctrl + a`: Switch to Tmux mode
 - `Ctrl + g`: Switch to Locked mode
 - `Ctrl + ;`: Switch to Scroll mode
-
-#### Essential
-- `Ctrl + q`: Quit Zellij
-
-### Locked Mode Keybinds
 - `Ctrl + g`: Switch back to Normal mode
 
 ## Integration Notes
@@ -136,8 +129,3 @@ cmd+opt+b                   join-with down    # stacked
 cmd+opt+tab                 focus-back-and-forth
 ```
 
-### overlaps / conflicts
-
-* aerospace now uses **cmd+opt** while zellij keeps **ctrl** and ghostty **cmd**
-* same hjkl letters map to same directions across all layers, only the modifiers change
-* no binding clashes detected
