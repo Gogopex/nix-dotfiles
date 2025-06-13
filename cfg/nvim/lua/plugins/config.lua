@@ -92,4 +92,50 @@ return {
     },
     config = true,
   },
+
+  {
+    "stevearc/oil.nvim",
+    keys = {
+      { "<leader>e", "<cmd>Oil<cr>", desc = "Open Oil file explorer" },
+    },
+    opts = {
+      columns = { "icon", "permissions", "size" },
+      keymaps = {
+        ["<leader>e"] = "actions.close",
+      },
+    },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+  },
+
+  {
+    "nvim-lualine/lualine.nvim",
+    opts = {
+      options = { 
+        icons_enabled = false,
+        theme = "gruvbox",
+      },
+      sections = {
+        lualine_a = {},
+        lualine_b = {},
+        lualine_c = {{ 'filename', path = 1 }}, -- full file path
+        lualine_x = {{ 'diagnostics', sources = {'nvim_lsp'} }},
+        lualine_y = {},
+        lualine_z = {},
+      },
+    },
+  },
+
+  {
+    "ibhagwan/fzf-lua",
+    keys = {
+      { "<leader>f", "<cmd>FzfLua files<cr>", desc = "Find Files" },
+      { "<leader>g", "<cmd>FzfLua live_grep<cr>", desc = "Live Grep" },
+      { "<leader>b", "<cmd>FzfLua buffers<cr>", desc = "Buffers" },
+    },
+  },
+
+  {
+    "hrsh7th/nvim-cmp",
+    enabled = true,
+  },
 }

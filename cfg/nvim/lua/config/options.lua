@@ -3,3 +3,7 @@
 -- Add any additional options here
 vim.g.snacks_animate = false
 vim.g.zig_fmt_autosave = 0
+
+-- disable relative line numbers, keep absolute
+vim.opt.relativenumber = false
+vim.opt.number = true

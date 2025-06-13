@@ -108,6 +108,7 @@
                       "bind \"Super l\"" = { GoToNextTab = {}; };
                       "bind \"Super t\"" = { NewTab = {}; };
                       "bind \"Super w\"" = { CloseTab = {}; };
+                      "bind \"Super s\"" = { SwitchToMode = "Session"; };
                       
                       # pane navigation (matching Ghostty keybinds)
                       "bind \"Ctrl h\"" = { MoveFocus = "Left"; };
@@ -209,7 +210,9 @@
                 settings = {
                   theme = "gruvbox";
                   editor = {
-                    line-number = "relative";
+                    line-number = "absolute";              # change to absolute numbers
+                    auto-completion = false;               # disable autocomplete by default
+                    completion-trigger-len = 0;            # don't auto-trigger
                     mouse = false;
                     cursor-shape = {
                       insert = "bar";
@@ -241,6 +244,17 @@
                       # quick iteration on config changes
                       "C-o" = ":config-open";
                       "C-r" = ":config-reload";
+                      
+                      # manual completion trigger
+                      "C-space" = "completion";
+                      
+                      # autocomplete toggle commands
+                      "space" = {
+                        "u" = {
+                          "c" = ":set editor.auto-completion true";   # space+u+c = enable
+                          "C" = ":set editor.auto-completion false";  # space+u+C = disable
+                        };
+                      };
                       
                       "C-h" = "select_prev_sibling";
                       "C-j" = "shrink_selection";
