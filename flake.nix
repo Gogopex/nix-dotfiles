@@ -44,6 +44,7 @@
             home-manager.users.ludwig = { pkgs, lib, ... }: let
               darwinOnly = lib.mkIf pkgs.stdenv.isDarwin;
             in {
+              imports = [ ./modules/obsidian.nix ];
               home.stateVersion = "25.05";
               home.file.".hammerspoon".source = cfg + "/hammerspoon";
 
@@ -538,6 +539,39 @@
               };
 
               programs.zoxide.enable = true;
+
+              # obsidian declarative module (testing)
+              # programs.obsidian = {
+              #   enable = true;
+              #   vaultPath = "/Users/ludwig/obsidian_vaults/personal";
+              #   
+              #   settings = {
+              #     vimMode = true;
+              #     theme = "obsidian";  # dark theme
+              #     cssTheme = "LessWrong";
+              #     baseFontSize = 18;
+              #     accentColor = "#5359fd";
+              #     monospaceFontFamily = "TX-02";
+              #     alwaysUpdateLinks = true;
+              #     attachmentFolderPath = "Attachments";
+              #     promptDelete = false;
+              #   };
+              #   
+              #   plugins = {
+              #     "readwise-official" = {
+              #       url = "https://github.com/readwiseio/obsidian-readwise/archive/refs/tags/3.0.1.tar.gz";
+              #       sha256 = "126y495yhk12j5piqn95yn1p1v9058si0mwcbrdfgb8vwrl4ymhj";
+              #     };
+              #     "smart-composer" = {
+              #       url = "https://github.com/glowingjade/obsidian-smart-composer/archive/refs/tags/1.2.1.tar.gz";
+              #       sha256 = "1r0pvavzl7rmvdmhc96w7zwmxi7s4mmzpac44jrr5w4g6ynqw3ik";
+              #     };
+              #     "better-word-count" = {
+              #       url = "https://github.com/lukeleppan/better-word-count/archive/refs/tags/0.9.5.tar.gz";
+              #       sha256 = "1lpz1gp0w6by39dxl48jkqshv6cg8g2rr8rpar504qifv31zbvgv";
+              #     };
+              #   };
+              # };
 
               programs.jujutsu = {
                 enable = true;
