@@ -61,23 +61,30 @@ vnoremap > >gv
 nnoremap <leader>h :nohlsearch<CR>
 
 " IntelliJ specific actions
-" File explorer (cmd+e)
+" File explorer (cmd+e and leader+e for LazyVim consistency)
 nnoremap <D-e> :action ActivateProjectToolWindow<CR>
+nnoremap <leader>e :action ActivateProjectToolWindow<CR>
 " LLM/AI Assistant (cmd+i) - adjust action name based on your IntelliJ plugins
 nnoremap <D-i> :action ActivateAIAssistantToolWindow<CR>
 
 " Additional IntelliJ vim actions
 nnoremap <leader>r :action RenameElement<CR>
 nnoremap <leader>f :action GotoFile<CR>
+nnoremap <leader><space> :action GotoFile<CR>
+nnoremap <leader>ff :action GotoFile<CR>
 nnoremap <leader>s :action GotoSymbol<CR>
 nnoremap <leader>g :action FindInPath<CR>
 nnoremap <leader>b :action RecentFiles<CR>
+nnoremap <leader>bb :action RecentFiles<CR>
+nnoremap <leader>bd :action CloseContent<CR>
 
 " Go to definition/declaration
 nnoremap gd :action GotoDeclaration<CR>
 nnoremap gy :action GotoTypeDeclaration<CR>
 nnoremap gi :action GotoImplementation<CR>
 nnoremap gr :action FindUsages<CR>
+nnoremap <C-o> :action Back<CR>
+nnoremap <C-i> :action Forward<CR>
 
 " Code navigation
 nnoremap ]e :action GotoNextError<CR>

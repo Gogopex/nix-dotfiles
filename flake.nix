@@ -65,6 +65,7 @@
                   window-save-state        = "always";
                   auto-update              = "off";
                   keybind = [
+                    "shift+enter=text:\n"
                     "ctrl+space=toggle_fullscreen"
                     # ghostty tab management
                     "cmd+shift+t=new_tab"
