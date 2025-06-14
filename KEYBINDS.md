@@ -83,6 +83,10 @@ keybind = cmd+ctrl+shift+l=unbind
 - `Cmd + f`: Toggle pane fullscreen (zoom / unzoom)
 - `Cmd + z`: Toggle pane frames (stack view)
 
+#### Tab Movement
+- `Opt + i`: Move tab left
+- `Opt + o`: Move tab right
+
 #### Legend
 zoom = focused pane takes full tab size but layout is preserved
 stack view = borders hidden so panes appear overlapped

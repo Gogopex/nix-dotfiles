@@ -44,7 +44,7 @@
             home-manager.users.ludwig = { pkgs, lib, ... }: let
               darwinOnly = lib.mkIf pkgs.stdenv.isDarwin;
             in {
-              imports = [ ./modules/obsidian.nix ];
+              imports = [ ];
               home.stateVersion = "25.05";
               home.file.".hammerspoon".source = cfg + "/hammerspoon";
 
