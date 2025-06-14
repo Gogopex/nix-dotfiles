@@ -103,6 +103,11 @@
                   default_layout = "compact";
                   copy_command = "pbcopy";
                   copy_on_select = true;
+                  
+                  # session management
+                  session_serialization = true;
+                  pane_viewport_serialization = true;
+                  scrollback_lines_to_serialize = 10000;
                   keybinds = {
                     normal = {
                       # tab navigation (matching Ghostty keybinds)
@@ -144,6 +149,9 @@
                       
                       # mode switching
                       "bind \"Ctrl a\"" = { SwitchToMode = "Tmux"; };
+                      
+                      # session management
+                      "bind \"Super s\"" = { SwitchToMode = "Session"; };
                       
                       # essential shortcuts
                       "bind \"Ctrl q\"" = { Quit = {}; };
@@ -211,7 +219,7 @@
                 settings = {
                   theme = "gruvbox";
                   editor = {
-                    line-number = "absolute";              # change to absolute numbers
+                    line-number = "absolute";              
                     auto-completion = false;               # disable autocomplete by default
                     completion-trigger-len = 0;            # don't auto-trigger
                     mouse = false;
