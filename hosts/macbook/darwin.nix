@@ -22,6 +22,7 @@ in {
     enable          = true;
     global.brewfile = true;
     casks           = [ "raycast" "orbstack" "hammerspoon" ];
+    brews           = [ "displayplacer" ];
   };
 
   system.defaults = {
@@ -53,6 +54,15 @@ in {
   programs.fish.enable = true;
 
   environment.pathsToLink = [ "/share/zsh" ];
+
+  # Enable system services for display detection
+  launchd.user.agents.displaydetection = {
+    serviceConfig = {
+      ProgramArguments = [ "/usr/bin/killall" "-USR1" "Dock" ];
+      RunAtLoad = true;
+      WatchPaths = [ "/System/Library/Displays" ];
+    };
+  };
 
   # Screenshot shortcut remapping via activation script
   system.activationScripts.screenshots.text = ''

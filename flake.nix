@@ -30,7 +30,7 @@
         home-manager.darwinModules.home-manager
         agenix.darwinModules.default
 
-        ({ config, pkgs, ghosttySrc, ... }: let
+        ({ config, pkgs, ... }: let
             leader = "C-Space";
             cfg    = ./cfg;                
           in {
@@ -41,7 +41,7 @@
             home-manager.backupFileExtension = "backup";
             home-manager.extraSpecialArgs = { inherit ghosttySrc; };
 
-            home-manager.users.ludwig = { pkgs, lib, ... }: let
+            home-manager.users.ludwig = { pkgs, lib, ghosttySrc, ... }: let
               darwinOnly = lib.mkIf pkgs.stdenv.isDarwin;
             in {
               imports = [ ];
@@ -158,37 +158,37 @@
                       "bind \"Ctrl g\"" = { SwitchToMode = "Locked"; };
                       "bind \"Ctrl ;\"" = { SwitchToMode = "Scroll"; };
                     };
-                    layouts = {
-                       dev = {
-                        panes = [
-                          { run = "hx"; }
-                          {
-                            direction = "Right";
-                            size = "35%";
-                            panes = [
-                              { }
-                              { }
-                            ];
-                          }
-                        ];
-                      };
-                       tt-evolve = {
-                        panes = [
-                          { run = "hx"; }
-                          {
-                            direction = "Right";
-                            size = "35%";
-                            panes = [
-                              { run = "cd tui/ttop; cargo run"; }
-                              { run = "cd tui/ttop; cargo watch"; }
-                            ];
-                          }
-                        ];
-                      };
-                    };
 
                     locked = {
                       "bind \"Ctrl g\"" = { SwitchToMode = "Normal"; };
+                    };
+                  };
+                  layouts = {
+                    dev = {
+                      panes = [
+                        { run = "hx"; }
+                        {
+                          direction = "Right";
+                          size = "35%";
+                          panes = [
+                            { }
+                            { }
+                          ];
+                        }
+                      ];
+                    };
+                    tt-evolve = {
+                      panes = [
+                        { run = "hx"; }
+                        {
+                          direction = "Right";
+                          size = "35%";
+                          panes = [
+                            { run = "cd tui/ttop; cargo run"; }
+                            { run = "cd tui/ttop; cargo watch"; }
+                          ];
+                        }
+                      ];
                     };
                   };
                 };
@@ -649,9 +649,11 @@
                   zoxide init fish | source
                   source ~/.orbstack/shell/init2.fish 2>/dev/null || true
                   
-                  # Zellij auto-start for Ghostty
+                  # Zellij auto-start for Ghostty (without exec to avoid shell replacement issues)
                   if test "$TERM" = "xterm-ghostty"; and test -z "$ZELLIJ"
-                    exec zellij
+                    if command -v zellij >/dev/null 2>&1
+                      zellij
+                    end
                   end
                   
                   # Fisher and plugins
