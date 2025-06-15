@@ -134,6 +134,37 @@ cmd+opt+b                   join-with down    # stacked
 
 # Toggle last two focused windows
 cmd+opt+tab                 focus-back-and-forth
+
+# Workspace navigation
+cmd+opt+n                   workspace n
+
+# Move window to workspace
+cmd+opt+shift+n             move-node-to-workspace n
+
+# Layout management
+cmd+opt+f                   fullscreen
+cmd+opt+space               layout toggle floating tiling
+cmd+opt+s                   layout v_accordion  # vertical stack
+cmd+opt+w                   layout h_accordion  # horizontal stack
+cmd+opt+e                   layout tiles        # default tiling
+
+# Window resizing
+cmd+opt+minus               resize smart -50
+cmd+opt+equal               resize smart +50
+
+# Monitor navigation
+cmd+opt+comma               focus-monitor --wrap-around prev
+cmd+opt+period              focus-monitor --wrap-around next
+
+# Move window between monitors
+cmd+opt+shift+comma         move-node-to-monitor --wrap-around prev
+cmd+opt+shift+period        move-node-to-monitor --wrap-around next
+
+# Reload configuration
+cmd+opt+shift+r             reload-config
+
+# Close window
+cmd+opt+shift+q             close
 ```
 
 ## Hammerspoon (App Switching)
