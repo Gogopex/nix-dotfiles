@@ -598,7 +598,7 @@
                   nixfmt-rfc-style nil volta maven openjdk wiki-tui tokei
                   mutagen mutagen-compose agenix.packages.${system}.default
                   obsidian uutils-coreutils-noprefix
-                  dust hyperfine just tldr glow lazygit procs
+                  dust hyperfine just tldr glow lazygit procs git-recent
                 ] ++ lib.optionals pkgs.stdenv.isDarwin [ zotero ]
               );
 
