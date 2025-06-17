@@ -52,6 +52,7 @@
               imports = [ ];
               home.stateVersion = "25.05";
               home.file.".hammerspoon".source = cfg + "/hammerspoon";
+              home.file.".ideavimrc".source = cfg + "/ideavimrc";
 
               xdg.configFile."nvim".source              = cfg + "/nvim";
               
@@ -606,6 +607,7 @@
                   pkgs-stable.mutagen pkgs-stable.mutagen-compose
                   obsidian uutils-coreutils-noprefix
                   dust hyperfine just tldr glow lazygit procs git-recent
+                  tailscale
                 ] ++ lib.optionals pkgs.stdenv.isDarwin [ zotero ]
               );
 
