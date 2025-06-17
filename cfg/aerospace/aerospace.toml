@@ -13,8 +13,9 @@
 "cmd-opt-shift-l" = "move right"
 
 # quick splits for current window
-"cmd-opt-v"       = "join-with right" # vertical side by side
-"cmd-opt-b"       = "join-with down"  # horizontal stacked
+"cmd-opt-v" = "join-with right" # vertical side by side
+"cmd-opt-b" = "join-with down"  # horizontal stacked
 
 # instant toggle between last two focused windows
-"cmd-opt-tab"     = "focus-back-and-forth" 
+"cmd-opt-tab" = "focus-back-and-forth"
+

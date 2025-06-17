@@ -600,7 +600,7 @@
                 [ bandwhich zoxide fzf ripgrep bat fd eza git curl wget direnv
                   zellij delta zig zls odin go rustc cargo rustfmt rust-analyzer
                   ghc cabal-install stack haskell-language-server
-                  nixfmt-rfc-style nil volta maven openjdk wiki-tui tokei
+                  nixfmt-rfc-style nil volta nodejs maven openjdk wiki-tui tokei
                   agenix.packages.${system}.default
                   # Mutagen with compatible versions from stable nixpkgs
                   pkgs-stable.mutagen pkgs-stable.mutagen-compose
@@ -636,6 +636,21 @@
                     fish_add_path ~/.local/bin ~/.modular/bin \
                                    /Applications/WezTerm.app/Contents/MacOS \
                                    $HOME/.cache/lm-studio/bin
+                  end
+
+                  # nvm initialization (install if not present)
+                  if not test -d ~/.nvm
+                    echo "Installing nvm..."
+                    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+                  end
+                  if test -d ~/.nvm
+                    set -gx NVM_DIR ~/.nvm
+                  end
+
+                  # volta initialization
+                  if test -d ~/.volta
+                    fish_add_path ~/.volta/bin
+                    set -gx VOLTA_HOME ~/.volta
                   end
 
                   for key in anthropic openai gemini deepseek
