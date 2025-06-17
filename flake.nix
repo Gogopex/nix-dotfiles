@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url      = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.11";
     nix-darwin.url   = "github:LnL7/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager/master";
@@ -11,11 +12,15 @@
     agenix.url       = "github:ryantm/agenix";
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, agenix, ghosttySrc, ... }:
+  outputs = { self, nixpkgs, nixpkgs-stable, nix-darwin, home-manager, agenix, ghosttySrc, ... }:
   let
     system = "aarch64-darwin";
     pkgs   = import nixpkgs { 
       inherit system; 
+      config.allowUnfree = true;
+    };
+    pkgs-stable = import nixpkgs-stable {
+      inherit system;
       config.allowUnfree = true;
     };
   in
@@ -596,7 +601,9 @@
                   zellij delta zig zls odin go rustc cargo rustfmt rust-analyzer
                   ghc cabal-install stack haskell-language-server
                   nixfmt-rfc-style nil volta maven openjdk wiki-tui tokei
-                  mutagen mutagen-compose agenix.packages.${system}.default
+                  agenix.packages.${system}.default
+                  # Mutagen with compatible versions from stable nixpkgs
+                  pkgs-stable.mutagen pkgs-stable.mutagen-compose
                   obsidian uutils-coreutils-noprefix
                   dust hyperfine just tldr glow lazygit procs git-recent
                 ] ++ lib.optionals pkgs.stdenv.isDarwin [ zotero ]
