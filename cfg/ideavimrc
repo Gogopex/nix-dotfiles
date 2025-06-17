@@ -1,4 +1,4 @@
-" Leader key
+" Leader key (matching Helix and all other tools)
 let mapleader = " "
 
 " Basic vim settings
