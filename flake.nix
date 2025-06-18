@@ -168,6 +168,35 @@
                     locked = {
                       "bind \"Ctrl g\"" = { SwitchToMode = "Normal"; };
                     };
+
+                    scroll = {
+                      # vim-like navigation
+                      "bind \"h\"" = { MoveFocus = "Left"; };
+                      "bind \"j\"" = { ScrollDown = {}; };
+                      "bind \"k\"" = { ScrollUp = {}; };
+                      "bind \"l\"" = { MoveFocus = "Right"; };
+                      
+                      # page navigation
+                      "bind \"Ctrl f\"" = { PageScrollDown = {}; };
+                      "bind \"Ctrl b\"" = { PageScrollUp = {}; };
+                      "bind \"d\"" = { HalfPageScrollDown = {}; };
+                      "bind \"u\"" = { HalfPageScrollUp = {}; };
+                      
+                      # selection and copy
+                      "bind \"v\"" = { SwitchToMode = "EnterSearch"; };
+                      "bind \"s\"" = { SwitchToMode = "EnterSearch"; };
+                      "bind \"y\"" = { Copy = {}; };
+                      
+                      # exit scroll mode
+                      "bind \"q\"" = { SwitchToMode = "Normal"; };
+                      "bind \"Escape\"" = { SwitchToMode = "Normal"; };
+                      "bind \"Ctrl c\"" = { SwitchToMode = "Normal"; };
+                      
+                      # search
+                      "bind \"/\"" = { SwitchToMode = "EnterSearch"; };
+                      "bind \"n\"" = { Search = "down"; };
+                      "bind \"N\"" = { Search = "up"; };
+                    };
                   };
                   layouts = {
                     dev = {
@@ -627,6 +656,7 @@
                   md = "glow";
                   lg = "lazygit";
                   bench = "hyperfine";
+                  vim-mode = "toggle_vim_mode";
                 };
                 shellInit = /* fish */ ''
                   if status is-interactive
@@ -685,6 +715,9 @@
                     # Install fisher if not present
                     curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
                   end
+                  
+                  # Bind Ctrl+Alt+V to toggle vim mode
+                  bind \e\cv toggle_vim_mode
                 '';
                 functions = {
                   ssh_tt = ''
@@ -694,6 +727,19 @@
                   '';
                   fish_greeting = ''echo "What is impossible for you is not impossible for me."'';
                   cc = ''$argv | pbcopy'';
+                  toggle_vim_mode = ''
+                    function toggle_vim_mode
+                      if test "$fish_key_bindings" = "fish_vi_key_bindings"
+                        echo "Switching to default key bindings"
+                        fish_default_key_bindings
+                        set -g fish_key_bindings fish_default_key_bindings
+                      else
+                        echo "Switching to vim key bindings"
+                        fish_vi_key_bindings
+                        set -g fish_key_bindings fish_vi_key_bindings
+                      end
+                    end
+                  '';
                 };
                 plugins = [
                   { name = "grc";     src = pkgs.fishPlugins.grc; }
