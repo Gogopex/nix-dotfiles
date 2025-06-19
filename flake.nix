@@ -182,10 +182,8 @@
                       "bind \"d\"" = { HalfPageScrollDown = {}; };
                       "bind \"u\"" = { HalfPageScrollUp = {}; };
                       
-                      # selection and copy
-                      "bind \"v\"" = { SwitchToMode = "EnterSearch"; };
-                      "bind \"s\"" = { SwitchToMode = "EnterSearch"; };
-                      "bind \"y\"" = { Copy = {}; };
+                      # open scrollback in editor for visual selection/copying
+                      "bind \"e\"" = { EditScrollback = {}; };
                       
                       # exit scroll mode
                       "bind \"q\"" = { SwitchToMode = "Normal"; };
@@ -632,7 +630,6 @@
                   ghc cabal-install stack haskell-language-server
                   nixfmt-rfc-style nil volta nodejs maven openjdk wiki-tui tokei
                   agenix.packages.${system}.default
-                  # Mutagen with compatible versions from stable nixpkgs
                   pkgs-stable.mutagen pkgs-stable.mutagen-compose
                   obsidian uutils-coreutils-noprefix
                   dust hyperfine just tldr glow lazygit procs git-recent
@@ -657,6 +654,7 @@
                   lg = "lazygit";
                   bench = "hyperfine";
                   vim-mode = "toggle_vim_mode";
+                  links = "open_links";
                 };
                 shellInit = /* fish */ ''
                   if status is-interactive
@@ -716,8 +714,11 @@
                     curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
                   end
                   
-                  # Bind Ctrl+Alt+V to toggle vim mode
-                  bind \e\cv toggle_vim_mode
+                  # Create fish_user_key_bindings function for persistent keybinds
+                  function fish_user_key_bindings
+                    bind \ev toggle_vim_mode
+                    bind \eg open_links
+                  end
                 '';
                 functions = {
                   ssh_tt = ''
@@ -737,6 +738,21 @@
                         echo "Switching to vim key bindings"
                         fish_vi_key_bindings
                         set -g fish_key_bindings fish_vi_key_bindings
+                      end
+                    end
+                  '';
+                  open_links = ''
+                    function open_links
+                      # Extract URLs from recent terminal output and open with fzf selection
+                      set -l urls (history | grep -oE 'https?://[^\s]+' | tail -20 | sort -u)
+                      if test (count $urls) -eq 0
+                        echo "No URLs found in recent output"
+                        return 1
+                      end
+                      set -l selected (printf '%s\n' $urls | fzf --prompt="Select URL to open: ")
+                      if test -n "$selected"
+                        echo "Opening: $selected"
+                        open "$selected"
                       end
                     end
                   '';

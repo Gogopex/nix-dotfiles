@@ -55,7 +55,8 @@ in {
 
   environment.pathsToLink = [ "/share/zsh" ];
 
-  # Enable system services for display detection
+  # enable system services for display detection
+  # @FIXME: this is me fighting external monitor not being recognized anymore
   launchd.user.agents.displaydetection = {
     serviceConfig = {
       ProgramArguments = [ "/usr/bin/killall" "-USR1" "Dock" ];
@@ -64,7 +65,8 @@ in {
     };
   };
 
-  # Screenshot shortcut remapping via activation script
+  # screenshot shortcut remapping via activation script
+  # @FIXME: I dont think it is needed anymore? had an issue with macos keybind conflicts
   system.activationScripts.screenshots.text = ''
     echo "Configuring screenshot shortcuts..."
     
@@ -139,6 +141,4 @@ in {
     echo "  Ctrl+Alt+Shift+4: Copy selected area to clipboard"
     echo "  Ctrl+Alt+5: Screenshot and recording options"
   '';
-
-  # aerospace is now configured in home-manager (programs.aerospace)
 }
