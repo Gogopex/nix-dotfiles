@@ -1,9 +1,22 @@
 ## Modifier Hierarchy
 
-1. **Ctrl**: Core navigation (pane focus movement)
-2. **Super (Cmd)**: Tab-level operations
-3. **Super + Ctrl**: Pane resizing
-4. **Super + Shift**: Destructive operations (close, split down)
+Scope-based hierarchy from smallest to largest operational scope:
+
+1. **Ctrl**: Terminal/pane navigation (smallest scope - within terminal)
+2. **Cmd**: Tab/session operations (medium scope - within application)  
+3. **Cmd+Opt**: Window manager operations (largest scope - across applications)
+4. **Ctrl+Shift**: Application switching (system-level shortcuts)
+
+### Modifier Combination Patterns
+- **Base modifier**: Basic operation (focus, navigate)
+- **+ Shift**: Destructive/moving operations (close, move, split down)
+- **+ Ctrl**: Resizing operations  
+- **+ Alt**: Search/utility operations (FZF functions)
+
+### Ergonomic Notes
+- **Cmd+Opt access**: Use ZSA Voyager's "Cmd" and "Opt" keys for window management
+- **Consistent directional keys**: `h/j/k/l` used across all hierarchy levels
+- **Native macOS**: `Cmd+Tab` preserved for native app switching
 
 ## Ghostty Configuration
 
@@ -115,65 +128,97 @@ stack view = borders hidden so panes appear overlapped
 
 ## AeroSpace Configuration (macOS tiling WM)
 
-```
-# Basic navigation
-cmd+opt+h                   focus left
-cmd+opt+j                   focus down
-cmd+opt+k                   focus up
-cmd+opt+l                   focus right
+**Native macOS Integration**: `Cmd + Tab` works as native macOS app switcher (AeroSpace doesn't intercept it)
 
-# Move active window
-cmd+opt+shift+h             move window left
-cmd+opt+shift+j             move window down
-cmd+opt+shift+k             move window up
-cmd+opt+shift+l             move window right
+**Layout**: Automatic 2x2 grid arrangement - windows arrange optimally from 1 (fullscreen) to 4 (2x2 grid)
 
-# Quick splits for current window
-cmd+opt+v                   join-with right   # side-by-side
-cmd+opt+b                   join-with down    # stacked
+**Two-tier hierarchy:** `Cmd + Opt + hjkl` for frequent operations, `Cmd + Opt + Shift + right-hand keys` for less frequent
 
-# Toggle last two focused windows
-cmd+opt+tab                 focus-back-and-forth
+#### Frequent Operations (Cmd + Opt + hjkl)
+- `Cmd + Opt + h`: Focus left
+- `Cmd + Opt + j`: Focus down
+- `Cmd + Opt + k`: Focus up
+- `Cmd + Opt + l`: Focus right
 
-# Workspace navigation
-cmd+opt+n                   workspace n
+#### Window Movement (Cmd + Opt + Shift + hjkl)
+- `Cmd + Opt + Shift + h`: Move window left
+- `Cmd + Opt + Shift + j`: Move window down
+- `Cmd + Opt + Shift + k`: Move window up
+- `Cmd + Opt + Shift + l`: Move window right
 
-# Move window to workspace
-cmd+opt+shift+n             move-node-to-workspace n
+#### Less Frequent Operations (Cmd + Opt + Shift + right-hand keys)
 
-# Layout management
-cmd+opt+f                   fullscreen
-cmd+opt+space               layout toggle floating tiling
-cmd+opt+s                   layout v_accordion  # vertical stack
-cmd+opt+w                   layout h_accordion  # horizontal stack
-cmd+opt+e                   layout tiles        # default tiling
+**Window Resizing:**
+- `Cmd + Opt + Shift + u`: Resize smart -50
+- `Cmd + Opt + Shift + i`: Resize smart +50
 
-# Window resizing
-cmd+opt+minus               resize smart -50
-cmd+opt+equal               resize smart +50
+**Window Splits:**
+- `Cmd + Opt + Shift + y`: Join with right (side-by-side)
+- `Cmd + Opt + Shift + o`: Join with down (stacked)
 
-# Monitor navigation
-cmd+opt+comma               focus-monitor --wrap-around prev
-cmd+opt+period              focus-monitor --wrap-around next
+**Layout Management:**
+- `Cmd + Opt + Shift + n`: Toggle floating/tiling
+- `Cmd + Opt + Shift + m`: Tiles (default tiling layout)
 
-# Move window between monitors
-cmd+opt+shift+comma         move-node-to-monitor --wrap-around prev
-cmd+opt+shift+period        move-node-to-monitor --wrap-around next
+**Focus Management:**
+- `Cmd + Opt + Shift + p`: Focus back-and-forth (toggle last two windows)
 
-# Reload configuration
-cmd+opt+shift+r             reload-config
+## Terminal Output & Link Management
 
-# Close window
-cmd+opt+shift+q             close
-```
+### Direct Scrollback Editing
+- `Ctrl + Shift + e`: Open current terminal scrollback directly in Helix (no scroll mode needed)
+
+### Fish Vi Mode for Terminal Navigation
+- **Enhanced Fish vi mode is enabled by default**
+- `Ctrl + ;`: Toggle between vi mode and default mode
+
+#### Enhanced Vi Mode Keybinds
+- **Standard navigation**: `h/j/k/l`, `w/b/e`, `/` for search, `y` to yank, etc.
+- **Line selection**: `Shift + V` - visual select entire line
+- **Line navigation**: 
+  - `gh` - go to beginning of line (like `0` or `^`)
+  - `gl` - go to end of line (like `$`)
+- **Buffer navigation**:
+  - `gg` - go to beginning of command history buffer  
+  - `G` - go to end of command history buffer
+- **Mode switching**: `Escape` or `Ctrl + c` - switch between insert/normal mode
+
+#### Benefits of Enhanced Vi Mode
+- **Familiar keybinds**: `gh`/`gl` mirror vim's line navigation philosophy
+- **Visual selection**: `Shift + V` for quick line selection and editing
+- **Buffer navigation**: `gg`/`G` for command history browsing
+- **Works in visual mode**: All navigation keys work in both normal and visual modes
+
+### Link Extraction
+- `Ctrl + Alt + l`: Extract URLs from current Zellij pane scrollback and open with fzf selection
+- `links`: Command alias for URL extraction (same as Ctrl+Alt+l)
+
+### Benefits of New Workflow
+- **Direct Helix access**: No need to enter/exit scroll mode
+- **Native vi navigation**: Fish's built-in vi mode is more responsive and familiar
+- **Accurate link extraction**: Uses Zellij's `dump-screen` to get actual pane content
+- **Better ergonomics**: Single keybind workflows, vi mode by default
+- **Consistent experience**: Works seamlessly with your Zellij-centric workflow
+
+## Fish Shell & FZF Integration
+
+### FZF Keybindings (Available in both default and insert modes)
+- `Ctrl + Alt + f`: Search files and directories with fzf
+- `Ctrl + Alt + l`: **Search Git Log** - Interactive git history browser with commit preview
+- `Ctrl + Alt + s`: **Search Git Status** - Interactive git status browser with file diff preview
+- `Ctrl + r`: Search command history with fzf
+- `Ctrl + Alt + p`: Search running processes with fzf
+- `Ctrl + v`: Search shell variables with fzf
+
+### Custom Fish Keybindings
+- `Ctrl + Alt + v`: Toggle vim mode in Fish shell
+- `Ctrl + Alt + l`: Open links from Zellij scrollback with fzf selection
+- `Ctrl + ;`: Toggle between vi mode and default mode
 
 ## Hammerspoon (App Switching)
 
-```
-# Quick app switching
-ctrl+shift+1                Ghostty
-ctrl+shift+2                Arc
-ctrl+shift+3                Obsidian
-ctrl+shift+4                Sublime Text
-```
+- `Ctrl + Shift + 1`: Ghostty
+- `Ctrl + Shift + 2`: Arc
+- `Ctrl + Shift + 3`: Obsidian
+- `Ctrl + Shift + 4`: Sublime Text
 

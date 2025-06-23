@@ -4,7 +4,7 @@
 let mod = "alt";
 in {
   nixpkgs.hostPlatform = "aarch64-darwin";
-  system.stateVersion  = 7;
+  system.stateVersion  = 6;
   system.primaryUser   = "ludwig";
 
   age.secrets = {
@@ -22,7 +22,7 @@ in {
     enable          = true;
     global.brewfile = true;
     casks           = [ "raycast" "orbstack" "hammerspoon" ];
-    brews           = [ "displayplacer" ];
+    brews           = [ "displayplacer" "switchaudio-osx" ];
   };
 
   system.defaults = {
@@ -55,13 +55,39 @@ in {
 
   environment.pathsToLink = [ "/share/zsh" ];
 
-  # enable system services for display detection
-  # @FIXME: this is me fighting external monitor not being recognized anymore
-  launchd.user.agents.displaydetection = {
-    serviceConfig = {
-      ProgramArguments = [ "/usr/bin/killall" "-USR1" "Dock" ];
-      RunAtLoad = true;
-      WatchPaths = [ "/System/Library/Displays" ];
+  # ensure USB services are properly managed
+  system.activationScripts.usbservices.text = ''
+    echo "Ensuring USB services are running..."
+    launchctl bootout gui/$(id -u) /System/Library/LaunchAgents/com.apple.USBAgent.plist 2>/dev/null || true
+    launchctl bootstrap gui/$(id -u) /System/Library/LaunchAgents/com.apple.USBAgent.plist 2>/dev/null || true
+  '';
+
+  # comprehensive display detection and management services
+  launchd.user.agents = {
+    displaydetection = {
+      serviceConfig = {
+        ProgramArguments = [ "/usr/bin/killall" "-USR1" "Dock" ];
+        RunAtLoad = true;
+        WatchPaths = [ "/System/Library/Displays" ];
+      };
+    };
+    
+    # Enhanced display detection with hardware probe
+    displayprobe = {
+      serviceConfig = {
+        ProgramArguments = [ "/bin/sh" "-c" "system_profiler SPDisplaysDataType > /dev/null 2>&1" ];
+        RunAtLoad = true;
+        StartInterval = 30; # Check every 30 seconds
+      };
+    };
+    
+    # USB device monitoring for external displays
+    usbmonitor = {
+      serviceConfig = {
+        ProgramArguments = [ "/usr/bin/killall" "-USR1" "SystemUIServer" ];
+        RunAtLoad = true;
+        WatchPaths = [ "/dev" ];
+      };
     };
   };
 

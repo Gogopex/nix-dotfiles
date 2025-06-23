@@ -162,7 +162,9 @@
                       # essential shortcuts
                       "bind \"Ctrl q\"" = { Quit = {}; };
                       "bind \"Ctrl g\"" = { SwitchToMode = "Locked"; };
-                      "bind \"Ctrl ;\"" = { SwitchToMode = "Scroll"; };
+                      
+                      # direct scrollback editing (no scroll mode needed)
+                      "bind \"Ctrl Shift e\"" = { EditScrollback = {}; };
                     };
 
                     locked = {
@@ -187,7 +189,7 @@
                       
                       # exit scroll mode
                       "bind \"q\"" = { SwitchToMode = "Normal"; };
-                      "bind \"Escape\"" = { SwitchToMode = "Normal"; };
+                      "bind \"Esc\"" = { SwitchToMode = "Normal"; };
                       "bind \"Ctrl c\"" = { SwitchToMode = "Normal"; };
                       
                       # search
@@ -320,6 +322,7 @@
                         "delete_selection"
                         "insert_mode"
                       ];
+                      "C-S-A-c" = "copy_selection_on_next_line";
                       D = [
                         "extend_to_line_end"
                         "yank_main_selection_to_clipboard"
@@ -634,10 +637,127 @@
                   obsidian uutils-coreutils-noprefix
                   dust hyperfine just tldr glow lazygit procs git-recent
                   tailscale
+                  # Lean toolchain
+                  elan
+                  # Zed editor
+                  zed-editor
                 ] ++ lib.optionals pkgs.stdenv.isDarwin [ zotero ]
               );
 
               programs.go.enable = true;
+
+              programs.zed-editor = darwinOnly {
+                enable = true;
+                
+                userSettings = {
+                  # Editor behavior
+                  vim_mode = true;
+                  telemetry = {
+                    metrics = false;
+                    diagnostics = false;
+                  };
+                  
+                  # UI/Font
+                  ui_font_size = 16;
+                  buffer_font_size = 16;
+                  ui_font_family = "TX-02";
+                  buffer_font_family = "TX-02-Regular";
+                  theme = "Gruvbox Dark";
+                  
+                  # Features  
+                  features = {
+                    copilot = false;
+                  };
+                  
+                  # Behavior
+                  auto_update = false;
+                  confirm_quit = true;
+                  restore_on_startup = "last_workspace";
+                };
+                
+                userKeymaps = [
+                  # Vim mode enhancements (matches your existing patterns)
+                  {
+                    context = "Editor && VimControl && !VimWaiting && !menu";
+                    bindings = {
+                      "g h" = ["vim::StartOfLine"];
+                      "g l" = ["vim::EndOfLine"];
+                      "space y" = ["editor::Copy"];
+                      "space d" = ["vim::Substitute" {"target" = "Selected";} "d" "\"_d"];
+                      "space h" = ["search::ClearSearchResults"];
+                    };
+                  }
+                  
+                  # Visual mode (matches your existing patterns)
+                  {
+                    context = "Editor && vim_mode == visual && !VimWaiting && !menu";
+                    bindings = {
+                      "shift-j" = ["editor::MoveLineDown"];
+                      "shift-k" = ["editor::MoveLineUp"];
+                      "<" = ["editor::Outdent"];
+                      ">" = ["editor::Indent"];
+                      "g h" = ["vim::StartOfLine"];
+                      "g l" = ["vim::EndOfLine"];
+                      "space y" = ["editor::Copy"];
+                      "space d" = ["vim::Substitute" {"target" = "Selected";} "d" "\"_d"];
+                    };
+                  }
+                  
+                  # Workspace - unified with Zellij/Helix patterns
+                  {
+                    context = "Workspace";
+                    bindings = {
+                      # File/Project management (matches Helix space patterns)
+                      "space f" = ["file_finder::Toggle"];  # File finder
+                      "space e" = ["workspace::ToggleLeftDock"];  # File explorer (matches cmd-e)
+                      "space b" = ["tab_switcher::Toggle"];  # Buffer/tab switcher
+                      
+                      # AI Assistant (new unified pattern)
+                      "space a c" = ["assistant::ToggleFocus"];  # AI Chat toggle  
+                      "space a i" = ["assistant::InlineAssist"];  # Quick AI input/inline
+                      "space a a" = ["agent::NewThread"];  # Agent panel
+                      
+                      # Pane management (matches Zellij patterns exactly)
+                      "cmd-h" = ["pane::ActivatePrevItem"];    # Tab navigation (matches Zellij)
+                      "cmd-l" = ["pane::ActivateNextItem"];    # Tab navigation (matches Zellij)
+                      "cmd-t" = ["workspace::NewFile"];       # New tab (matches Zellij)
+                      "cmd-w" = ["pane::CloseActiveItem"];     # Close tab (matches Zellij)
+                      
+                      # Pane focus navigation (matches AeroSpace cmd+opt pattern)
+                      "cmd-opt-h" = ["workspace::ActivatePaneInDirection" "Left"];
+                      "cmd-opt-j" = ["workspace::ActivatePaneInDirection" "Down"];
+                      "cmd-opt-k" = ["workspace::ActivatePaneInDirection" "Up"];
+                      "cmd-opt-l" = ["workspace::ActivatePaneInDirection" "Right"];
+                      
+                      # Pane splitting (matches Zellij exactly)
+                      "cmd-d" = ["pane::SplitRight"];         # Split right (matches Zellij)
+                      "cmd-shift-d" = ["pane::SplitDown"];    # Split down (matches Zellij) 
+                      "cmd-shift-w" = ["pane::ClosePane"];    # Close pane (matches Zellij)
+                      
+                      # Search (Helix pattern)
+                      "space /" = ["search::ToggleReplace"];
+                      "space s" = ["project_search::ToggleFocus"];  # Project search
+                      
+                      # Terminal (Helix/Zellij pattern)
+                      "space t" = ["terminal_panel::ToggleFocus"];
+                      
+                      # Diagnostics/Git (Helix patterns)
+                      "space g" = ["editor::ToggleGitBlame"];
+                      "space d" = ["diagnostics::Deploy"];
+                    };
+                  }
+                ];
+                
+                extensions = [
+                  "nix"
+                  "swift"
+                  "rust"
+                  "python"
+                  "json"
+                  "toml"
+                  "markdown"
+                ];
+              };
 
               programs.fish = {
                 enable = true;
@@ -694,6 +814,10 @@
                   set -gx PHP_VERSION 8.3
                   set -gx GHCUP_INSTALL_BASE_PREFIX $HOME
                   
+                  # Enable vi mode by default with enhanced bindings
+                  fish_vi_key_bindings
+                  setup_enhanced_vi_mode
+                  
                   theme_gruvbox dark
                   if set -q GHOSTTY_RESOURCES_DIR
                     source $GHOSTTY_RESOURCES_DIR/shell-integration/fish/vendor_conf.d/ghostty-shell-integration.fish
@@ -716,9 +840,14 @@
                   
                   # Create fish_user_key_bindings function for persistent keybinds
                   function fish_user_key_bindings
-                    bind \ev toggle_vim_mode
-                    bind \eg open_links
+                    # Use Ctrl+Alt combinations to avoid conflicts
+                    bind \e\cv 'toggle_vim_mode'
+                    bind \e\cl 'open_links'
+                    
+                    # Ctrl+; toggles between vi mode and default mode
+                    bind \c\; 'toggle_vim_mode'
                   end
+                  
                 '';
                 functions = {
                   ssh_tt = ''
@@ -728,6 +857,26 @@
                   '';
                   fish_greeting = ''echo "What is impossible for you is not impossible for me."'';
                   cc = ''$argv | pbcopy'';
+                  setup_enhanced_vi_mode = ''
+                    function setup_enhanced_vi_mode
+                      # Visual line selection with Shift+V (in normal mode)
+                      bind -M default V 'commandline -f beginning-of-line visual-mode end-of-line'
+                      
+                      # Home/End shortcuts with gh/gl (in normal mode)
+                      bind -M default gh 'commandline -f beginning-of-line'
+                      bind -M default gl 'commandline -f end-of-line'
+                      
+                      # Additional useful vi shortcuts
+                      bind -M default gg 'commandline -f beginning-of-buffer'
+                      bind -M default G 'commandline -f end-of-buffer'
+                      
+                      # Make these work in visual mode too
+                      bind -M visual gh 'commandline -f beginning-of-line'
+                      bind -M visual gl 'commandline -f end-of-line'
+                      bind -M visual gg 'commandline -f beginning-of-buffer'
+                      bind -M visual G 'commandline -f end-of-buffer'
+                    end
+                  '';
                   toggle_vim_mode = ''
                     function toggle_vim_mode
                       if test "$fish_key_bindings" = "fish_vi_key_bindings"
@@ -735,20 +884,33 @@
                         fish_default_key_bindings
                         set -g fish_key_bindings fish_default_key_bindings
                       else
-                        echo "Switching to vim key bindings"
+                        echo "Switching to enhanced vim key bindings"
                         fish_vi_key_bindings
+                        setup_enhanced_vi_mode
                         set -g fish_key_bindings fish_vi_key_bindings
                       end
                     end
                   '';
                   open_links = ''
                     function open_links
-                      # Extract URLs from recent terminal output and open with fzf selection
-                      set -l urls (history | grep -oE 'https?://[^\s]+' | tail -20 | sort -u)
+                      # Extract URLs from Zellij scrollback and open with fzf selection
+                      # Create a temporary file to capture Zellij scrollback
+                      set -l temp_file (mktemp)
+                      
+                      # Use Zellij to dump the current pane's scrollback
+                      zellij action dump-screen $temp_file
+                      
+                      # Extract URLs from the dumped content
+                      set -l urls (cat $temp_file | grep -oE 'https?://[^\s]+' | sort -u)
+                      
+                      # Clean up temp file
+                      rm -f $temp_file
+                      
                       if test (count $urls) -eq 0
-                        echo "No URLs found in recent output"
+                        echo "No URLs found in current Zellij pane output"
                         return 1
                       end
+                      
                       set -l selected (printf '%s\n' $urls | fzf --prompt="Select URL to open: ")
                       if test -n "$selected"
                         echo "Opening: $selected"
@@ -892,17 +1054,34 @@
                   };
 
                   mode.main.binding = {
+                    # Frequent operations: Cmd + Opt + hjkl
                     "cmd-opt-h" = "focus left";
                     "cmd-opt-j" = "focus down";
                     "cmd-opt-k" = "focus up";
                     "cmd-opt-l" = "focus right";
+                    
+                    # Window movement: Cmd + Opt + Shift + hjkl
                     "cmd-opt-shift-h" = "move left";
                     "cmd-opt-shift-j" = "move down";
                     "cmd-opt-shift-k" = "move up";
                     "cmd-opt-shift-l" = "move right";
-                    "cmd-opt-v" = "join-with right";
-                    "cmd-opt-b" = "join-with down";
-                    "cmd-opt-tab" = "focus-back-and-forth";
+                    
+                    # Less frequent operations: Cmd + Opt + Shift + right-hand keys
+                    
+                    # Window resizing
+                    "cmd-opt-shift-u" = "resize smart -50";
+                    "cmd-opt-shift-i" = "resize smart +50";
+                    
+                    # Window splits
+                    "cmd-opt-shift-y" = "join-with right";
+                    "cmd-opt-shift-o" = "join-with down";
+                    
+                    # Layout management
+                    "cmd-opt-shift-n" = "layout toggle floating tiling";
+                    "cmd-opt-shift-m" = "layout tiles";
+                    
+                    # Focus management
+                    "cmd-opt-shift-p" = "focus-back-and-forth";
                   };
                 };
               };

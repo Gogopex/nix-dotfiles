@@ -7,3 +7,6 @@ vim.g.zig_fmt_autosave = 0
 -- disable relative line numbers, keep absolute
 vim.opt.relativenumber = false
 vim.opt.number = true
+
+-- disable icons globally
+vim.g.have_nerd_font = false

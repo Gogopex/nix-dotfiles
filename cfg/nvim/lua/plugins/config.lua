@@ -32,9 +32,7 @@ return {
       vim.o.timeout = true
       vim.o.timeoutlen = 1000
     end,
-    opts = {},
-    -- opts = { icons = false },
-    -- enabled = false
+    opts = { icons = { mappings = false } },
   },
   {
     "yetone/avante.nvim",
@@ -99,12 +97,11 @@ return {
       { "<leader>e", "<cmd>Oil<cr>", desc = "Open Oil file explorer" },
     },
     opts = {
-      columns = { "icon", "permissions", "size" },
+      columns = { "permissions", "size" },
       keymaps = {
         ["<leader>e"] = "actions.close",
       },
     },
-    dependencies = { "nvim-tree/nvim-web-devicons" },
   },
 
   {
@@ -138,4 +135,17 @@ return {
     "hrsh7th/nvim-cmp",
     enabled = true,
   },
+  {
+    "kawre/leetcode.nvim",
+    build = ":TSUpdate html",
+    dependencies = {
+        "nvim-treesitter/nvim-treesitter",
+        "ibhagwan/fzf-lua",
+        "nvim-lua/plenary.nvim",
+        "MunifTanjim/nui.nvim",
+    },
+    opts = {
+        -- configuration goes here
+    },
+}
 }
