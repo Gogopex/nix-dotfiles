@@ -1,4 +1,4 @@
--- app switching with cmd+alt+number
+-- app switching with hyper+number (shift+ctrl+alt+cmd)
 local apps = {
   { key = "1", app = "Ghostty" },
   { key = "2", app = "Arc" },
@@ -7,7 +7,7 @@ local apps = {
 }
 
 for _, binding in ipairs(apps) do
-  hs.hotkey.bind({"ctrl", "shift"}, binding.key, function()
+  hs.hotkey.bind({"shift", "ctrl", "alt", "cmd"}, binding.key, function()
     hs.application.launchOrFocus(binding.app)
   end)
 end

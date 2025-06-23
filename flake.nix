@@ -164,7 +164,7 @@
                       "bind \"Ctrl g\"" = { SwitchToMode = "Locked"; };
                       
                       # direct scrollback editing (no scroll mode needed)
-                      "bind \"Ctrl Shift e\"" = { EditScrollback = {}; };
+                      "bind \"Ctrl-Shift-e\"" = { EditScrollback = {}; };
                     };
 
                     locked = {
@@ -633,7 +633,7 @@
                   ghc cabal-install stack haskell-language-server
                   nixfmt-rfc-style nil volta nodejs maven openjdk wiki-tui tokei
                   agenix.packages.${system}.default
-                  pkgs-stable.mutagen pkgs-stable.mutagen-compose
+                  mutagen mutagen-compose
                   obsidian uutils-coreutils-noprefix
                   dust hyperfine just tldr glow lazygit procs git-recent
                   tailscale
@@ -783,6 +783,7 @@
                     fish_add_path -g /run/current-system/sw/bin
                     fish_add_path -g /nix/var/nix/profiles/default/bin
                     fish_add_path ~/.npm-global/bin
+                    fish_add_path ~/.cargo/bin
                     fish_add_path ~/.local/bin ~/.modular/bin \
                                    /Applications/WezTerm.app/Contents/MacOS \
                                    $HOME/.cache/lm-studio/bin

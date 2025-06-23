@@ -2,21 +2,19 @@
 
 Scope-based hierarchy from smallest to largest operational scope:
 
-1. **Ctrl**: Terminal/pane navigation (smallest scope - within terminal)
-2. **Cmd**: Tab/session operations (medium scope - within application)  
-3. **Cmd+Opt**: Window manager operations (largest scope - across applications)
+1. **Ctrl**: Terminal/pane navigation (within terminal)
+2. **Cmd**: Tab/session operations (within application)  
+3. **Cmd+Opt**: Window manager operations (across applications)
 4. **Ctrl+Shift**: Application switching (system-level shortcuts)
 
 ### Modifier Combination Patterns
 - **Base modifier**: Basic operation (focus, navigate)
 - **+ Shift**: Destructive/moving operations (close, move, split down)
 - **+ Ctrl**: Resizing operations  
-- **+ Alt**: Search/utility operations (FZF functions)
+- **+ Alt**: Search/utility operations 
 
 ### Ergonomic Notes
 - **Cmd+Opt access**: Use ZSA Voyager's "Cmd" and "Opt" keys for window management
-- **Consistent directional keys**: `h/j/k/l` used across all hierarchy levels
-- **Native macOS**: `Cmd+Tab` preserved for native app switching
 
 ## Ghostty Configuration
 
@@ -25,36 +23,11 @@ Ghostty is configured to handle its own tab management while passing through pan
 ```
 # Ghostty tab management
 keybind = cmd+shift+t=new_tab
-# Tab reordering
-keybind = cmd+ctrl+shift+left=move_tab:-1
-keybind = cmd+ctrl+shift+right=move_tab:1
-
 # Pass through to Zellij for pane navigation
-keybind = ctrl+h=unbind
-keybind = ctrl+j=unbind
-keybind = ctrl+k=unbind  
-keybind = ctrl+l=unbind
-
 # Pass through to Zellij for tab navigation
-keybind = cmd+h=unbind
-keybind = cmd+l=unbind
-keybind = cmd+t=unbind
-keybind = cmd+w=unbind
-
 # Pass through to Zellij for pane splitting
-keybind = cmd+d=unbind
-keybind = cmd+shift+d=unbind
-keybind = cmd+shift+w=unbind
-
 # Pass through to Zellij for pane resizing
-keybind = cmd+ctrl+h=unbind
-keybind = cmd+ctrl+j=unbind
-keybind = cmd+ctrl+k=unbind
-keybind = cmd+ctrl+l=unbind
-
 # Pass through to Zellij for tab reordering
-keybind = cmd+ctrl+shift+h=unbind
-keybind = cmd+ctrl+shift+l=unbind
 ```
 
 ## Zellij Configuration
@@ -121,17 +94,11 @@ stack view = borders hidden so panes appear overlapped
 - `Ctrl + g`: Switch back to Normal mode
 
 ## Integration Notes
-- Ghostty unbinds `Ctrl + hjkl` so they pass through to Zellij
-- All other Zellij keybinds work normally alongside default Zellij functionality
-- System copy/paste (`Cmd + C/V`) still works in Ghostty
 - Ghostty window management uses `Cmd + Shift` combinations to avoid conflicts
 
 ## AeroSpace Configuration (macOS tiling WM)
 
-**Native macOS Integration**: `Cmd + Tab` works as native macOS app switcher (AeroSpace doesn't intercept it)
-
 **Layout**: Automatic 2x2 grid arrangement - windows arrange optimally from 1 (fullscreen) to 4 (2x2 grid)
-
 **Two-tier hierarchy:** `Cmd + Opt + hjkl` for frequent operations, `Cmd + Opt + Shift + right-hand keys` for less frequent
 
 #### Frequent Operations (Cmd + Opt + hjkl)
@@ -169,10 +136,9 @@ stack view = borders hidden so panes appear overlapped
 - `Ctrl + Shift + e`: Open current terminal scrollback directly in Helix (no scroll mode needed)
 
 ### Fish Vi Mode for Terminal Navigation
-- **Enhanced Fish vi mode is enabled by default**
 - `Ctrl + ;`: Toggle between vi mode and default mode
 
-#### Enhanced Vi Mode Keybinds
+#### Vi Mode Keybinds
 - **Standard navigation**: `h/j/k/l`, `w/b/e`, `/` for search, `y` to yank, etc.
 - **Line selection**: `Shift + V` - visual select entire line
 - **Line navigation**: 
@@ -183,34 +149,19 @@ stack view = borders hidden so panes appear overlapped
   - `G` - go to end of command history buffer
 - **Mode switching**: `Escape` or `Ctrl + c` - switch between insert/normal mode
 
-#### Benefits of Enhanced Vi Mode
-- **Familiar keybinds**: `gh`/`gl` mirror vim's line navigation philosophy
-- **Visual selection**: `Shift + V` for quick line selection and editing
-- **Buffer navigation**: `gg`/`G` for command history browsing
-- **Works in visual mode**: All navigation keys work in both normal and visual modes
-
 ### Link Extraction
 - `Ctrl + Alt + l`: Extract URLs from current Zellij pane scrollback and open with fzf selection
 - `links`: Command alias for URL extraction (same as Ctrl+Alt+l)
 
-### Benefits of New Workflow
-- **Direct Helix access**: No need to enter/exit scroll mode
-- **Native vi navigation**: Fish's built-in vi mode is more responsive and familiar
-- **Accurate link extraction**: Uses Zellij's `dump-screen` to get actual pane content
-- **Better ergonomics**: Single keybind workflows, vi mode by default
-- **Consistent experience**: Works seamlessly with your Zellij-centric workflow
-
 ## Fish Shell & FZF Integration
 
-### FZF Keybindings (Available in both default and insert modes)
+### FZF Keybindings 
 - `Ctrl + Alt + f`: Search files and directories with fzf
-- `Ctrl + Alt + l`: **Search Git Log** - Interactive git history browser with commit preview
-- `Ctrl + Alt + s`: **Search Git Status** - Interactive git status browser with file diff preview
+- `Ctrl + Alt + l`: **Search Git Log** 
+- `Ctrl + Alt + s`: **Search Git Status** 
 - `Ctrl + r`: Search command history with fzf
 - `Ctrl + Alt + p`: Search running processes with fzf
 - `Ctrl + v`: Search shell variables with fzf
-
-### Custom Fish Keybindings
 - `Ctrl + Alt + v`: Toggle vim mode in Fish shell
 - `Ctrl + Alt + l`: Open links from Zellij scrollback with fzf selection
 - `Ctrl + ;`: Toggle between vi mode and default mode
