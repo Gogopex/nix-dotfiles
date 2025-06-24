@@ -10,9 +10,10 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     ghosttySrc.url   = "github:ghostty-org/ghostty";
     agenix.url       = "github:ryantm/agenix";
+    zjstatus.url     = "github:dj95/zjstatus";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-stable, nix-darwin, home-manager, agenix, ghosttySrc, ... }:
+  outputs = { self, nixpkgs, nixpkgs-stable, nix-darwin, home-manager, agenix, ghosttySrc, zjstatus, ... }:
   let
     system = "aarch64-darwin";
     pkgs   = import nixpkgs { 
@@ -25,7 +26,7 @@
     };
   in
   {
-    packages.default = pkgs.hello;
+    packages.${system}.default = pkgs.hello;
 
     darwinConfigurations.macbook = nix-darwin.lib.darwinSystem {
       inherit system pkgs;
@@ -44,9 +45,9 @@
             home-manager.useGlobalPkgs   = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";
-            home-manager.extraSpecialArgs = { inherit ghosttySrc; };
+            home-manager.extraSpecialArgs = { inherit ghosttySrc zjstatus; };
 
-            home-manager.users.ludwig = { pkgs, lib, ghosttySrc, ... }: let
+            home-manager.users.ludwig = { pkgs, lib, ghosttySrc, zjstatus, ... }: let
               darwinOnly = lib.mkIf pkgs.stdenv.isDarwin;
             in {
               imports = [ ];
@@ -102,170 +103,9 @@
 
               programs.zellij = {
                 enable = true;
-                settings = {
-                  simplified_ui = true;
-                  default_shell = "fish";
-                  theme = "gruvbox-dark";
-                  default_layout = "compact";
-                  copy_command = "pbcopy";
-                  copy_on_select = true;
-                  
-                  # session management
-                  session_serialization = true;
-                  pane_viewport_serialization = true;
-                  scrollback_lines_to_serialize = 10000;
-                  serialization_interval = 60;
-                  keybinds = {
-                    normal = {
-                      # tab navigation (matching Ghostty keybinds)
-                      "bind \"Super h\"" = { GoToPreviousTab = {}; };
-                      "bind \"Super l\"" = { GoToNextTab = {}; };
-                      "bind \"Super t\"" = { NewTab = {}; };
-                      "bind \"Super w\"" = { CloseTab = {}; };
-                      
-                      # pane navigation (matching Ghostty keybinds)
-                      "bind \"Ctrl h\"" = { MoveFocus = "Left"; };
-                      "bind \"Ctrl j\"" = { MoveFocus = "Down"; };
-                      "bind \"Ctrl k\"" = { MoveFocus = "Up"; };
-                      "bind \"Ctrl l\"" = { MoveFocus = "Right"; };
-                      
-                      # pane resizing (matching Ghostty keybinds)
-                      "bind \"Super Ctrl h\"" = { Resize = "Increase Left"; };
-                      "bind \"Super Ctrl j\"" = { Resize = "Increase Down"; };
-                      "bind \"Super Ctrl k\"" = { Resize = "Increase Up"; };
-                      "bind \"Super Ctrl l\"" = { Resize = "Increase Right"; };
-                      
-                      # pane management
-                      "bind \"Super d\"" = { NewPane = "Right"; };
-                      "bind \"Super Shift d\"" = { NewPane = "Down"; };
-                      "bind \"Super Shift w\"" = { CloseFocus = {}; };
-                      
-                      # pane movement
-                      "bind \"Super Shift h\"" = { MovePane = "Left"; };
-                      "bind \"Super Shift j\"" = { MovePane = "Down"; };
-                      "bind \"Super Shift k\"" = { MovePane = "Up"; };
-                      "bind \"Super Shift l\"" = { MovePane = "Right"; };
-                      
-                      # pane stacking and fullscreen
-                      "bind \"Super f\"" = { ToggleFocusFullscreen = {}; };
-                      "bind \"Super z\"" = { TogglePaneFrames = {}; };
-                      
-                      # tab movement
-                      "bind \"Super Ctrl Shift h\"" = { MoveTab = "Left"; };
-                      "bind \"Super Ctrl Shift l\"" = { MoveTab = "Right"; };
-                      
-                      # mode switching
-                      "bind \"Ctrl a\"" = { SwitchToMode = "Tmux"; };
-                      
-                      # session management
-                      "bind \"Super s\"" = { SwitchToMode = "Session"; };
-                      
-                      # quick layout switching
-                      "bind \"Super 1\"" = { NewTab = { layout = "dev"; }; };
-                      "bind \"Super 2\"" = { NewTab = { layout = "monitoring"; }; };
-                      "bind \"Super 3\"" = { NewTab = { layout = "research"; }; };
-                      
-                      # essential shortcuts
-                      "bind \"Ctrl q\"" = { Quit = {}; };
-                      "bind \"Ctrl g\"" = { SwitchToMode = "Locked"; };
-                      
-                      # direct scrollback editing (no scroll mode needed)
-                      "bind \"Ctrl-Shift-e\"" = { EditScrollback = {}; };
-                    };
-
-                    locked = {
-                      "bind \"Ctrl g\"" = { SwitchToMode = "Normal"; };
-                    };
-
-                    scroll = {
-                      # vim-like navigation
-                      "bind \"h\"" = { MoveFocus = "Left"; };
-                      "bind \"j\"" = { ScrollDown = {}; };
-                      "bind \"k\"" = { ScrollUp = {}; };
-                      "bind \"l\"" = { MoveFocus = "Right"; };
-                      
-                      # page navigation
-                      "bind \"Ctrl f\"" = { PageScrollDown = {}; };
-                      "bind \"Ctrl b\"" = { PageScrollUp = {}; };
-                      "bind \"d\"" = { HalfPageScrollDown = {}; };
-                      "bind \"u\"" = { HalfPageScrollUp = {}; };
-                      
-                      # open scrollback in editor for visual selection/copying
-                      "bind \"e\"" = { EditScrollback = {}; };
-                      
-                      # exit scroll mode
-                      "bind \"q\"" = { SwitchToMode = "Normal"; };
-                      "bind \"Esc\"" = { SwitchToMode = "Normal"; };
-                      "bind \"Ctrl c\"" = { SwitchToMode = "Normal"; };
-                      
-                      # search
-                      "bind \"/\"" = { SwitchToMode = "EnterSearch"; };
-                      "bind \"n\"" = { Search = "down"; };
-                      "bind \"N\"" = { Search = "up"; };
-                    };
-                  };
-                  layouts = {
-                    dev = {
-                      panes = [
-                        { run = "hx"; }
-                        {
-                          direction = "Right";
-                          size = "35%";
-                          panes = [
-                            { }
-                            { }
-                          ];
-                        }
-                      ];
-                    };
-                    tt-evolve = {
-                      panes = [
-                        { run = "hx"; }
-                        {
-                          direction = "Right";
-                          size = "35%";
-                          panes = [
-                            { run = "cd tui/ttop; cargo run"; }
-                            { run = "cd tui/ttop; cargo watch"; }
-                          ];
-                        }
-                      ];
-                    };
-                    monitoring = {
-                      panes = [
-                        {
-                          direction = "Right";
-                          size = "50%";
-                          panes = [
-                            { run = "btop"; }
-                            { run = "procs"; }
-                          ];
-                        }
-                        {
-                          direction = "Down";
-                          panes = [
-                            { run = "tail -f /var/log/system.log"; }
-                            { }
-                          ];
-                        }
-                      ];
-                    };
-                    research = {
-                      panes = [
-                        { }
-                        {
-                          direction = "Right";
-                          size = "40%";
-                          panes = [
-                            { run = "hx"; }
-                            { }
-                          ];
-                        }
-                      ];
-                    };
-                  };
-                };
               };
+              
+              xdg.configFile."zellij/config.kdl".source = cfg + "/zellij/config.kdl";
 
               programs.tmux = {
                 enable = true;
@@ -671,6 +511,7 @@
                   ghc cabal-install stack haskell-language-server
                   nixfmt-rfc-style nil volta nodejs maven openjdk wiki-tui tokei
                   agenix.packages.${system}.default
+                  zjstatus.packages.${system}.default
                   mutagen mutagen-compose
                   obsidian uutils-coreutils-noprefix
                   dust hyperfine just tldr glow lazygit procs git-recent
@@ -816,6 +657,8 @@
                   zls = "zellij list-sessions";
                   zdel = "zellij delete-session";
                   zforce = "zellij attach --force-run-commands";
+                  notify = "run_with_notify";
+                  claude-check = "check_claude_sessions";
                 };
                 shellInit = /* fish */ ''
                   if status is-interactive
@@ -830,7 +673,6 @@
                                    $HOME/.cache/lm-studio/bin
                   end
 
-                  # nvm initialization (install if not present)
                   if not test -d ~/.nvm
                     echo "Installing nvm..."
                     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
@@ -839,7 +681,6 @@
                     set -gx NVM_DIR ~/.nvm
                   end
 
-                  # volta initialization
                   if test -d ~/.volta
                     fish_add_path ~/.volta/bin
                     set -gx VOLTA_HOME ~/.volta
@@ -856,11 +697,9 @@
                   set -gx PHP_VERSION 8.3
                   set -gx GHCUP_INSTALL_BASE_PREFIX $HOME
                   
-                  # Enable vi mode by default with enhanced bindings and Berkeley Mono styling
                   fish_vi_key_bindings
                   setup_enhanced_vi_mode
                   
-                  # Set Berkeley Mono cursor shapes for better vim mode experience
                   set -g fish_cursor_default block
                   set -g fish_cursor_insert line
                   set -g fish_cursor_replace_one underscore
@@ -875,20 +714,17 @@
                   zoxide init fish | source
                   source ~/.orbstack/shell/init2.fish 2>/dev/null || true
                   
-                  # Zellij auto-start for Ghostty (without exec to avoid shell replacement issues)
                   if test "$TERM" = "xterm-ghostty"; and test -z "$ZELLIJ"
                     if command -v zellij >/dev/null 2>&1
                       zellij
                     end
                   end
                   
-                  # Fisher and plugins
                   if not functions -q fisher
                     # Install fisher if not present
                     curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
                   end
                   
-                  # Create fish_user_key_bindings function for persistent keybinds
                   function fish_user_key_bindings
                     # Use Ctrl+Alt combinations to avoid conflicts
                     bind \e\cv 'toggle_vim_mode'
@@ -908,7 +744,6 @@
                   fish_greeting = ''echo "What is impossible for you is not impossible for me."'';
                   cc = ''$argv | pbcopy'';
                   
-                  # Custom mode prompt with Berkeley Mono characters
                   fish_mode_prompt = ''
                     function fish_mode_prompt
                       switch $fish_bind_mode
@@ -936,18 +771,16 @@
                     end
                   '';
                   
-                  # Nix shell detection with creative Berkeley Mono indicators
                   nix_shell_prompt = ''
                     function nix_shell_prompt
                       if test -n "$IN_NIX_SHELL"
                         set_color -o brcyan
-                        echo -n "◉ nix "
+                        echo -n "❄"
                         set_color normal
                       end
                     end
                   '';
                   
-                  # Enhanced right prompt that includes nix shell info (doesn't interfere with hydro)
                   fish_right_prompt = ''
                     function fish_right_prompt
                       nix_shell_prompt
@@ -956,7 +789,6 @@
                   
                   setup_enhanced_vi_mode = ''
                     function setup_enhanced_vi_mode
-                      # Set Berkeley Mono-friendly cursor shapes
                       set -g fish_cursor_default block
                       set -g fish_cursor_insert line
                       set -g fish_cursor_replace_one underscore
@@ -964,18 +796,14 @@
                       set -g fish_cursor_external line
                       set -g fish_cursor_visual block
                       
-                      # Visual line selection with Shift+V (in normal mode)
                       bind -M default V 'commandline -f beginning-of-line visual-mode end-of-line'
                       
-                      # Home/End shortcuts with gh/gl (in normal mode)
                       bind -M default gh 'commandline -f beginning-of-line'
                       bind -M default gl 'commandline -f end-of-line'
                       
-                      # Additional useful vi shortcuts
                       bind -M default gg 'commandline -f beginning-of-buffer'
                       bind -M default G 'commandline -f end-of-buffer'
                       
-                      # Make these work in visual mode too
                       bind -M visual gh 'commandline -f beginning-of-line'
                       bind -M visual gl 'commandline -f end-of-line'
                       bind -M visual gg 'commandline -f beginning-of-buffer'
@@ -1035,6 +863,59 @@
                       set -l session_name $argv[1]
                       echo "Resurrecting session: $session_name"
                       zellij attach $session_name
+                    end
+                  '';
+                  
+                  notify_completion = ''
+                    function notify_completion
+                      # Get the command that just finished
+                      set -l last_command (history | head -n 1)
+                      set -l exit_status $status
+                      
+                      # Send bell signal to trigger zjstatus notification
+                      printf "\a"
+                      
+                      # Optional: show completion status
+                      if test $exit_status -eq 0
+                        echo "[OK] Command completed: $last_command"
+                      else
+                        echo "[FAIL] Command failed ($exit_status): $last_command"
+                      end
+                    end
+                  '';
+                  
+                  run_with_notify = ''
+                    function run_with_notify
+                      if test (count $argv) -eq 0
+                        echo "Usage: run_with_notify <command> [args...]"
+                        return 1
+                      end
+                      
+                      echo ">> Starting: $argv"
+                      eval $argv
+                      set -l exit_status $status
+                      
+                      # Trigger notification
+                      printf "\a"
+                      
+                      if test $exit_status -eq 0
+                        echo ">> Completed: $argv"
+                      else
+                        echo ">> Failed ($exit_status): $argv"
+                      end
+                      
+                      return $exit_status
+                    end
+                  '';
+                  
+                  check_claude_sessions = ''
+                    function check_claude_sessions
+                      # Look for claude processes that might be waiting
+                      set -l claude_procs (ps aux | grep -i claude | grep -v grep)
+                      if test -n "$claude_procs"
+                        printf "\a"
+                        echo ">> Claude Code session detected"
+                      end
                     end
                   '';
                 };
