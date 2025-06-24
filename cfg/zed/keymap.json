@@ -2,42 +2,50 @@
   {
     "context": "Editor && VimControl && !VimWaiting && !menu",
     "bindings": {
-      "g h": ["vim::StartOfLine"],
-      "g l": ["vim::EndOfLine"],
-      "space y": ["editor::Copy"],
-      "space d": ["vim::Substitute", {"target": "Selected"}, "d", "\"_d"],
-      "space h": ["search::ClearSearchResults"]
+      "g h": ["vim::StartOfLine", null],
+      "g l": ["vim::EndOfLine", null],
+      "space y": ["editor::Copy", null],
+      "space d": ["editor::Delete", null],
+      "space h": ["search::ClearSearchResults", null],
+      "space a c": ["assistant::ToggleFocus", null],
+      "space a i": ["assistant::InlineAssist", null],
+      "space b": ["tab_switcher::Toggle", null],
+      "space e": ["workspace::ToggleLeftDock", null],
+      "space f": ["file_finder::Toggle", null],
+      "space g": ["editor::ToggleGitBlame", null],
+      "space s": ["project_search::ToggleFocus", null],
+      "space t": ["terminal_panel::ToggleFocus", null]
     }
   },
   {
     "context": "Editor && vim_mode == visual && !VimWaiting && !menu",
     "bindings": {
-      "shift-j": ["editor::MoveLineDown"],
-      "shift-k": ["editor::MoveLineUp"],
-      "<": ["editor::Outdent"],
-      ">": ["editor::Indent"],
-      "g h": ["vim::StartOfLine"],
-      "g l": ["vim::EndOfLine"],
-      "space y": ["editor::Copy"],
-      "space d": ["vim::Substitute", {"target": "Selected"}, "d", "\"_d"]
+      "shift-j": ["editor::MoveLineDown", null],
+      "shift-k": ["editor::MoveLineUp", null],
+      "<": ["editor::Outdent", null],
+      ">": ["editor::Indent", null],
+      "g h": ["vim::StartOfLine", null],
+      "g l": ["vim::EndOfLine", null],
+      "space y": ["editor::Copy", null],
+      "space d": ["editor::Delete", null]
     }
   },
   {
     "context": "Workspace",
     "bindings": {
-      "cmd-e": ["workspace::ToggleLeftDock"],
-      "cmd-i": ["assistant::ToggleFocus"],
-      "cmd-h": ["pane::ActivatePrevItem"],
-      "cmd-l": ["pane::ActivateNextItem"],
-      "cmd-t": ["workspace::NewFile"],
-      "cmd-w": ["pane::CloseActiveItem"],
+      "cmd-e": ["workspace::ToggleLeftDock", null],
+      "cmd-i": ["assistant::ToggleFocus", null],
+      "cmd-h": ["pane::ActivatePrevItem", null],
+      "cmd-l": ["pane::ActivateNextItem", null],
+      "cmd-t": ["workspace::NewFile", null],
+      "cmd-w": ["pane::CloseActiveItem", null],
       "alt-h": ["workspace::ActivatePaneInDirection", "Left"],
       "alt-j": ["workspace::ActivatePaneInDirection", "Down"],
       "alt-k": ["workspace::ActivatePaneInDirection", "Up"],
       "alt-l": ["workspace::ActivatePaneInDirection", "Right"],
-      "cmd-d": ["workspace::NewPane"],
-      "cmd-shift-d": ["workspace::NewPane"],
-      "cmd-shift-w": ["pane::ClosePane"]
+      "cmd-d": ["workspace::NewPane", null],
+      "cmd-shift-d": ["workspace::NewPane", null],
+      "cmd-shift-w": ["pane::ClosePane", null]
     }
   }
 ]

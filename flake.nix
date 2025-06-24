@@ -636,7 +636,7 @@
                   mutagen mutagen-compose
                   obsidian uutils-coreutils-noprefix
                   dust hyperfine just tldr glow lazygit procs git-recent
-                  tailscale
+                  tailscale gh
                   # Lean toolchain
                   elan
                   # Zed editor
@@ -815,9 +815,17 @@
                   set -gx PHP_VERSION 8.3
                   set -gx GHCUP_INSTALL_BASE_PREFIX $HOME
                   
-                  # Enable vi mode by default with enhanced bindings
+                  # Enable vi mode by default with enhanced bindings and Berkeley Mono styling
                   fish_vi_key_bindings
                   setup_enhanced_vi_mode
+                  
+                  # Set Berkeley Mono cursor shapes for better vim mode experience
+                  set -g fish_cursor_default block
+                  set -g fish_cursor_insert line
+                  set -g fish_cursor_replace_one underscore
+                  set -g fish_cursor_replace underscore
+                  set -g fish_cursor_external line
+                  set -g fish_cursor_visual block
                   
                   theme_gruvbox dark
                   if set -q GHOSTTY_RESOURCES_DIR
@@ -858,8 +866,71 @@
                   '';
                   fish_greeting = ''echo "What is impossible for you is not impossible for me."'';
                   cc = ''$argv | pbcopy'';
+                  
+                  # Custom mode prompt with Berkeley Mono characters
+                  fish_mode_prompt = ''
+                    function fish_mode_prompt
+                      switch $fish_bind_mode
+                        case default
+                          set_color -o brgreen
+                          echo -n "◆ "
+                          set_color normal
+                        case insert
+                          set_color -o bryellow
+                          echo -n "◇ "
+                          set_color normal
+                        case replace_one
+                          set_color -o brred
+                          echo -n "◈ "
+                          set_color normal
+                        case replace
+                          set_color -o brred
+                          echo -n "▓ "
+                          set_color normal
+                        case visual
+                          set_color -o brmagenta
+                          echo -n "◉ "
+                          set_color normal
+                      end
+                    end
+                  '';
+                  
+                  # Nix shell detection with creative Berkeley Mono indicators
+                  nix_shell_prompt = ''
+                    function nix_shell_prompt
+                      if test -n "$IN_NIX_SHELL"
+                        set_color -o brcyan
+                        if test -n "$name"
+                          echo -n "⬢ $name "
+                        else
+                          echo -n "❅ nix "
+                        end
+                        set_color normal
+                      else if test -n "$FLAKE_SHELL"
+                        set_color -o brcyan
+                        echo -n "◉ flake "
+                        set_color normal
+                      end
+                    end
+                  '';
+                  
+                  # Enhanced right prompt that includes nix shell info (doesn't interfere with hydro)
+                  fish_right_prompt = ''
+                    function fish_right_prompt
+                      nix_shell_prompt
+                    end
+                  '';
+                  
                   setup_enhanced_vi_mode = ''
                     function setup_enhanced_vi_mode
+                      # Set Berkeley Mono-friendly cursor shapes
+                      set -g fish_cursor_default block
+                      set -g fish_cursor_insert line
+                      set -g fish_cursor_replace_one underscore
+                      set -g fish_cursor_replace underscore
+                      set -g fish_cursor_external line
+                      set -g fish_cursor_visual block
+                      
                       # Visual line selection with Shift+V (in normal mode)
                       bind -M default V 'commandline -f beginning-of-line visual-mode end-of-line'
                       
