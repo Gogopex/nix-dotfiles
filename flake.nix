@@ -114,6 +114,7 @@
                   session_serialization = true;
                   pane_viewport_serialization = true;
                   scrollback_lines_to_serialize = 10000;
+                  serialization_interval = 60;
                   keybinds = {
                     normal = {
                       # tab navigation (matching Ghostty keybinds)
@@ -158,6 +159,11 @@
                       
                       # session management
                       "bind \"Super s\"" = { SwitchToMode = "Session"; };
+                      
+                      # quick layout switching
+                      "bind \"Super 1\"" = { NewTab = { layout = "dev"; }; };
+                      "bind \"Super 2\"" = { NewTab = { layout = "monitoring"; }; };
+                      "bind \"Super 3\"" = { NewTab = { layout = "research"; }; };
                       
                       # essential shortcuts
                       "bind \"Ctrl q\"" = { Quit = {}; };
@@ -221,6 +227,38 @@
                           panes = [
                             { run = "cd tui/ttop; cargo run"; }
                             { run = "cd tui/ttop; cargo watch"; }
+                          ];
+                        }
+                      ];
+                    };
+                    monitoring = {
+                      panes = [
+                        {
+                          direction = "Right";
+                          size = "50%";
+                          panes = [
+                            { run = "btop"; }
+                            { run = "procs"; }
+                          ];
+                        }
+                        {
+                          direction = "Down";
+                          panes = [
+                            { run = "tail -f /var/log/system.log"; }
+                            { }
+                          ];
+                        }
+                      ];
+                    };
+                    research = {
+                      panes = [
+                        { }
+                        {
+                          direction = "Right";
+                          size = "40%";
+                          panes = [
+                            { run = "hx"; }
+                            { }
                           ];
                         }
                       ];
@@ -775,6 +813,9 @@
                   bench = "hyperfine";
                   vim-mode = "toggle_vim_mode";
                   links = "open_links";
+                  zls = "zellij list-sessions";
+                  zdel = "zellij delete-session";
+                  zforce = "zellij attach --force-run-commands";
                 };
                 shellInit = /* fish */ ''
                   if status is-interactive
@@ -900,15 +941,7 @@
                     function nix_shell_prompt
                       if test -n "$IN_NIX_SHELL"
                         set_color -o brcyan
-                        if test -n "$name"
-                          echo -n "⬢ $name "
-                        else
-                          echo -n "❅ nix "
-                        end
-                        set_color normal
-                      else if test -n "$FLAKE_SHELL"
-                        set_color -o brcyan
-                        echo -n "◉ flake "
+                        echo -n "◉ nix "
                         set_color normal
                       end
                     end
@@ -988,6 +1021,20 @@
                         echo "Opening: $selected"
                         open "$selected"
                       end
+                    end
+                  '';
+                  zres = ''
+                    function zres
+                      if test (count $argv) -eq 0
+                        echo "Usage: zres <session-name>"
+                        echo "Available sessions:"
+                        zellij list-sessions
+                        return 1
+                      end
+                      
+                      set -l session_name $argv[1]
+                      echo "Resurrecting session: $session_name"
+                      zellij attach $session_name
                     end
                   '';
                 };

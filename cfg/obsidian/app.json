@@ -1,6 +1,7 @@
 {
   "promptDelete": false,
   "pdfExportSettings": {
+    "includeName": true,
     "pageSize": "Letter",
     "landscape": false,
     "margin": "0",
@@ -12,5 +13,6 @@
   "newFileFolderPath": "Attachments",
   "attachmentFolderPath": "Attachments",
   "showInlineTitle": true,
-  "strictLineBreaks": true
+  "strictLineBreaks": true,
+  "readableLineLength": true
 }
