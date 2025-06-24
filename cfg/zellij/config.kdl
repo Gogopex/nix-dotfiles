@@ -113,10 +113,6 @@ keybinds {
         bind "Ctrl a" { SwitchToMode "Tmux"; }
         bind "Cmd s" { SwitchToMode "Session"; }
         
-        // Quick layouts
-        bind "Cmd 1" { NewTab { layout "dev"; }; }
-        bind "Cmd 2" { NewTab { layout "monitoring"; }; }
-        bind "Cmd 3" { NewTab { layout "research"; }; }
         
         // Essential shortcuts
         bind "Ctrl q" { Quit; }
