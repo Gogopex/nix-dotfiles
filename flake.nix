@@ -11,17 +11,18 @@
     ghosttySrc.url   = "github:ghostty-org/ghostty";
     agenix.url       = "github:ryantm/agenix";
     zjstatus.url     = "github:dj95/zjstatus";
+    # zen-browser.url  = "github:youwen5/zen-browser-flake";
   };
 
   outputs = { self, nixpkgs, nixpkgs-stable, nix-darwin, home-manager, agenix, ghosttySrc, zjstatus, ... }:
   let
     system = "aarch64-darwin";
-    pkgs   = import nixpkgs { 
-      inherit system; 
-      config.allowUnfree = true;
-    };
     pkgs-stable = import nixpkgs-stable {
       inherit system;
+      config.allowUnfree = true;
+    };
+    pkgs   = import nixpkgs { 
+      inherit system; 
       config.allowUnfree = true;
     };
   in
@@ -49,6 +50,34 @@
 
             home-manager.users.ludwig = { pkgs, lib, ghosttySrc, zjstatus, ... }: let
               darwinOnly = lib.mkIf pkgs.stdenv.isDarwin;
+              
+              # Common editor settings for VS Code and Cursor
+              commonEditorSettings = {
+                "editor.fontFamily" = "'TX-02-Regular', monospace";
+                "editor.fontSize" = 16;
+                "editor.lineNumbers" = "on";
+                "editor.wordWrap" = "off";
+                "editor.insertSpaces" = false;
+                "editor.tabSize" = 8;
+                "editor.cursorStyle" = "line";
+                "editor.inlineSuggest.enabled" = true;
+                "editor.formatOnPaste" = true;
+                "editor.fontLigatures" = true;
+                "terminal.integrated.fontFamily" = "'TX-02-Regular', monospace";
+                "terminal.integrated.fontSize" = 16;
+                "terminal.integrated.env.osx" = {
+                  "NO_ZELLIJ" = "1";
+                };
+                "github.copilot.enable" = {
+                  "*" = false;
+                  "plaintext" = false;
+                  "markdown" = false;
+                  "scminput" = false;
+                };
+                "explorer.confirmDragAndDrop" = false;
+                "remote.SSH.connectTimeout" = 30;
+                "remote.SSH.useLocalServer" = false;
+              };
             in {
               imports = [ ];
               home.stateVersion = "25.05";
@@ -56,6 +85,7 @@
               home.file.".ideavimrc".source = cfg + "/ideavimrc";
 
               xdg.configFile."nvim".source              = cfg + "/nvim";
+              # xdg.configFile."zen/distribution/policies.json".source = cfg + "/zen/policies.json";
               
 
               programs.ghostty = {
@@ -66,13 +96,14 @@
                   font-family              = "TX-02-Regular";
                   window-title-font-family = "TX-02";
                   font-size                = 16;
+                  # shell                    = "/bin/bash -c 'exec /run/current-system/sw/bin/fish'";
                   shell-integration        = "fish";
                   confirm-close-surface    = false;
-                  macos-titlebar-style     = "tabs";
+                  window-decoration        = "none";
                   window-save-state        = "always";
                   auto-update              = "off";
                   keybind = [
-                    "shift+enter=text:\n"
+                    "shift+enter=text:\x1b\r"
                     "ctrl+space=toggle_fullscreen"
                     # ghostty tab management
                     "cmd+shift+t=new_tab"
@@ -103,9 +134,272 @@
 
               programs.zellij = {
                 enable = true;
+                enableFishIntegration = true;
+                settings = {
+                  theme = "gruvbox-dark";
+                };
               };
               
-              xdg.configFile."zellij/config.kdl".source = cfg + "/zellij/config.kdl";
+              # Use xdg.configFile for complex KDL configuration
+              xdg.configFile."zellij/config.kdl".text = ''
+                // Zellij configuration with zjstatus notifications
+                simplified_ui true
+                default_shell "fish"
+                theme "gruvbox-dark"
+                copy_command "pbcopy"
+                copy_on_select true
+                show_startup_tips false
+                
+                // Session management
+                session_serialization true
+                pane_viewport_serialization true
+                scrollback_lines_to_serialize 10000
+                serialization_interval 60
+                
+                // Plugins
+                plugins {
+                    zjstatus location="file:${zjstatus.packages.${system}.default}/bin/zjstatus.wasm" {
+                        // Format for notifications and status
+                        format_left  "#[fg=#689d6a,bold]#[bg=#3c3836] {mode}#[bg=#689d6a,fg=#1d2021,bold] {session} "
+                        format_center "#[fg=#ddc7a1,bg=#3c3836]{tabs}"
+                        format_right "#[fg=#ddc7a1,bg=#3c3836] {notifications}#[fg=#689d6a,bg=#3c3836] {datetime}"
+                        format_space "#[bg=#1d2021]"
+                        format_hide_on_overlength true
+                        format_precedence "crl"
+                
+                        // Notification settings for Claude Code sessions and commands
+                        notification_format_unread           "#[fg=#d79921,bold]●"
+                        notification_format_no_notifications "#[fg=#504945]○"
+                        
+                        // Tab formatting with bell alerts
+                        tab_normal               "#[fg=#6C7086] {name} "
+                        tab_normal_fullscreen    "#[fg=#6C7086] {name}[] "
+                        tab_normal_sync          "#[fg=#6C7086] {name}<> "
+                        tab_active               "#[fg=#9ECE6A,bold] {name} "
+                        tab_active_fullscreen    "#[fg=#9ECE6A,bold] {name}[] "
+                        tab_active_sync          "#[fg=#9ECE6A,bold] {name}<> "
+                        
+                        // Bell alerts for background activity (including Claude Code waiting)
+                        tab_bell                 "#[fg=#F7768E,bold]!{name} "
+                        tab_bell_fullscreen      "#[fg=#F7768E,bold]!{name}[] "
+                        tab_bell_sync            "#[fg=#F7768E,bold]!{name}<> "
+                
+                        // Mode indicators
+                        mode_normal        "#[fg=#689d6a,bold] NORMAL"
+                        mode_locked        "#[fg=#d79921,bold] LOCKED"
+                        mode_resize        "#[fg=#d3869b,bold] RESIZE"
+                        mode_pane          "#[fg=#458588,bold] PANE"
+                        mode_tab           "#[fg=#b16286,bold] TAB"
+                        mode_scroll        "#[fg=#689d6a,bold] SCROLL"
+                        mode_enter_search  "#[fg=#d79921,bold] SEARCH"
+                        mode_search        "#[fg=#d79921,bold] SEARCH"
+                        mode_rename_tab    "#[fg=#b16286,bold] RENAME"
+                        mode_rename_pane   "#[fg=#458588,bold] RENAME"
+                        mode_session       "#[fg=#d3869b,bold] SESSION"
+                        mode_move          "#[fg=#d79921,bold] MOVE"
+                        mode_prompt        "#[fg=#689d6a,bold] PROMPT"
+                        mode_tmux          "#[fg=#98971a,bold] TMUX"
+                
+                        // Datetime
+                        datetime        "#[fg=#6C7086,bold] {format} "
+                        datetime_format "%A, %d %b %Y %H:%M"
+                        datetime_timezone "America/New_York"
+                    }
+                }
+                
+                // UI configuration
+                ui {
+                    pane_frames {
+                        hide_session_name true
+                    }
+                }
+                
+                // Key bindings (keeping existing ones)
+                keybinds {
+                    normal {
+                        // Tab navigation (matching Ghostty keybinds)
+                        bind "Super h" { GoToPreviousTab; }
+                        bind "Super l" { GoToNextTab; }
+                        bind "Super t" { NewTab; }
+                        bind "Super w" { CloseTab; }
+                        
+                        // Pane navigation (matching Ghostty keybinds) 
+                        bind "Ctrl h" { MoveFocus "Left"; }
+                        bind "Ctrl j" { MoveFocus "Down"; }
+                        bind "Ctrl k" { MoveFocus "Up"; }
+                        bind "Ctrl l" { MoveFocus "Right"; }
+                        
+                        // Pane resizing
+                        bind "Super Ctrl h" { Resize "Increase Left"; }
+                        bind "Super Ctrl j" { Resize "Increase Down"; }
+                        bind "Super Ctrl k" { Resize "Increase Up"; }
+                        bind "Super Ctrl l" { Resize "Increase Right"; }
+                        
+                        // Pane management
+                        bind "Super d" { NewPane "Right"; }
+                        bind "Super Shift d" { NewPane "Down"; }
+                        bind "Super Shift w" { CloseFocus; }
+                        
+                        // Pane movement
+                        bind "Super Shift h" { MovePane "Left"; }
+                        bind "Super Shift j" { MovePane "Down"; }
+                        bind "Super Shift k" { MovePane "Up"; }
+                        bind "Super Shift l" { MovePane "Right"; }
+                        
+                        // Fullscreen and frames
+                        bind "Super f" { ToggleFocusFullscreen; }
+                        bind "Super z" { TogglePaneFrames; }
+                        
+                        // Tab movement
+                        bind "Super Ctrl Shift h" { MoveTab "Left"; }
+                        bind "Super Ctrl Shift l" { MoveTab "Right"; }
+                        
+                        // Mode switching
+                        bind "Ctrl a" { SwitchToMode "Tmux"; }
+                        bind "Super s" { SwitchToMode "Session"; }
+                        
+                        // Direct session switching
+                        bind "Super Shift 1" {
+                            NewPane {
+                                direction "Down"
+                                command "fish"
+                                args "-c" "zmain"
+                                floating true
+                                close_on_exit true
+                            }
+                        }
+                        bind "Super Shift 2" {
+                            NewPane {
+                                direction "Down"
+                                command "fish"
+                                args "-c" "zwork"
+                                floating true
+                                close_on_exit true
+                            }
+                        }
+                        
+                        // Tab fuzzy finder
+                        bind "Super /" { 
+                            NewPane {
+                                direction "Down";
+                                command "fish";
+                                args "-c" "zellij_tab_switcher";
+                                floating true;
+                                close_on_exit true;
+                            }
+                        }
+                        
+                        // Essential shortcuts
+                        bind "Ctrl q" { Quit; }
+                        bind "Ctrl g" { SwitchToMode "Locked"; }
+                        bind "Ctrl Shift e" { EditScrollback; }
+                    }
+                
+                    locked {
+                        bind "Ctrl g" { SwitchToMode "Normal"; }
+                    }
+                
+                    scroll {
+                        bind "h" { MoveFocus "Left"; }
+                        bind "j" { ScrollDown; }
+                        bind "k" { ScrollUp; }
+                        bind "l" { MoveFocus "Right"; }
+                        bind "Ctrl f" { PageScrollDown; }
+                        bind "Ctrl b" { PageScrollUp; }
+                        bind "d" { HalfPageScrollDown; }
+                        bind "u" { HalfPageScrollUp; }
+                        bind "e" { EditScrollback; }
+                        bind "q" { SwitchToMode "Normal"; }
+                        bind "Esc" { SwitchToMode "Normal"; }
+                        bind "Ctrl c" { SwitchToMode "Normal"; }
+                        bind "/" { SwitchToMode "EnterSearch"; }
+                        bind "n" { Search "down"; }
+                        bind "N" { Search "up"; }
+                    }
+                }
+                
+                // Layouts
+                layout {
+                    default_tab_template {
+                        pane size=1 borderless=true {
+                            plugin location="file:${zjstatus.packages.${system}.default}/bin/zjstatus.wasm"
+                        }
+                        children
+                    }
+                    
+                    // Existing layouts with status bar
+                    dev {
+                        tab name="dev" {
+                            pane {
+                                command "hx"
+                            }
+                            pane split_direction="vertical" size="35%" {
+                                pane
+                                pane
+                            }
+                        }
+                    }
+                    
+                    monitoring {
+                        tab name="monitor" {
+                            pane split_direction="vertical" size="50%" {
+                                pane {
+                                    command "btop"
+                                }
+                                pane {
+                                    command "procs"
+                                }
+                            }
+                            pane split_direction="horizontal" {
+                                pane {
+                                    command "tail"
+                                    args "-f" "/var/log/system.log"
+                                }
+                                pane
+                            }
+                        }
+                    }
+                    
+                    research {
+                        tab name="research" {
+                            pane
+                            pane split_direction="vertical" size="40%" {
+                                pane {
+                                    command "hx"
+                                }
+                                pane
+                            }
+                        }
+                    }
+                    
+                    
+                    work {
+                        tab name="work" {
+                            pane
+                        }
+                        tab name="projects" {
+                            pane {
+                                command "hx"
+                            }
+                            pane split_direction="vertical" size="35%" {
+                                pane
+                                pane
+                            }
+                        }
+                        tab name="monitor" {
+                            pane split_direction="vertical" size="50%" {
+                                pane {
+                                    command "btop"
+                                }
+                                pane {
+                                    command "procs"
+                                }
+                            }
+                            pane
+                        }
+                    }
+                }
+              '';
 
               programs.tmux = {
                 enable = true;
@@ -456,7 +750,7 @@
                 enable = true;
                 settings = {
                   log.enabled = false;
-                  manager = { show_hidden = true; sort_by = "mtime"; };
+                  mgr = { show_hidden = true; sort_by = "mtime"; };
                   keymap.normal."${leader}" = "toggle_preview";
                 };
               };
@@ -511,8 +805,7 @@
                   ghc cabal-install stack haskell-language-server
                   nixfmt-rfc-style nil volta nodejs maven openjdk wiki-tui tokei
                   agenix.packages.${system}.default
-                  zjstatus.packages.${system}.default
-                  mutagen mutagen-compose
+                  mutagen
                   obsidian uutils-coreutils-noprefix
                   dust hyperfine just tldr glow lazygit procs git-recent
                   tailscale gh
@@ -638,6 +931,153 @@
                 ];
               };
 
+              programs.vscode = {
+                enable = true;
+                profiles.default.userSettings = commonEditorSettings // {
+                  # VS Code specific settings
+                  "workbench.colorTheme" = "Gruvbox Dark Hard";
+                  "window.zoomLevel" = 0.8;
+                  "editor.fontSize" = 15;
+                  "git.enableSmartCommit" = true;
+                  "files.exclude" = {
+                    "**/.DS_Store" = true;
+                    "**/.git" = true;
+                    "**/.hg" = true;
+                    "**/.svn" = true;
+                    "**/*.js" = {
+                      "when" = "$(basename).ts";
+                    };
+                    "**/**.js" = {
+                      "when" = "$(basename).tsx";
+                    };
+                    "**/app/cache/**" = true;
+                    "**/CVS" = true;
+                    "app/cache/**" = true;
+                  };
+                  "workbench.editor.enablePreviewFromQuickOpen" = false;
+                  "breadcrumbs.enabled" = true;
+                  "search.useIgnoreFiles" = false;
+                  "explorer.confirmDelete" = false;
+                  "emmet.triggerExpansionOnTab" = true;
+                  "emmet.syntaxProfiles" = {
+                    "html" = {
+                      "filters" = "bem";
+                    };
+                  };
+                  "diffEditor.ignoreTrimWhitespace" = false;
+                  "[javascript]" = {
+                    "editor.defaultFormatter" = "vscode.typescript-language-features";
+                  };
+                  "files.eol" = "\n";
+                  "files.insertFinalNewline" = true;
+                  "files.trimFinalNewlines" = true;
+                  "twig-language-2.bracePadding" = true;
+                  "twig-language-2.spaceClose" = true;
+                  "liveshare.presence" = true;
+                  "intelephense.environment.phpVersion" = "7.4.13";
+                  "php.suggest.basic" = false;
+                  "[php]" = {
+                    "editor.defaultFormatter" = "bmewburn.vscode-intelephense-client";
+                    "editor.formatOnSave" = true;
+                  };
+                  "emmet.includeLanguages" = {
+                    "twig" = "html";
+                  };
+                  "search.exclude" = {
+                    "**/app/cache" = true;
+                    "**/app/logs" = true;
+                    "**/node_modules/**" = true;
+                    "**/var/cache" = true;
+                    "**/var/logs" = true;
+                    "**/web" = true;
+                    "app/cache/*.xml" = true;
+                    "app/cache/**" = true;
+                  };
+                  "files.watcherExclude" = {
+                    "**/app/cache/**" = true;
+                    "**/var/cache/**" = true;
+                    "**/var/logs/**" = true;
+                    "**/node_modules/**" = true;
+                    "**/.venv/**" = true;
+                  };
+                  "rust-analyzer.checkOnSave.command" = "clippy";
+                  "rust-analyzer.cargo.loadOutDirsFromCheck" = true;
+                  "rust-analyzer.debug.engine" = "vadimcn.vscode-lldb";
+                  "editor.defaultFormatter" = "kokororin.vscode-phpfmt";
+                  "editor.wordSeparators" = "/\\()\"':,.;<>~!@#$%^&*|+=[]{}`?-";
+                  "github.copilot.enable" = {
+                    "*" = false;
+                    "plaintext" = true;
+                    "markdown" = false;
+                    "scminput" = false;
+                    "yaml" = false;
+                    "rust" = true;
+                    "php" = true;
+                    "python" = true;
+                    "uiua" = false;
+                  };
+                  "[python]" = {
+                    "editor.defaultFormatter" = "ms-python.python";
+                    "editor.formatOnType" = true;
+                  };
+                  "workbench.editor.highlightModifiedTabs" = true;
+                  "workbench.editor.wrapTabs" = true;
+                  "security.promptForLocalFileProtocolHandling" = false;
+                  "makefile.configureOnOpen" = true;
+                  "editor.columnSelection" = true;
+                  "terminal.external.osxExec" = "Ghostty.app";
+                  "terminal.integrated.fontLigatures.enabled" = true;
+                  "extensions.experimental.affinity" = {
+                    "asvetliakov.vscode-neovim" = 1;
+                  };
+                  "jupyter.askForKernelRestart" = false;
+                  "chat.commandCenter.enabled" = false;
+                  "remote.SSH.showLoginTerminal" = true;
+                  "remote.SSH.useExecServer" = true;
+                  "remote.SSH.remotePlatform" = {
+                    "38.97.6.9" = "linux";
+                    "bigdave" = "linux";
+                  };
+                  "workbench.startupEditor" = "none";
+                  "amp.url" = "https://ampcode.com/";
+                };
+              };
+
+              # Cursor IDE settings
+              home.file."Library/Application Support/Cursor/User/settings.json".text = builtins.toJSON (commonEditorSettings // {
+                # Cursor specific settings
+                "workbench.colorTheme" = "Gruvbox Dark Soft";
+                "editor.fontSize" = 18;
+                "terminal.integrated.fontSize" = 18;
+                "chat.editor.fontSize" = 16;
+                "extensions.experimental.affinity" = {
+                  "asvetliakov.vscode-neovim" = 1;
+                };
+                "cursor.composer.collapsePaneInputBoxPills" = true;
+                "cursor.composer.renderPillsInsteadOfBlocks" = true;
+                "git.confirmSync" = false;
+                "cursor.composer.cmdPFilePicker2" = true;
+                "cursor.terminal.usePreviewBox" = true;
+                "go.toolsManagement.autoUpdate" = true;
+                "remote.SSH.path" = "/opt/homebrew/bin/ssh";
+                "remote.SSH.remotePlatform" = {
+                  "bigdave" = "linux";
+                };
+                "remote.SSH.enableDynamicForwarding" = false;
+                "remote.SSH.enableAgentForwarding" = false;
+                "gitlens.home.preview.enabled" = false;
+                "update.releaseTrack" = "prerelease";
+                "cursor.composer.textSizeScale" = 1.15;
+                "cursor.composer.shouldAllowCustomModes" = true;
+                "cursor.cpp.enablePartialAccepts" = true;
+                "clangd.detectExtensionConflicts" = false;
+                "cursor.composer.shouldChimeAfterChatFinishes" = true;
+                "lldb.suppressUpdateNotifications" = true;
+                "lean4.alwaysAskBeforeInstallingLeanVersions" = false;
+                "terminal.integrated.shell.osx" = "/run/current-system/sw/bin/fish";
+                "terminal.integrated.automationShell.osx" = "/run/current-system/sw/bin/fish";
+              });
+
               programs.fish = {
                 enable = true;
                 shellAliases = {
@@ -657,8 +1097,11 @@
                   zls = "zellij list-sessions";
                   zdel = "zellij delete-session";
                   zforce = "zellij attach --force-run-commands";
+                  zt = "zellij_tab_switcher";
                   notify = "run_with_notify";
                   claude-check = "check_claude_sessions";
+                  zm = "zmain";
+                  zw = "zwork";
                 };
                 shellInit = /* fish */ ''
                   if status is-interactive
@@ -714,9 +1157,9 @@
                   zoxide init fish | source
                   source ~/.orbstack/shell/init2.fish 2>/dev/null || true
                   
-                  if test "$TERM" = "xterm-ghostty"; and test -z "$ZELLIJ"
+                  if test "$TERM" = "xterm-ghostty"; and test -z "$ZELLIJ"; and test -z "$NO_ZELLIJ"; and test -z "$GHOSTTY_QUICK_TERMINAL"
                     if command -v zellij >/dev/null 2>&1
-                      zellij
+                      zellij attach circular-crab
                     end
                   end
                   
@@ -916,6 +1359,51 @@
                         printf "\a"
                         echo ">> Claude Code session detected"
                       end
+                    end
+                  '';
+                  
+                  zellij_tab_switcher = ''
+                    function zellij_tab_switcher
+                      # Get all tab names from zellij
+                      set -l tabs (zellij action query-tab-names 2>/dev/null)
+                      
+                      if test -z "$tabs"
+                        echo "No tabs found"
+                        return 1
+                      end
+                      
+                      # Add line numbers for quick selection and pipe to fzf
+                      set -l selected (printf '%s\n' $tabs | nl -w2 -s': ' | \
+                        fzf --height=40% --layout=reverse --border \
+                            --prompt="Select tab (or press number): " \
+                            --preview-window=hidden \
+                            --bind='1:accept,2:accept,3:accept,4:accept,5:accept,6:accept,7:accept,8:accept,9:accept')
+                      
+                      if test -n "$selected"
+                        # Extract the tab name (remove the line number prefix)
+                        set -l tab_name (echo $selected | sed 's/^[[:space:]]*[0-9]*:[[:space:]]*//')
+                        
+                        # Switch to the selected tab
+                        zellij action go-to-tab-name "$tab_name"
+                        
+                        # Close the floating pane (if we're in one)
+                        zellij action toggle-floating-panes 2>/dev/null
+                      end
+                    end
+                  '';
+                  
+                  zmain = ''
+                    function zmain
+                      echo "Switching to main session (circular-crab)..."
+                      zellij attach circular-crab
+                    end
+                  '';
+                  
+                  zwork = ''
+                    function zwork
+                      echo "Switching to work session..."
+                      # Create work session with layout if it doesn't exist, otherwise just attach
+                      zellij --layout work --session work
                     end
                   '';
                 };
