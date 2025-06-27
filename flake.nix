@@ -51,7 +51,6 @@
             home-manager.users.ludwig = { pkgs, lib, ghosttySrc, zjstatus, ... }: let
               darwinOnly = lib.mkIf pkgs.stdenv.isDarwin;
               
-              # Common editor settings for VS Code and Cursor
               commonEditorSettings = {
                 "editor.fontFamily" = "'TX-02-Regular', monospace";
                 "editor.fontSize" = 16;
@@ -96,7 +95,6 @@
                   font-family              = "TX-02-Regular";
                   window-title-font-family = "TX-02";
                   font-size                = 16;
-                  # shell                    = "/bin/bash -c 'exec /run/current-system/sw/bin/fish'";
                   shell-integration        = "fish";
                   confirm-close-surface    = false;
                   window-decoration        = "none";
@@ -105,26 +103,17 @@
                   keybind = [
                     "shift+enter=text:\x1b\r"
                     "ctrl+space=toggle_fullscreen"
-                    # ghostty tab management
                     "cmd+shift+t=new_tab"
-                    # pass through to Zellij for pane navigation
                     "ctrl+h=unbind"   "ctrl+j=unbind"
                     "ctrl+k=unbind"   "ctrl+l=unbind"
-                    # pass through to Zellij for tab navigation
                     "cmd+h=unbind"    "cmd+l=unbind"
                     "cmd+t=unbind"    "cmd+w=unbind"
-                    # pass through to Zellij for pane splitting
                     "cmd+d=unbind"    "cmd+shift+d=unbind"
                     "cmd+shift+w=unbind"
-                    # pass through to Zellij for pane resizing
                     "cmd+ctrl+h=unbind"
                     "cmd+ctrl+j=unbind"
                     "cmd+ctrl+k=unbind"
                     "cmd+ctrl+l=unbind"
-                    # tab movement (Ghostty owns arrow combos, letters go to Zellij)
-                    "cmd+ctrl+shift+left=move_tab:-1"
-                    "cmd+ctrl+shift+right=move_tab:1"
-                    # pass through to Zellij for tab re-ordering
                     "cmd+ctrl+shift+h=unbind"
                     "cmd+ctrl+shift+l=unbind"
                     "global:shift+opt+t=toggle_quick_terminal"
@@ -140,7 +129,6 @@
                 };
               };
               
-              # Use xdg.configFile for complex KDL configuration
               xdg.configFile."zellij/config.kdl".text = ''
                 // Zellij configuration with zjstatus notifications
                 simplified_ui true
@@ -150,16 +138,16 @@
                 copy_on_select true
                 show_startup_tips false
                 
-                // Session management
+                // session management
                 session_serialization true
                 pane_viewport_serialization true
                 scrollback_lines_to_serialize 10000
                 serialization_interval 60
                 
-                // Plugins
+                // plugins
                 plugins {
                     zjstatus location="file:${zjstatus.packages.${system}.default}/bin/zjstatus.wasm" {
-                        // Format for notifications and status
+                        // format for notifications and status
                         format_left  "#[fg=#689d6a,bold]#[bg=#3c3836] {mode}#[bg=#689d6a,fg=#1d2021,bold] {session} "
                         format_center "#[fg=#ddc7a1,bg=#3c3836]{tabs}"
                         format_right "#[fg=#ddc7a1,bg=#3c3836] {notifications}#[fg=#689d6a,bg=#3c3836] {datetime}"
@@ -167,11 +155,11 @@
                         format_hide_on_overlength true
                         format_precedence "crl"
                 
-                        // Notification settings for Claude Code sessions and commands
+                        // notification settings for Claude Code sessions and commands
                         notification_format_unread           "#[fg=#d79921,bold]●"
                         notification_format_no_notifications "#[fg=#504945]○"
                         
-                        // Tab formatting with bell alerts
+                        // tab formatting with bell alerts
                         tab_normal               "#[fg=#6C7086] {name} "
                         tab_normal_fullscreen    "#[fg=#6C7086] {name}[] "
                         tab_normal_sync          "#[fg=#6C7086] {name}<> "
@@ -179,12 +167,11 @@
                         tab_active_fullscreen    "#[fg=#9ECE6A,bold] {name}[] "
                         tab_active_sync          "#[fg=#9ECE6A,bold] {name}<> "
                         
-                        // Bell alerts for background activity (including Claude Code waiting)
                         tab_bell                 "#[fg=#F7768E,bold]!{name} "
                         tab_bell_fullscreen      "#[fg=#F7768E,bold]!{name}[] "
                         tab_bell_sync            "#[fg=#F7768E,bold]!{name}<> "
                 
-                        // Mode indicators
+                        // mode indicators
                         mode_normal        "#[fg=#689d6a,bold] NORMAL"
                         mode_locked        "#[fg=#d79921,bold] LOCKED"
                         mode_resize        "#[fg=#d3869b,bold] RESIZE"
@@ -200,65 +187,64 @@
                         mode_prompt        "#[fg=#689d6a,bold] PROMPT"
                         mode_tmux          "#[fg=#98971a,bold] TMUX"
                 
-                        // Datetime
+                        // datetime
                         datetime        "#[fg=#6C7086,bold] {format} "
                         datetime_format "%A, %d %b %Y %H:%M"
                         datetime_timezone "America/New_York"
                     }
                 }
                 
-                // UI configuration
                 ui {
                     pane_frames {
                         hide_session_name true
                     }
                 }
                 
-                // Key bindings (keeping existing ones)
                 keybinds {
                     normal {
-                        // Tab navigation (matching Ghostty keybinds)
+                        // tab navigation 
                         bind "Super h" { GoToPreviousTab; }
                         bind "Super l" { GoToNextTab; }
                         bind "Super t" { NewTab; }
                         bind "Super w" { CloseTab; }
                         
-                        // Pane navigation (matching Ghostty keybinds) 
+                        // pane navigation 
                         bind "Ctrl h" { MoveFocus "Left"; }
                         bind "Ctrl j" { MoveFocus "Down"; }
                         bind "Ctrl k" { MoveFocus "Up"; }
                         bind "Ctrl l" { MoveFocus "Right"; }
                         
-                        // Pane resizing
+                        // pane resizing
                         bind "Super Ctrl h" { Resize "Increase Left"; }
                         bind "Super Ctrl j" { Resize "Increase Down"; }
                         bind "Super Ctrl k" { Resize "Increase Up"; }
                         bind "Super Ctrl l" { Resize "Increase Right"; }
                         
-                        // Pane management
+                        // pane management
                         bind "Super d" { NewPane "Right"; }
                         bind "Super Shift d" { NewPane "Down"; }
                         bind "Super Shift w" { CloseFocus; }
                         
-                        // Pane movement
+                        // pane movement
                         bind "Super Shift h" { MovePane "Left"; }
                         bind "Super Shift j" { MovePane "Down"; }
                         bind "Super Shift k" { MovePane "Up"; }
                         bind "Super Shift l" { MovePane "Right"; }
                         
-                        // Fullscreen and frames
+                        // fullscreen and frames
                         bind "Super f" { ToggleFocusFullscreen; }
                         bind "Super z" { TogglePaneFrames; }
                         
-                        // Tab movement
+                        // tab movement
                         bind "Super Ctrl Shift h" { MoveTab "Left"; }
                         bind "Super Ctrl Shift l" { MoveTab "Right"; }
                         
-                        // Mode switching
+                        // mode switching
                         bind "Ctrl a" { SwitchToMode "Tmux"; }
                         bind "Super s" { SwitchToMode "Session"; }
                         
-                        // Direct session switching
+                        // @TODO: this still opens a tab, maybe overlaps with smth
+                        // direct session switching
                         bind "Super Shift 1" {
                             NewPane {
                                 direction "Down"
@@ -278,7 +264,8 @@
                             }
                         }
                         
-                        // Tab fuzzy finder
+                        // @TODO: this still opens a tab, maybe overlaps with smth
+                        // tab fuzzy finder
                         bind "Super /" { 
                             NewPane {
                                 direction "Down";
@@ -289,7 +276,7 @@
                             }
                         }
                         
-                        // Essential shortcuts
+                        // qssential shortcuts
                         bind "Ctrl q" { Quit; }
                         bind "Ctrl g" { SwitchToMode "Locked"; }
                         bind "Ctrl Shift e" { EditScrollback; }
@@ -318,85 +305,13 @@
                     }
                 }
                 
-                // Layouts
+                // layouts
                 layout {
                     default_tab_template {
                         pane size=1 borderless=true {
                             plugin location="file:${zjstatus.packages.${system}.default}/bin/zjstatus.wasm"
                         }
                         children
-                    }
-                    
-                    // Existing layouts with status bar
-                    dev {
-                        tab name="dev" {
-                            pane {
-                                command "hx"
-                            }
-                            pane split_direction="vertical" size="35%" {
-                                pane
-                                pane
-                            }
-                        }
-                    }
-                    
-                    monitoring {
-                        tab name="monitor" {
-                            pane split_direction="vertical" size="50%" {
-                                pane {
-                                    command "btop"
-                                }
-                                pane {
-                                    command "procs"
-                                }
-                            }
-                            pane split_direction="horizontal" {
-                                pane {
-                                    command "tail"
-                                    args "-f" "/var/log/system.log"
-                                }
-                                pane
-                            }
-                        }
-                    }
-                    
-                    research {
-                        tab name="research" {
-                            pane
-                            pane split_direction="vertical" size="40%" {
-                                pane {
-                                    command "hx"
-                                }
-                                pane
-                            }
-                        }
-                    }
-                    
-                    
-                    work {
-                        tab name="work" {
-                            pane
-                        }
-                        tab name="projects" {
-                            pane {
-                                command "hx"
-                            }
-                            pane split_direction="vertical" size="35%" {
-                                pane
-                                pane
-                            }
-                        }
-                        tab name="monitor" {
-                            pane split_direction="vertical" size="50%" {
-                                pane {
-                                    command "btop"
-                                }
-                                pane {
-                                    command "procs"
-                                }
-                            }
-                            pane
-                        }
                     }
                 }
               '';
@@ -427,8 +342,8 @@
                   theme = "gruvbox";
                   editor = {
                     line-number = "absolute";              
-                    auto-completion = false;               # disable autocomplete by default
-                    completion-trigger-len = 0;            # don't auto-trigger
+                    auto-completion = true; # disable autocomplete by default
+                    completion-trigger-len = 0; # don't auto-trigger
                     mouse = false;
                     cursor-shape = {
                       insert = "bar";
@@ -457,7 +372,6 @@
                   };
                   keys = {
                     normal = {
-                      # quick iteration on config changes
                       "C-o" = ":config-open";
                       "C-r" = ":config-reload";
                       
@@ -812,124 +726,124 @@
                   # Lean toolchain
                   elan
                   # Zed editor
-                  zed-editor
+                  # zed-editor
                 ] ++ lib.optionals pkgs.stdenv.isDarwin [ zotero ]
               );
 
               programs.go.enable = true;
 
-              programs.zed-editor = darwinOnly {
-                enable = true;
-                
-                userSettings = {
-                  # Editor behavior
-                  vim_mode = true;
-                  telemetry = {
-                    metrics = false;
-                    diagnostics = false;
-                  };
-                  
-                  # UI/Font
-                  ui_font_size = 16;
-                  buffer_font_size = 16;
-                  ui_font_family = "TX-02";
-                  buffer_font_family = "TX-02-Regular";
-                  theme = "Gruvbox Dark";
-                  
-                  # Features  
-                  features = {
-                    copilot = false;
-                  };
-                  
-                  # Behavior
-                  auto_update = false;
-                  confirm_quit = true;
-                  restore_on_startup = "last_workspace";
-                };
-                
-                userKeymaps = [
-                  # Vim mode enhancements (matches your existing patterns)
-                  {
-                    context = "Editor && VimControl && !VimWaiting && !menu";
-                    bindings = {
-                      "g h" = ["vim::StartOfLine"];
-                      "g l" = ["vim::EndOfLine"];
-                      "space y" = ["editor::Copy"];
-                      "space d" = ["vim::Substitute" {"target" = "Selected";} "d" "\"_d"];
-                      "space h" = ["search::ClearSearchResults"];
-                    };
-                  }
-                  
-                  # Visual mode (matches your existing patterns)
-                  {
-                    context = "Editor && vim_mode == visual && !VimWaiting && !menu";
-                    bindings = {
-                      "shift-j" = ["editor::MoveLineDown"];
-                      "shift-k" = ["editor::MoveLineUp"];
-                      "<" = ["editor::Outdent"];
-                      ">" = ["editor::Indent"];
-                      "g h" = ["vim::StartOfLine"];
-                      "g l" = ["vim::EndOfLine"];
-                      "space y" = ["editor::Copy"];
-                      "space d" = ["vim::Substitute" {"target" = "Selected";} "d" "\"_d"];
-                    };
-                  }
-                  
-                  # Workspace - unified with Zellij/Helix patterns
-                  {
-                    context = "Workspace";
-                    bindings = {
-                      # File/Project management (matches Helix space patterns)
-                      "space f" = ["file_finder::Toggle"];  # File finder
-                      "space e" = ["workspace::ToggleLeftDock"];  # File explorer (matches cmd-e)
-                      "space b" = ["tab_switcher::Toggle"];  # Buffer/tab switcher
-                      
-                      # AI Assistant (new unified pattern)
-                      "space a c" = ["assistant::ToggleFocus"];  # AI Chat toggle  
-                      "space a i" = ["assistant::InlineAssist"];  # Quick AI input/inline
-                      "space a a" = ["agent::NewThread"];  # Agent panel
-                      
-                      # Pane management (matches Zellij patterns exactly)
-                      "cmd-h" = ["pane::ActivatePrevItem"];    # Tab navigation (matches Zellij)
-                      "cmd-l" = ["pane::ActivateNextItem"];    # Tab navigation (matches Zellij)
-                      "cmd-t" = ["workspace::NewFile"];       # New tab (matches Zellij)
-                      "cmd-w" = ["pane::CloseActiveItem"];     # Close tab (matches Zellij)
-                      
-                      # Pane focus navigation (matches AeroSpace cmd+opt pattern)
-                      "cmd-opt-h" = ["workspace::ActivatePaneInDirection" "Left"];
-                      "cmd-opt-j" = ["workspace::ActivatePaneInDirection" "Down"];
-                      "cmd-opt-k" = ["workspace::ActivatePaneInDirection" "Up"];
-                      "cmd-opt-l" = ["workspace::ActivatePaneInDirection" "Right"];
-                      
-                      # Pane splitting (matches Zellij exactly)
-                      "cmd-d" = ["pane::SplitRight"];         # Split right (matches Zellij)
-                      "cmd-shift-d" = ["pane::SplitDown"];    # Split down (matches Zellij) 
-                      "cmd-shift-w" = ["pane::ClosePane"];    # Close pane (matches Zellij)
-                      
-                      # Search (Helix pattern)
-                      "space /" = ["search::ToggleReplace"];
-                      "space s" = ["project_search::ToggleFocus"];  # Project search
-                      
-                      # Terminal (Helix/Zellij pattern)
-                      "space t" = ["terminal_panel::ToggleFocus"];
-                      
-                      # Diagnostics/Git (Helix patterns)
-                      "space g" = ["editor::ToggleGitBlame"];
-                      "space d" = ["diagnostics::Deploy"];
-                    };
-                  }
-                ];
-                
-                extensions = [
-                  "nix"
-                  "swift"
-                  "rust"
-                  "python"
-                  "json"
-                  "toml"
-                  "markdown"
-                ];
-              };
+              # programs.zed-editor = darwinOnly {
+              #   enable = true;
+              #   
+              #   userSettings = {
+              #     # Editor behavior
+              #     vim_mode = true;
+              #     telemetry = {
+              #       metrics = false;
+              #       diagnostics = false;
+              #     };
+              #     
+              #     # UI/Font
+              #     ui_font_size = 16;
+              #     buffer_font_size = 16;
+              #     ui_font_family = "TX-02";
+              #     buffer_font_family = "TX-02-Regular";
+              #     theme = "Gruvbox Dark";
+              #     
+              #     # Features  
+              #     features = {
+              #       copilot = false;
+              #     };
+              #     
+              #     # Behavior
+              #     auto_update = false;
+              #     confirm_quit = true;
+              #     restore_on_startup = "last_workspace";
+              #   };
+              #   
+              #   userKeymaps = [
+              #     # Vim mode enhancements (matches your existing patterns)
+              #     {
+              #       context = "Editor && VimControl && !VimWaiting && !menu";
+              #       bindings = {
+              #         "g h" = ["vim::StartOfLine"];
+              #         "g l" = ["vim::EndOfLine"];
+              #         "space y" = ["editor::Copy"];
+              #         "space d" = ["vim::Substitute" {"target" = "Selected";} "d" "\"_d"];
+              #         "space h" = ["search::ClearSearchResults"];
+              #       };
+              #     }
+              #     
+              #     # Visual mode (matches your existing patterns)
+              #     {
+              #       context = "Editor && vim_mode == visual && !VimWaiting && !menu";
+              #       bindings = {
+              #         "shift-j" = ["editor::MoveLineDown"];
+              #         "shift-k" = ["editor::MoveLineUp"];
+              #         "<" = ["editor::Outdent"];
+              #         ">" = ["editor::Indent"];
+              #         "g h" = ["vim::StartOfLine"];
+              #         "g l" = ["vim::EndOfLine"];
+              #         "space y" = ["editor::Copy"];
+              #         "space d" = ["vim::Substitute" {"target" = "Selected";} "d" "\"_d"];
+              #       };
+              #     }
+              #     
+              #     # Workspace - unified with Zellij/Helix patterns
+              #     {
+              #       context = "Workspace";
+              #       bindings = {
+              #         # File/Project management (matches Helix space patterns)
+              #         "space f" = ["file_finder::Toggle"];  # File finder
+              #         "space e" = ["workspace::ToggleLeftDock"];  # File explorer (matches cmd-e)
+              #         "space b" = ["tab_switcher::Toggle"];  # Buffer/tab switcher
+              #         
+              #         # AI Assistant (new unified pattern)
+              #         "space a c" = ["assistant::ToggleFocus"];  # AI Chat toggle  
+              #         "space a i" = ["assistant::InlineAssist"];  # Quick AI input/inline
+              #         "space a a" = ["agent::NewThread"];  # Agent panel
+              #         
+              #         # Pane management (matches Zellij patterns exactly)
+              #         "cmd-h" = ["pane::ActivatePrevItem"];    # Tab navigation (matches Zellij)
+              #         "cmd-l" = ["pane::ActivateNextItem"];    # Tab navigation (matches Zellij)
+              #         "cmd-t" = ["workspace::NewFile"];       # New tab (matches Zellij)
+              #         "cmd-w" = ["pane::CloseActiveItem"];     # Close tab (matches Zellij)
+              #         
+              #         # Pane focus navigation (matches AeroSpace cmd+opt pattern)
+              #         "cmd-opt-h" = ["workspace::ActivatePaneInDirection" "Left"];
+              #         "cmd-opt-j" = ["workspace::ActivatePaneInDirection" "Down"];
+              #         "cmd-opt-k" = ["workspace::ActivatePaneInDirection" "Up"];
+              #         "cmd-opt-l" = ["workspace::ActivatePaneInDirection" "Right"];
+              #         
+              #         # Pane splitting (matches Zellij exactly)
+              #         "cmd-d" = ["pane::SplitRight"];         # Split right (matches Zellij)
+              #         "cmd-shift-d" = ["pane::SplitDown"];    # Split down (matches Zellij) 
+              #         "cmd-shift-w" = ["pane::ClosePane"];    # Close pane (matches Zellij)
+              #         
+              #         # Search (Helix pattern)
+              #         "space /" = ["search::ToggleReplace"];
+              #         "space s" = ["project_search::ToggleFocus"];  # Project search
+              #         
+              #         # Terminal (Helix/Zellij pattern)
+              #         "space t" = ["terminal_panel::ToggleFocus"];
+              #         
+              #         # Diagnostics/Git (Helix patterns)
+              #         "space g" = ["editor::ToggleGitBlame"];
+              #         "space d" = ["diagnostics::Deploy"];
+              #       };
+              #     }
+              #   ];
+              #   
+              #   extensions = [
+              #     "nix"
+              #     "swift"
+              #     "rust"
+              #     "python"
+              #     "json"
+              #     "toml"
+              #     "markdown"
+              #   ];
+              # };
 
               programs.vscode = {
                 enable = true;
@@ -1454,76 +1368,11 @@
                 };
               };
 
-
               programs.btop = {
                 enable = true;
                 settings = {
-                  color_theme = "Default";
-                  theme_background = true;
-                  truecolor = true;
-                  force_tty = false;
-                  presets = "cpu:1:default,proc:0:default cpu:0:default,mem:0:default,net:0:default cpu:0:block,net:0:tty";
-                  vim_keys = false;
+                  vim_keys = true;
                   rounded_corners = true;
-                  graph_symbol = "braille";
-                  graph_symbol_cpu = "default";
-                  graph_symbol_mem = "default";
-                  graph_symbol_net = "default";
-                  graph_symbol_proc = "default";
-                  shown_boxes = "cpu mem proc net";
-                  update_ms = 2000;
-                  proc_sorting = "memory";
-                  proc_reversed = false;
-                  proc_tree = false;
-                  proc_colors = true;
-                  proc_gradient = true;
-                  proc_per_core = false;
-                  proc_mem_bytes = true;
-                  proc_cpu_graphs = true;
-                  proc_info_smaps = false;
-                  proc_left = false;
-                  proc_filter_kernel = false;
-                  proc_aggregate = false;
-                  cpu_graph_upper = "Auto";
-                  cpu_graph_lower = "Auto";
-                  cpu_invert_lower = true;
-                  cpu_single_graph = false;
-                  cpu_bottom = false;
-                  show_uptime = true;
-                  check_temp = true;
-                  cpu_sensor = "Auto";
-                  show_coretemp = true;
-                  cpu_core_map = "";
-                  temp_scale = "celsius";
-                  base_10_sizes = false;
-                  show_cpu_freq = true;
-                  clock_format = "%X";
-                  background_update = true;
-                  custom_cpu_name = "";
-                  disks_filter = "";
-                  mem_graphs = true;
-                  mem_below_net = false;
-                  zfs_arc_cached = true;
-                  show_swap = true;
-                  swap_disk = true;
-                  show_disks = true;
-                  only_physical = true;
-                  use_fstab = true;
-                  zfs_hide_datasets = false;
-                  disk_free_priv = false;
-                  show_io_stat = true;
-                  io_mode = false;
-                  io_graph_combined = false;
-                  io_graph_speeds = "";
-                  net_download = 100;
-                  net_upload = 100;
-                  net_auto = true;
-                  net_sync = false;
-                  net_iface = "";
-                  show_battery = true;
-                  selected_battery = "Auto";
-                  show_battery_watts = true;
-                  log_level = "WARNING";
                 };
               };
 
@@ -1542,33 +1391,31 @@
                   };
 
                   mode.main.binding = {
-                    # Frequent operations: Cmd + Opt + hjkl
                     "cmd-opt-h" = "focus left";
                     "cmd-opt-j" = "focus down";
                     "cmd-opt-k" = "focus up";
                     "cmd-opt-l" = "focus right";
                     
-                    # Window movement: Cmd + Opt + Shift + hjkl
+                    # window movement: Cmd + Opt + Shift + hjkl
                     "cmd-opt-shift-h" = "move left";
                     "cmd-opt-shift-j" = "move down";
                     "cmd-opt-shift-k" = "move up";
                     "cmd-opt-shift-l" = "move right";
                     
-                    # Less frequent operations: Cmd + Opt + Shift + right-hand keys
                     
-                    # Window resizing
+                    # window resizing
                     "cmd-opt-shift-u" = "resize smart -50";
                     "cmd-opt-shift-i" = "resize smart +50";
                     
-                    # Window splits
+                    # window splits
                     "cmd-opt-shift-y" = "join-with right";
                     "cmd-opt-shift-o" = "join-with down";
                     
-                    # Layout management
+                    # layout management
                     "cmd-opt-shift-n" = "layout toggle floating tiling";
                     "cmd-opt-shift-m" = "layout tiles";
                     
-                    # Focus management
+                    # focus management
                     "cmd-opt-shift-p" = "focus-back-and-forth";
                   };
                 };
