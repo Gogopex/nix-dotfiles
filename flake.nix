@@ -14,13 +14,9 @@
     # zen-browser.url  = "github:youwen5/zen-browser-flake";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-stable, nix-darwin, home-manager, agenix, ghosttySrc, zjstatus, ... }:
+  outputs = { nixpkgs, nix-darwin, home-manager, agenix, ghosttySrc, zjstatus, ... }:
   let
     system = "aarch64-darwin";
-    pkgs-stable = import nixpkgs-stable {
-      inherit system;
-      config.allowUnfree = true;
-    };
     pkgs   = import nixpkgs { 
       inherit system; 
       config.allowUnfree = true;
@@ -101,7 +97,7 @@
                   window-save-state        = "always";
                   auto-update              = "off";
                   keybind = [
-                    "shift+enter=text:\x1b\r"
+                    "shift+return=text:\x1b\r"
                     "ctrl+space=toggle_fullscreen"
                     "cmd+shift+t=new_tab"
                     "ctrl+h=unbind"   "ctrl+j=unbind"
@@ -145,53 +141,53 @@
                 serialization_interval 60
                 
                 // plugins
-                plugins {
-                    zjstatus location="file:${zjstatus.packages.${system}.default}/bin/zjstatus.wasm" {
-                        // format for notifications and status
-                        format_left  "#[fg=#689d6a,bold]#[bg=#3c3836] {mode}#[bg=#689d6a,fg=#1d2021,bold] {session} "
-                        format_center "#[fg=#ddc7a1,bg=#3c3836]{tabs}"
-                        format_right "#[fg=#ddc7a1,bg=#3c3836] {notifications}#[fg=#689d6a,bg=#3c3836] {datetime}"
-                        format_space "#[bg=#1d2021]"
-                        format_hide_on_overlength true
-                        format_precedence "crl"
+                # plugins {
+                #     zjstatus location="file:${zjstatus.packages.${system}.default}/bin/zjstatus.wasm" {
+                #         // format for notifications and status
+                #         format_left  "#[fg=#689d6a,bold]#[bg=#3c3836] {mode}#[bg=#689d6a,fg=#1d2021,bold] {session} "
+                #         format_center "#[fg=#ddc7a1,bg=#3c3836]{tabs}"
+                #         format_right "#[fg=#ddc7a1,bg=#3c3836] {notifications}#[fg=#689d6a,bg=#3c3836] {datetime}"
+                #         format_space "#[bg=#1d2021]"
+                #         format_hide_on_overlength true
+                #         format_precedence "crl"
                 
-                        // notification settings for Claude Code sessions and commands
-                        notification_format_unread           "#[fg=#d79921,bold]●"
-                        notification_format_no_notifications "#[fg=#504945]○"
+                #         // notification settings for Claude Code sessions and commands
+                #         notification_format_unread           "#[fg=#d79921,bold]●"
+                #         notification_format_no_notifications "#[fg=#504945]○"
                         
-                        // tab formatting with bell alerts
-                        tab_normal               "#[fg=#6C7086] {name} "
-                        tab_normal_fullscreen    "#[fg=#6C7086] {name}[] "
-                        tab_normal_sync          "#[fg=#6C7086] {name}<> "
-                        tab_active               "#[fg=#9ECE6A,bold] {name} "
-                        tab_active_fullscreen    "#[fg=#9ECE6A,bold] {name}[] "
-                        tab_active_sync          "#[fg=#9ECE6A,bold] {name}<> "
+                #         // tab formatting with bell alerts
+                #         tab_normal               "#[fg=#6C7086] {name} "
+                #         tab_normal_fullscreen    "#[fg=#6C7086] {name}[] "
+                #         tab_normal_sync          "#[fg=#6C7086] {name}<> "
+                #         tab_active               "#[fg=#9ECE6A,bold] {name} "
+                #         tab_active_fullscreen    "#[fg=#9ECE6A,bold] {name}[] "
+                #         tab_active_sync          "#[fg=#9ECE6A,bold] {name}<> "
                         
-                        tab_bell                 "#[fg=#F7768E,bold]!{name} "
-                        tab_bell_fullscreen      "#[fg=#F7768E,bold]!{name}[] "
-                        tab_bell_sync            "#[fg=#F7768E,bold]!{name}<> "
+                #         tab_bell                 "#[fg=#F7768E,bold]!{name} "
+                #         tab_bell_fullscreen      "#[fg=#F7768E,bold]!{name}[] "
+                #         tab_bell_sync            "#[fg=#F7768E,bold]!{name}<> "
                 
-                        // mode indicators
-                        mode_normal        "#[fg=#689d6a,bold] NORMAL"
-                        mode_locked        "#[fg=#d79921,bold] LOCKED"
-                        mode_resize        "#[fg=#d3869b,bold] RESIZE"
-                        mode_pane          "#[fg=#458588,bold] PANE"
-                        mode_tab           "#[fg=#b16286,bold] TAB"
-                        mode_scroll        "#[fg=#689d6a,bold] SCROLL"
-                        mode_enter_search  "#[fg=#d79921,bold] SEARCH"
-                        mode_search        "#[fg=#d79921,bold] SEARCH"
-                        mode_rename_tab    "#[fg=#b16286,bold] RENAME"
-                        mode_rename_pane   "#[fg=#458588,bold] RENAME"
-                        mode_session       "#[fg=#d3869b,bold] SESSION"
-                        mode_move          "#[fg=#d79921,bold] MOVE"
-                        mode_prompt        "#[fg=#689d6a,bold] PROMPT"
-                        mode_tmux          "#[fg=#98971a,bold] TMUX"
+                #         // mode indicators
+                #         mode_normal        "#[fg=#689d6a,bold] NORMAL"
+                #         mode_locked        "#[fg=#d79921,bold] LOCKED"
+                #         mode_resize        "#[fg=#d3869b,bold] RESIZE"
+                #         mode_pane          "#[fg=#458588,bold] PANE"
+                #         mode_tab           "#[fg=#b16286,bold] TAB"
+                #         mode_scroll        "#[fg=#689d6a,bold] SCROLL"
+                #         mode_enter_search  "#[fg=#d79921,bold] SEARCH"
+                #         mode_search        "#[fg=#d79921,bold] SEARCH"
+                #         mode_rename_tab    "#[fg=#b16286,bold] RENAME"
+                #         mode_rename_pane   "#[fg=#458588,bold] RENAME"
+                #         mode_session       "#[fg=#d3869b,bold] SESSION"
+                #         mode_move          "#[fg=#d79921,bold] MOVE"
+                #         mode_prompt        "#[fg=#689d6a,bold] PROMPT"
+                #         mode_tmux          "#[fg=#98971a,bold] TMUX"
                 
-                        // datetime
-                        datetime        "#[fg=#6C7086,bold] {format} "
-                        datetime_format "%A, %d %b %Y %H:%M"
-                        datetime_timezone "America/New_York"
-                    }
+                #         // datetime
+                #         datetime        "#[fg=#6C7086,bold] {format} "
+                #         datetime_format "%A, %d %b %Y %H:%M"
+                #         datetime_timezone "America/New_York"
+                #     }
                 }
                 
                 ui {
@@ -231,6 +227,10 @@
                         bind "Super Shift k" { MovePane "Up"; }
                         bind "Super Shift l" { MovePane "Right"; }
                         
+                        // stacked panes management (swap layouts)
+                        bind "Super b" { NextSwapLayout; }
+                        bind "Super Shift b" { PreviousSwapLayout; }
+                        
                         // fullscreen and frames
                         bind "Super f" { ToggleFocusFullscreen; }
                         bind "Super z" { TogglePaneFrames; }
@@ -245,38 +245,38 @@
                         
                         // @TODO: this still opens a tab, maybe overlaps with smth
                         // direct session switching
-                        bind "Super Shift 1" {
-                            NewPane {
-                                direction "Down"
-                                command "fish"
-                                args "-c" "zmain"
-                                floating true
-                                close_on_exit true
-                            }
-                        }
-                        bind "Super Shift 2" {
-                            NewPane {
-                                direction "Down"
-                                command "fish"
-                                args "-c" "zwork"
-                                floating true
-                                close_on_exit true
-                            }
-                        }
+                        // bind "Super Shift 1" {
+                        //     NewPane {
+                        //         direction "Down"
+                        //         command "fish"
+                        //         args "-c" "zmain"
+                        //         floating true
+                        //         close_on_exit true
+                        //     }
+                        // }
+                        // bind "Super Shift 2" {
+                        //     NewPane {
+                        //         direction "Down"
+                        //         command "fish"
+                        //         args "-c" "zwork"
+                        //         floating true
+                        //         close_on_exit true
+                        //     }
+                        // }
                         
                         // @TODO: this still opens a tab, maybe overlaps with smth
                         // tab fuzzy finder
-                        bind "Super /" { 
-                            NewPane {
-                                direction "Down";
-                                command "fish";
-                                args "-c" "zellij_tab_switcher";
-                                floating true;
-                                close_on_exit true;
-                            }
-                        }
+                        // bind "Super /" { 
+                        //     NewPane {
+                        //         direction "Down";
+                        //         command "fish";
+                        //         args "-c" "zellij_tab_switcher";
+                        //         floating true;
+                        //         close_on_exit true;
+                        //     }
+                        // }
                         
-                        // qssential shortcuts
+                        // essential shortcuts
                         bind "Ctrl q" { Quit; }
                         bind "Ctrl g" { SwitchToMode "Locked"; }
                         bind "Ctrl Shift e" { EditScrollback; }
@@ -302,16 +302,6 @@
                         bind "/" { SwitchToMode "EnterSearch"; }
                         bind "n" { Search "down"; }
                         bind "N" { Search "up"; }
-                    }
-                }
-                
-                // layouts
-                layout {
-                    default_tab_template {
-                        pane size=1 borderless=true {
-                            plugin location="file:${zjstatus.packages.${system}.default}/bin/zjstatus.wasm"
-                        }
-                        children
                     }
                 }
               '';
@@ -1348,7 +1338,7 @@
                     side-by-side = false;
                     syntax-theme = "gruvbox-dark";
                   };
-                  merge.conflictStyle = "diff3";
+                  merge.conflictStyle = "zdiff3";
                   diff.colorMoved = "default";
                 };
                 aliases = {

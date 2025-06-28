@@ -69,6 +69,10 @@ keybind = cmd+shift+t=new_tab
 - `Cmd + f`: Toggle pane fullscreen (zoom / unzoom)
 - `Cmd + z`: Toggle pane frames (stack view)
 
+#### Stacked Panes Management
+- `Cmd + b`: Next swap layout (cycle through layouts including stacked)
+- `Cmd + Shift + b`: Previous swap layout (reverse cycle)
+
 #### Tab Movement
 - `Opt + i`: Move tab left
 - `Opt + o`: Move tab right
