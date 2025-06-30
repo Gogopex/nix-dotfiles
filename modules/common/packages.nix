@@ -53,6 +53,7 @@ in merge {
         # Git tools
         git-recent
         gh
+        radicle-node
         
         # Other tools
         wiki-tui
