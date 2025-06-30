@@ -8,5 +8,8 @@
 !flake.lock
 !cfg/**/*
 !modules/**/*
+!lib/**/*
+!hosts/**/*
+!scripts/**/*
 !secrets/
 !secrets.nix
