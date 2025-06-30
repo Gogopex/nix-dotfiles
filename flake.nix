@@ -88,8 +88,11 @@
                 package = null;
                 settings = {
                   theme                    = "GruvboxDark";
-                  font-family              = "TX-02-Regular";
-                  window-title-font-family = "TX-02";
+                  font-family              = "Berkeley Mono";
+                  font-family-bold         = "Berkeley Mono Bold";
+                  font-family-italic       = "Berkeley Mono Oblique";
+                  font-family-bold-italic  = "Berkeley Mono Bold Oblique";
+                  window-title-font-family = "Berkeley Mono";
                   font-size                = 16;
                   shell-integration        = "fish";
                   confirm-close-surface    = false;
@@ -97,22 +100,28 @@
                   window-save-state        = "always";
                   auto-update              = "off";
                   keybind = [
-                    "shift+return=text:\x1b\r"
                     "ctrl+space=toggle_fullscreen"
-                    "cmd+shift+t=new_tab"
-                    "ctrl+h=unbind"   "ctrl+j=unbind"
-                    "ctrl+k=unbind"   "ctrl+l=unbind"
-                    "cmd+h=unbind"    "cmd+l=unbind"
-                    "cmd+t=unbind"    "cmd+w=unbind"
-                    "cmd+d=unbind"    "cmd+shift+d=unbind"
-                    "cmd+shift+w=unbind"
-                    "cmd+ctrl+h=unbind"
-                    "cmd+ctrl+j=unbind"
-                    "cmd+ctrl+k=unbind"
-                    "cmd+ctrl+l=unbind"
-                    "cmd+ctrl+shift+h=unbind"
-                    "cmd+ctrl+shift+l=unbind"
-                    "global:shift+opt+t=toggle_quick_terminal"
+                    "ctrl+h=unbind"
+                    "ctrl+j=unbind"
+                    "ctrl+k=unbind"
+                    "ctrl+l=unbind"
+                    "super+h=unbind"
+                    "super+l=unbind"
+                    "super+t=unbind"
+                    "super+w=unbind"
+                    "super+d=unbind"
+                    "super+shift+d=unbind"
+                    "super+shift+w=unbind"
+                    "super+ctrl+h=unbind"
+                    "super+ctrl+j=unbind"
+                    "super+ctrl+k=unbind"
+                    "super+ctrl+l=unbind"
+                    "super+ctrl+shift+h=unbind"
+                    "super+ctrl+shift+l=unbind"
+                    "super+shift+t=new_tab"
+                    "global:shift+alt+t=toggle_quick_terminal"
+                    # Text binding with escape sequences not working in Nix
+                    # "shift+return=text:\x1b\r"
                   ];
                 };
               };
@@ -141,53 +150,53 @@
                 serialization_interval 60
                 
                 // plugins
-                # plugins {
-                #     zjstatus location="file:${zjstatus.packages.${system}.default}/bin/zjstatus.wasm" {
-                #         // format for notifications and status
-                #         format_left  "#[fg=#689d6a,bold]#[bg=#3c3836] {mode}#[bg=#689d6a,fg=#1d2021,bold] {session} "
-                #         format_center "#[fg=#ddc7a1,bg=#3c3836]{tabs}"
-                #         format_right "#[fg=#ddc7a1,bg=#3c3836] {notifications}#[fg=#689d6a,bg=#3c3836] {datetime}"
-                #         format_space "#[bg=#1d2021]"
-                #         format_hide_on_overlength true
-                #         format_precedence "crl"
+                plugins {
+                    zjstatus location="file:${zjstatus.packages.${system}.default}/bin/zjstatus.wasm" {
+                        // format for notifications and status
+                        format_left  "#[fg=#689d6a,bold]#[bg=#3c3836] {mode}#[bg=#689d6a,fg=#1d2021,bold] {session} "
+                        format_center "#[fg=#ddc7a1,bg=#3c3836]{tabs}"
+                        format_right "#[fg=#ddc7a1,bg=#3c3836] {notifications}#[fg=#689d6a,bg=#3c3836] {datetime}"
+                        format_space "#[bg=#1d2021]"
+                        format_hide_on_overlength true
+                        format_precedence "crl"
                 
-                #         // notification settings for Claude Code sessions and commands
-                #         notification_format_unread           "#[fg=#d79921,bold]●"
-                #         notification_format_no_notifications "#[fg=#504945]○"
+                        // notification settings for Claude Code sessions and commands
+                        notification_format_unread           "#[fg=#d79921,bold]●"
+                        notification_format_no_notifications "#[fg=#504945]○"
                         
-                #         // tab formatting with bell alerts
-                #         tab_normal               "#[fg=#6C7086] {name} "
-                #         tab_normal_fullscreen    "#[fg=#6C7086] {name}[] "
-                #         tab_normal_sync          "#[fg=#6C7086] {name}<> "
-                #         tab_active               "#[fg=#9ECE6A,bold] {name} "
-                #         tab_active_fullscreen    "#[fg=#9ECE6A,bold] {name}[] "
-                #         tab_active_sync          "#[fg=#9ECE6A,bold] {name}<> "
+                        // tab formatting with bell alerts
+                        tab_normal               "#[fg=#6C7086] {name} "
+                        tab_normal_fullscreen    "#[fg=#6C7086] {name}[] "
+                        tab_normal_sync          "#[fg=#6C7086] {name}<> "
+                        tab_active               "#[fg=#9ECE6A,bold] {name} "
+                        tab_active_fullscreen    "#[fg=#9ECE6A,bold] {name}[] "
+                        tab_active_sync          "#[fg=#9ECE6A,bold] {name}<> "
                         
-                #         tab_bell                 "#[fg=#F7768E,bold]!{name} "
-                #         tab_bell_fullscreen      "#[fg=#F7768E,bold]!{name}[] "
-                #         tab_bell_sync            "#[fg=#F7768E,bold]!{name}<> "
+                        tab_bell                 "#[fg=#F7768E,bold]!{name} "
+                        tab_bell_fullscreen      "#[fg=#F7768E,bold]!{name}[] "
+                        tab_bell_sync            "#[fg=#F7768E,bold]!{name}<> "
                 
-                #         // mode indicators
-                #         mode_normal        "#[fg=#689d6a,bold] NORMAL"
-                #         mode_locked        "#[fg=#d79921,bold] LOCKED"
-                #         mode_resize        "#[fg=#d3869b,bold] RESIZE"
-                #         mode_pane          "#[fg=#458588,bold] PANE"
-                #         mode_tab           "#[fg=#b16286,bold] TAB"
-                #         mode_scroll        "#[fg=#689d6a,bold] SCROLL"
-                #         mode_enter_search  "#[fg=#d79921,bold] SEARCH"
-                #         mode_search        "#[fg=#d79921,bold] SEARCH"
-                #         mode_rename_tab    "#[fg=#b16286,bold] RENAME"
-                #         mode_rename_pane   "#[fg=#458588,bold] RENAME"
-                #         mode_session       "#[fg=#d3869b,bold] SESSION"
-                #         mode_move          "#[fg=#d79921,bold] MOVE"
-                #         mode_prompt        "#[fg=#689d6a,bold] PROMPT"
-                #         mode_tmux          "#[fg=#98971a,bold] TMUX"
+                        // mode indicators
+                        mode_normal        "#[fg=#689d6a,bold] NORMAL"
+                        mode_locked        "#[fg=#d79921,bold] LOCKED"
+                        mode_resize        "#[fg=#d3869b,bold] RESIZE"
+                        mode_pane          "#[fg=#458588,bold] PANE"
+                        mode_tab           "#[fg=#b16286,bold] TAB"
+                        mode_scroll        "#[fg=#689d6a,bold] SCROLL"
+                        mode_enter_search  "#[fg=#d79921,bold] SEARCH"
+                        mode_search        "#[fg=#d79921,bold] SEARCH"
+                        mode_rename_tab    "#[fg=#b16286,bold] RENAME"
+                        mode_rename_pane   "#[fg=#458588,bold] RENAME"
+                        mode_session       "#[fg=#d3869b,bold] SESSION"
+                        mode_move          "#[fg=#d79921,bold] MOVE"
+                        mode_prompt        "#[fg=#689d6a,bold] PROMPT"
+                        mode_tmux          "#[fg=#98971a,bold] TMUX"
                 
-                #         // datetime
-                #         datetime        "#[fg=#6C7086,bold] {format} "
-                #         datetime_format "%A, %d %b %Y %H:%M"
-                #         datetime_timezone "America/New_York"
-                #     }
+                        // datetime
+                        datetime        "#[fg=#6C7086,bold] {format} "
+                        datetime_format "%A, %d %b %Y %H:%M"
+                        datetime_timezone "America/New_York"
+                    }
                 }
                 
                 ui {
@@ -276,6 +285,9 @@
                         //     }
                         // }
                         
+                        // disable problematic default bindings
+                        // bind "Alt f" { Noop; } - commented out, no Noop action in Zellij
+                        
                         // essential shortcuts
                         bind "Ctrl q" { Quit; }
                         bind "Ctrl g" { SwitchToMode "Locked"; }
@@ -331,6 +343,7 @@
                 settings = {
                   theme = "gruvbox";
                   editor = {
+                    bufferline = "multiple";
                     line-number = "absolute";              
                     auto-completion = true; # disable autocomplete by default
                     completion-trigger-len = 0; # don't auto-trigger
@@ -712,7 +725,7 @@
                   mutagen
                   obsidian uutils-coreutils-noprefix
                   dust hyperfine just tldr glow lazygit procs git-recent
-                  tailscale gh
+                  tailscale gh radicle-node
                   # Lean toolchain
                   elan
                   # Zed editor
@@ -1381,32 +1394,35 @@
                   };
 
                   mode.main.binding = {
-                    "cmd-opt-h" = "focus left";
-                    "cmd-opt-j" = "focus down";
-                    "cmd-opt-k" = "focus up";
-                    "cmd-opt-l" = "focus right";
+                    # Disable default alt+letter workspace switching
+                    "alt-f" = "nop";
                     
-                    # window movement: Cmd + Opt + Shift + hjkl
-                    "cmd-opt-shift-h" = "move left";
-                    "cmd-opt-shift-j" = "move down";
-                    "cmd-opt-shift-k" = "move up";
-                    "cmd-opt-shift-l" = "move right";
+                    "cmd-alt-h" = "focus left";
+                    "cmd-alt-j" = "focus down";
+                    "cmd-alt-k" = "focus up";
+                    "cmd-alt-l" = "focus right";
+                    
+                    # window movement: Cmd + Alt + Shift + hjkl
+                    "cmd-alt-shift-h" = "move left";
+                    "cmd-alt-shift-j" = "move down";
+                    "cmd-alt-shift-k" = "move up";
+                    "cmd-alt-shift-l" = "move right";
                     
                     
                     # window resizing
-                    "cmd-opt-shift-u" = "resize smart -50";
-                    "cmd-opt-shift-i" = "resize smart +50";
+                    "cmd-alt-shift-u" = "resize smart -50";
+                    "cmd-alt-shift-i" = "resize smart +50";
                     
                     # window splits
-                    "cmd-opt-shift-y" = "join-with right";
-                    "cmd-opt-shift-o" = "join-with down";
+                    "cmd-alt-shift-y" = "join-with right";
+                    "cmd-alt-shift-o" = "join-with down";
                     
                     # layout management
-                    "cmd-opt-shift-n" = "layout toggle floating tiling";
-                    "cmd-opt-shift-m" = "layout tiles";
+                    "cmd-alt-shift-n" = "layout floating tiling";
+                    "cmd-alt-shift-m" = "layout tiles";
                     
                     # focus management
-                    "cmd-opt-shift-p" = "focus-back-and-forth";
+                    "cmd-alt-shift-p" = "focus-back-and-forth";
                   };
                 };
               };
