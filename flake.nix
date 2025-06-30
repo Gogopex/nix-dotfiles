@@ -1,6 +1,10 @@
 {
   description = "macOS dev environment";
 
+  nixConfig = {
+    experimental-features = ["flakes" "nix-command" "pipe-operators"];
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.11";
@@ -27,6 +31,7 @@
   };
 
   outputs = inputs @ { nixpkgs, nix-darwin, home-manager, ... }: let
+    inherit (builtins) readDir;
     inherit (nixpkgs.lib) attrsToList const groupBy listToAttrs mapAttrs nameValuePair;
     
     # Extend lib with our custom functions and nix-darwin's lib
@@ -34,7 +39,7 @@
     lib = lib'.extend <| import ./lib inputs;
     
     # Read all host configurations
-    hostsByType = lib.filesystem.readDir ./hosts
+    hostsByType = readDir ./hosts
       |> mapAttrs (name: const <| import ./hosts/${name} lib)
       |> attrsToList
       |> groupBy ({ name, value }:
