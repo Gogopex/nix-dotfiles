@@ -22,6 +22,7 @@ in merge {
         
         zig
         zls
+        odin
         go
         rustc
         cargo
@@ -33,6 +34,22 @@ in merge {
         python311
         poetry
         uv
+        
+        # Haskell toolchain
+        ghc
+        cabal-install
+        stack
+        haskell-language-server
+        
+        # Java toolchain
+        maven
+        openjdk
+        
+        # Lean toolchain
+        elan
+        
+        # Node version management
+        volta
         
         nixfmt-rfc-style
         nil
@@ -75,6 +92,7 @@ in merge {
     } // optionalAttrs config.isDesktop {
       inherit (pkgs)
         obsidian
+        zotero
         ;
     });
     
