@@ -1,11 +1,12 @@
 *
 
 !.gitignore
+
 !README.md
 !KEYBINDS.md
 !flake.nix
 !flake.lock
 !cfg/**/*
-!modules/
+!modules/**/*
 !secrets/
 !secrets.nix
