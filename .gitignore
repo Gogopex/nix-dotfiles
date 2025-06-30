@@ -1,15 +1,26 @@
+# Ignore everything by default
 *
 
 !.gitignore
 
 !README.md
 !KEYBINDS.md
+
 !flake.nix
 !flake.lock
-!cfg/**/*
-!modules/**/*
-!lib/**/*
-!hosts/**/*
-!scripts/**/*
-!secrets/
 !secrets.nix
+
+!cfg/
+!cfg/**
+!modules/
+!modules/**
+!lib/
+!lib/**
+!hosts/
+!hosts/**
+!scripts/
+!scripts/**
+!secrets/
+!secrets/**
+
+!rebuild.sh
