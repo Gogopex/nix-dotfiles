@@ -11,11 +11,10 @@ in {
 
     isDesktop = mkConst <| config.type == "desktop";
     isServer  = mkConst <| config.type == "server";
-    
-    system.primaryUser = mkOption {
-      type = types.str;
-      default = "ludwig";
-      description = "Primary user of the system";
-    };
+  };
+  
+  config = {
+    # Allow unfree packages
+    nixpkgs.config.allowUnfree = true;
   };
 }
