@@ -91,6 +91,7 @@ in merge {
       agenix = inputs.agenix.packages.${pkgs.system}.default;
     } // optionalAttrs config.isDesktop {
       inherit (pkgs)
+        aerospace
         obsidian
         zotero
         ;
