@@ -1,2 +1,11 @@
-.DS_Store
-cfg/.DS_Store
+*
+
+!.gitignore
+!README.md
+!KEYBINDS.md
+!flake.nix
+!flake.lock
+!cfg/**/*
+!modules/
+!secrets/
+!secrets.nix
