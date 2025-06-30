@@ -1,5 +1,5 @@
 {
-  description = "macOS dev environment";
+  description = "dev env";
 
   nixConfig = {
     extra-substituters = [
@@ -57,11 +57,9 @@
     inherit (builtins) readDir;
     inherit (nixpkgs.lib) attrsToList const groupBy listToAttrs mapAttrs nameValuePair;
     
-    # Extend lib with our custom functions and nix-darwin's lib
     lib' = nixpkgs.lib.extend (_: _: nix-darwin.lib);
     lib = lib'.extend <| import ./lib inputs;
     
-    # Read all host configurations
     hostsByType = readDir ./hosts
       |> mapAttrs (name: const <| import ./hosts/${name} lib)
       |> attrsToList
@@ -72,7 +70,6 @@
           "darwinConfigurations")
       |> mapAttrs (const listToAttrs);
     
-    # Extract just the configs for convenience
     hostConfigs = (hostsByType.darwinConfigurations or {})
       |> attrsToList
       |> map ({ name, value }: nameValuePair name value.config)

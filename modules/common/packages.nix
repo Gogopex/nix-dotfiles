@@ -17,11 +17,9 @@ in merge {
         wget
         direnv
         
-        # Terminal multiplexers and tools
         zellij
         delta
         
-        # Programming languages and tools
         zig
         zls
         go
@@ -30,13 +28,16 @@ in merge {
         rustfmt
         rust-analyzer
         nodejs
+        bun
+        deno
+        python311
+        poetry
+        uv
         
-        # Nix tools
         nixfmt-rfc-style
         nil
         nh
         
-        # Development tools
         tokei
         mutagen
         hyperfine
@@ -45,31 +46,38 @@ in merge {
         glow
         lazygit
         procs
+        jq
+        yq-go
+        tree
+        bottom
         
-        # System tools
         dust
         uutils-coreutils-noprefix
         
-        # Git tools
+        ffmpeg
+        imagemagick
+        pandoc
+        graphviz
+        
+        postgresql
+        redis
+        sqlite
+        
         git-recent
         gh
         radicle-node
         
-        # Other tools
         wiki-tui
         tailscale
         ;
       
-      # Add agenix from inputs
       agenix = inputs.agenix.packages.${pkgs.system}.default;
     } // optionalAttrs config.isDesktop {
       inherit (pkgs)
-        # Desktop-only packages
         obsidian
         ;
     });
     
-    # Enable some programs that need configuration
     programs.zoxide.enable = true;
     programs.btop = {
       enable = true;

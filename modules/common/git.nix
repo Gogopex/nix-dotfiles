@@ -5,7 +5,6 @@ in merge {
     homeConfig = homeArgs.config;
   in {
     programs.git = enabled {
-      # Reference user info from jujutsu configuration
       userName  = homeConfig.programs.jujutsu.settings.user.name;
       userEmail = homeConfig.programs.jujutsu.settings.user.email;
       
