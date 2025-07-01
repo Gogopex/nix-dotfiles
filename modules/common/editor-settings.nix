@@ -54,6 +54,19 @@ in {
       "twig" = "html";
     };
     "files.exclude" = {
+      "**/.DS_Store" = true;
+      "**/.git" = true;
+      "**/.hg" = true;
+      "**/.svn" = true;
+      "**/*.js" = {
+        "when" = "$(basename).ts";
+      };
+      "**/**.js" = {
+        "when" = "$(basename).tsx";
+      };
+      "**/app/cache/**" = true;
+      "**/CVS" = true;
+      "app/cache/**" = true;
       "**/node_modules/**" = true;
       "**/.venv/**" = true;
     };
@@ -66,6 +79,12 @@ in {
       "*" = false;
       "plaintext" = true;
       "markdown" = false;
+      "scminput" = false;
+      "yaml" = false;
+      "rust" = true;
+      "php" = true;
+      "python" = true;
+      "uiua" = false;
     };
     "makefile.configureOnOpen" = true;
     "editor.columnSelection" = true;
@@ -84,5 +103,34 @@ in {
     };
     "workbench.startupEditor" = "none";
     "amp.url" = "https://ampcode.com/";
+    
+    # Missing configurations from flake.nix
+    "emmet.triggerExpansionOnTab" = true;
+    "emmet.syntaxProfiles" = {
+      "html" = {
+        "filters" = "bem";
+      };
+    };
+    "search.exclude" = {
+      "**/app/cache" = true;
+      "**/app/logs" = true;
+      "**/node_modules/**" = true;
+      "**/var/cache" = true;
+      "**/var/logs" = true;
+      "**/web" = true;
+      "app/cache/*.xml" = true;
+      "app/cache/**" = true;
+    };
+    "files.watcherExclude" = {
+      "**/app/cache/**" = true;
+      "**/var/cache/**" = true;
+      "**/var/logs/**" = true;
+      "**/node_modules/**" = true;
+      "**/.venv/**" = true;
+    };
+    "[python]" = {
+      "editor.defaultFormatter" = "ms-python.python";
+      "editor.formatOnType" = true;
+    };
   };
 }

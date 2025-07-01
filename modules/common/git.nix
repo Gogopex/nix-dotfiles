@@ -30,6 +30,8 @@ in merge {
       
       aliases = {
         st = "status";
+        co = "checkout";
+        br = "branch";
         last = "log -1 HEAD";
         
         l = "log --oneline --graph --decorate";
@@ -37,6 +39,10 @@ in merge {
         
         d = "diff";
         dc = "diff --cached";
+        
+        a = "add";
+        c = "commit";
+        ca = "commit -a";
         
         unstage = "reset HEAD --";
         

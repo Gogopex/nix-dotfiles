@@ -1,20 +1,25 @@
-{ config, lib, pkgs, ... }:
-
-{
+{ config, lib, pkgs, ... }: let
+  inherit (lib) enabled merge;
+in merge {
   home-manager.sharedModules = [{
-    programs.yazi = {
-      enable = true;
+    programs.yazi = enabled {
       enableFishIntegration = true;
       
       settings = {
-        show_hidden = true;
-        preview = true;
+        log = {
+          enabled = false;
+        };
+        manager = {
+          show_hidden = true;
+          sort_by = "mtime";
+        };
       };
       
       keymap = {
         normal = {
           "." = "shell 'printf \"%s\" \"$0\" | pbcopy' --confirm";
           "ctrl-c" = "quit";
+          "C-Space" = "toggle_preview";
         };
       };
     };
