@@ -82,6 +82,33 @@ in merge {
         zoxide init fish | source
         source ~/.orbstack/shell/init2.fish 2>/dev/null || true
         
+        # Override hydro's fish_mode_prompt with our custom one
+        functions -e fish_mode_prompt 2>/dev/null
+        function fish_mode_prompt --description 'Display the current vi mode'
+          switch $fish_bind_mode
+            case default
+              set_color -o brgreen
+              echo -n "◆ "
+              set_color normal
+            case insert
+              set_color -o bryellow
+              echo -n "◇ "
+              set_color normal
+            case replace_one
+              set_color -o brred
+              echo -n "◈ "
+              set_color normal
+            case replace
+              set_color -o brred
+              echo -n "▓ "
+              set_color normal
+            case visual
+              set_color -o brmagenta
+              echo -n "◉ "
+              set_color normal
+          end
+        end
+        
         if test "$TERM" = "xterm-ghostty"; and test -z "$ZELLIJ"; and test -z "$NO_ZELLIJ"; and test -z "$GHOSTTY_QUICK_TERMINAL"
           if command -v zellij >/dev/null 2>&1
             zellij attach circular-crab
