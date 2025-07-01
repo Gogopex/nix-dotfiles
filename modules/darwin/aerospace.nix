@@ -4,7 +4,8 @@ in {
   home-manager.sharedModules = [{
     programs.aerospace = mkIf pkgs.stdenv.isDarwin {
       enable = true;
-      settings = builtins.fromTOML (builtins.readFile ../../cfg/aerospace/aerospace.toml);
+      launchd.enable = true;  # Use built-in launchd support
+      userSettings = builtins.fromTOML (builtins.readFile ../../cfg/aerospace/aerospace.toml);
     };
   }];
 }

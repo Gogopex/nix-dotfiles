@@ -94,6 +94,7 @@ in merge {
         aerospace
         obsidian
         zotero
+        zed-editor
         ;
     });
     

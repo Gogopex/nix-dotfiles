@@ -151,7 +151,7 @@ if command -v nh &> /dev/null && [[ "$USE_NH" == "true" ]]; then
         NIX_ARGS+=("${EXTRA_ARGS[@]}")
     fi
     
-    export FLAKE="$SCRIPT_DIR"
+    export NH_FLAKE="$SCRIPT_DIR"
     if nh "${NH_ARGS[@]}" -- "${NIX_ARGS[@]}"; then
         print_success "Darwin configuration rebuilt successfully with nh!"
     else
