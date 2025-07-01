@@ -340,7 +340,6 @@ in merge {
       
       plugins = [
         { name = "grc";     src = pkgs.fishPlugins.grc; }
-        { name = "z";       src = pkgs.fishPlugins.z; }
         { name = "hydro";   src = pkgs.fishPlugins.hydro; }
         { name = "gruvbox"; src = pkgs.fishPlugins.gruvbox; }
       ];

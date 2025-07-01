@@ -4,7 +4,6 @@ in merge {
   home-manager.sharedModules = [{
     home.packages = attrValues ({
       inherit (pkgs)
-        # Core utilities
         bandwhich
         zoxide
         fzf
@@ -35,20 +34,16 @@ in merge {
         poetry
         uv
         
-        # Haskell toolchain
         ghc
         cabal-install
         stack
         haskell-language-server
         
-        # Java toolchain
         maven
         openjdk
         
-        # Lean toolchain
         elan
         
-        # Node version management
         volta
         
         nixfmt-rfc-style
