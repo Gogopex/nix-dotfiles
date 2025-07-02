@@ -1,13 +1,11 @@
 { pkgs, ... }: {
   nixpkgs.hostPlatform = "aarch64-darwin";
   
-  # Nix is managed externally
   nix.enable = false;
   
-  # Basic system packages
-  environment.systemPackages = with pkgs; [ git ];
-  environment.pathsToLink = [ "/share/zsh" ];
+  environment.systemPackages = with pkgs; [ git fish grc ];
+  environment.pathsToLink = [ "/share/zsh" "/share/fish" ];
   
-  # Shell configuration
   programs.fish.enable = true;
+  environment.shells = [ pkgs.fish ];
 }

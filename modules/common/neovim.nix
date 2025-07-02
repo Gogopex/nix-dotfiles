@@ -33,14 +33,10 @@
         signcolumn = "yes";
         updatetime = 50;
         colorcolumn = "80";
+        background = "dark";
       };
       
-      colorschemes.gruvbox = {
-        enable = true;
-        settings = {
-          background = "dark";
-        };
-      };
+      colorschemes.gruvbox.enable = true;
       
       plugins = {
         comment.enable = true;
@@ -82,13 +78,9 @@
         };
         
         # Debug Adapter Protocol
-        dap = {
-          enable = true;
-          extensions = {
-            dap-ui.enable = true;
-            dap-virtual-text.enable = true;
-          };
-        };
+        dap.enable = true;
+        dap-ui.enable = true;
+        dap-virtual-text.enable = true;
         
         # Utility plugins
         lastplace.enable = true;
@@ -118,10 +110,71 @@
         nvim-surround.enable = true;
         
         # Rust crate version hints
-        crates-nvim.enable = true;
+        crates.enable = true;
+        
+        # Key bindings helper
+        which-key = {
+          enable = true;
+          settings = {
+            delay = 0;  # Instant popup
+            icons = {
+              mappings = false;
+            };
+          };
+        };
+        
+        # Session management
+        persistence = {
+          enable = true;
+          settings = {
+            dir = "~/.local/share/nvim/sessions/";
+          };
+        };
+        
+        # Fuzzy finder
+        fzf-lua = {
+          enable = true;
+          keymaps = {
+            "<leader>ff" = "files";
+            "<leader>fg" = "live_grep";
+            "<leader>fb" = "buffers";
+            "<leader>fh" = "help_tags";
+            "<leader>fo" = "oldfiles";
+            "<leader>fc" = "grep_cword";
+            "<leader>fd" = "diagnostics_document";
+          };
+        };
+        
+        # LSP configuration
+        lsp = {
+          enable = true;
+          servers = {
+            # Nix
+            nil_ls.enable = true;
+            
+            # Rust
+            rust_analyzer = {
+              enable = true;
+              installCargo = false;
+              installRustc = false;
+            };
+            
+            # TypeScript/JavaScript
+            ts_ls.enable = true;
+            
+            # Python
+            pyright.enable = true;
+            
+            # Go
+            gopls.enable = true;
+            
+            # Lua
+            lua_ls.enable = true;
+          };
+        };
         
         # GitHub Copilot
-        # Temporarily disabled due to unfree license issue
+        # Temporarily disabled - need to handle unfree license properly
         # copilot-vim = {
         #   enable = true;
         #   settings = {
@@ -180,6 +233,77 @@
           action = "<cmd>Oil<CR>";
           options.desc = "Open parent directory";
         }
+        # Navigation shortcuts
+        {
+          mode = ["n" "v"];
+          key = "gh";
+          action = "0";
+          options.desc = "Go to start of line";
+        }
+        {
+          mode = ["n" "v"];
+          key = "gl";
+          action = "$";
+          options.desc = "Go to end of line";
+        }
+        # Clipboard operations
+        {
+          mode = "x";
+          key = "<leader>p";
+          action = "\"_dP";
+          options.desc = "Paste without yanking";
+        }
+        {
+          mode = ["n" "v"];
+          key = "<leader>d";
+          action = "\"_d";
+          options.desc = "Delete without yanking";
+        }
+        # Line manipulation
+        {
+          mode = "v";
+          key = "J";
+          action = ":m '>+1<CR>gv=gv";
+          options.desc = "Move selection down";
+        }
+        {
+          mode = "v";
+          key = "K";
+          action = ":m '<-2<CR>gv=gv";
+          options.desc = "Move selection up";
+        }
+        # Indentation
+        {
+          mode = "v";
+          key = "<";
+          action = "<gv";
+          options.desc = "Indent left and keep selection";
+        }
+        {
+          mode = "v";
+          key = ">";
+          action = ">gv";
+          options.desc = "Indent right and keep selection";
+        }
+        # Persistence keymaps
+        {
+          mode = "n";
+          key = "<leader>ps";
+          action = "<cmd>lua require('persistence').save()<CR>";
+          options.desc = "Save session";
+        }
+        {
+          mode = "n";
+          key = "<leader>pr";
+          action = "<cmd>lua require('persistence').load()<CR>";
+          options.desc = "Restore session";
+        }
+        {
+          mode = "n";
+          key = "<leader>pl";
+          action = "<cmd>lua require('persistence').load({ last = true })<CR>";
+          options.desc = "Restore last session";
+        }
       ];
       
       # Extra plugins not directly supported by NixVim
@@ -196,8 +320,13 @@
         # File path in statusline
         fileline-nvim
         
-        # Code outline
-        # Temporarily disabled - norg provider issue
+        # Yank history management
+        yanky-nvim
+        
+        # Startup time profiling
+        vim-startuptime
+        
+        # Code outline - temporarily disabled due to norg provider issue
         # (pkgs.vimUtils.buildVimPlugin {
         #   name = "outline.nvim";
         #   src = pkgs.fetchFromGitHub {
@@ -231,12 +360,40 @@
         -- Multicursor
         require('multicursor').setup()
         
-        -- Outline
-        -- Temporarily disabled - norg provider issue
+        -- Yanky (yank history)
+        require('yanky').setup({
+          ring = {
+            history_length = 100,
+            storage = "shada",
+            sync_with_numbered_registers = true,
+          },
+          picker = {
+            select = {
+              action = nil, -- default action
+            },
+          },
+          system_clipboard = {
+            sync_with_ring = true,
+          },
+        })
+        
+        -- Remap for yanky
+        vim.keymap.set({"n","x"}, "p", "<Plug>(YankyPutAfter)")
+        vim.keymap.set({"n","x"}, "P", "<Plug>(YankyPutBefore)")
+        vim.keymap.set({"n","x"}, "gp", "<Plug>(YankyGPutAfter)")
+        vim.keymap.set({"n","x"}, "gP", "<Plug>(YankyGPutBefore)")
+        vim.keymap.set("n", "<c-n>", "<Plug>(YankyCycleForward)")
+        vim.keymap.set("n", "<c-p>", "<Plug>(YankyCycleBackward)")
+        vim.keymap.set("n", "<leader>yh", ":YankyRingHistory<CR>", { desc = "Yank history" })
+        
+        -- Outline - temporarily disabled
         -- require('outline').setup({
         --   outline_window = {
         --     position = 'right',
         --     width = 25,
+        --   },
+        --   providers = {
+        --     priority = { 'lsp', 'markdown', 'man' },  -- Exclude 'norg' provider
         --   },
         -- })
         

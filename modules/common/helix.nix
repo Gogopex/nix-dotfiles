@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }: let
+{ lib, ... }: let
   inherit (lib) enabled merge;
 in merge {
   home-manager.sharedModules = [{

@@ -75,7 +75,11 @@ in merge {
         set -g fish_cursor_external line
         set -g fish_cursor_visual block
         
-        theme_gruvbox dark
+        # Hide username and hostname in hydro prompt
+        set -g hydro_multiline false
+        set -g hydro_prompt_show_user false
+        set -g hydro_prompt_show_host false
+        
         if set -q GHOSTTY_RESOURCES_DIR
           source $GHOSTTY_RESOURCES_DIR/shell-integration/fish/vendor_conf.d/ghostty-shell-integration.fish
         end
@@ -128,6 +132,7 @@ in merge {
           # Ctrl+; toggles between vi mode and default mode
           bind \c\; 'toggle_vim_mode'
         end
+        
       '';
       
       functions = {
@@ -366,9 +371,9 @@ in merge {
       };
       
       plugins = [
-        { name = "grc";     src = pkgs.fishPlugins.grc; }
-        { name = "hydro";   src = pkgs.fishPlugins.hydro; }
-        { name = "gruvbox"; src = pkgs.fishPlugins.gruvbox; }
+        { name = "grc";     src = pkgs.fishPlugins.grc.src; }
+        { name = "hydro";   src = pkgs.fishPlugins.hydro.src; }
+        { name = "gruvbox"; src = pkgs.fishPlugins.gruvbox.src; }
       ];
     };
   }];

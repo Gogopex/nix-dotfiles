@@ -1,4 +1,4 @@
-lib: lib.darwinSystem' ({ lib, ... }: let
+lib: lib.darwinSystem' ({ lib, pkgs, ... }: let
   inherit (lib) collectNix remove;
 in {
   imports = collectNix ./. |> remove ./default.nix;
@@ -11,6 +11,7 @@ in {
   users.users.ludwig = {
     name = "ludwig";
     home = "/Users/ludwig";
+    shell = pkgs.fish;
   };
 
   home-manager.users.ludwig.home = {

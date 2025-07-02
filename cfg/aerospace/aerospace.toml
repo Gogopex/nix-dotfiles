@@ -10,7 +10,7 @@ on-focused-monitor-changed = ['move-node-to-monitor focused']
 # Mouse follows focus
 [mode.main.binding]
 # Disable default alt+letter workspace switching
-alt-f = 'nop'
+alt-f = 'no-op'
 
 # Window focus navigation
 cmd-alt-h = 'focus left'
@@ -40,20 +40,16 @@ cmd-alt-shift-m = 'layout tiles'
 cmd-alt-shift-p = 'focus-back-and-forth'
 
 # Default layouts
-[[workspace]]
-name = '1'
+[workspace.1]
 layout = 'tiles'
 
-[[workspace]]
-name = '2'
+[workspace.2]
 layout = 'tiles'
 
-[[workspace]]
-name = '3'
+[workspace.3]
 layout = 'tiles'
 
-[[workspace]]
-name = '4'
+[workspace.4]
 layout = 'tiles'
 
 # Gaps configuration

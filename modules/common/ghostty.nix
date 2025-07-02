@@ -3,14 +3,11 @@
 in merge <| mkIf config.isDesktop {
   home-manager.sharedModules = [{
     programs.ghostty = enabled {
-      # don't install ghostty package on Darwin (it's installed manually)
       package = mkIf config.isDarwin null;
 
       settings = with config.theme; {
-        # theme settings
         theme = "GruvboxDark";
         
-        # font settings from global theme
         font-family              = font.mono.name;
         font-family-bold         = "${font.mono.name} Bold";
         font-family-italic       = "${font.mono.name} Italic";
@@ -18,32 +15,25 @@ in merge <| mkIf config.isDesktop {
         window-title-font-family = font.mono.name;
         font-size                = font.size.normal;
         
-        # Window settings
         window-padding-x = padding;
         window-padding-y = padding;
         window-decoration = "none";
         window-save-state = "always";
         
-        # Shell and behavior settings
         shell-integration = "fish";
         confirm-close-surface = false;
         quit-after-last-window-closed = true;
         mouse-hide-while-typing = true;
         auto-update = "off";
         
-        # macOS specific settings
-        macos-titlebar-style = mkIf config.isDarwin "tabs";
+        macos-titlebar-style = mkIf config.isDarwin "hidden";
         
-        # Keybindings
         keybind = [
-          # Quick terminal toggle
           "global:shift+alt+t=toggle_quick_terminal"
           
-          # Window management
           "ctrl+space=toggle_fullscreen"
           "super+shift+t=new_tab"
           
-          # Unbind keys used by zellij
           "ctrl+h=unbind"
           "ctrl+j=unbind"
           "ctrl+k=unbind"
@@ -62,7 +52,6 @@ in merge <| mkIf config.isDesktop {
           "super+ctrl+shift+h=unbind"
           "super+ctrl+shift+l=unbind"
         ] ++ (
-          # Additional keybindings inspired by NCC's structure
           mapAttrsToList (name: value: "ctrl+shift+${name}=${value}") {
             c = "copy_to_clipboard";
             v = "paste_from_clipboard";

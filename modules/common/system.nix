@@ -1,5 +1,5 @@
 { config, lib, ... }: let
-  inherit (lib) last mkConst mkOption mkValue splitString types;
+  inherit (lib) last mkConst  mkValue splitString ;
 in {
   options = {
     os = mkConst <| last <| splitString "-" config.nixpkgs.hostPlatform.system;
@@ -7,14 +7,13 @@ in {
     isLinux  = mkConst <| config.os == "linux";
     isDarwin = mkConst <| config.os == "darwin";
 
-    type = mkValue "desktop"; # Default to desktop for now
+    type = mkValue "desktop"; 
 
     isDesktop = mkConst <| config.type == "desktop";
     isServer  = mkConst <| config.type == "server";
   };
   
   config = {
-    # Allow unfree packages
     nixpkgs.config.allowUnfree = true;
   };
 }
