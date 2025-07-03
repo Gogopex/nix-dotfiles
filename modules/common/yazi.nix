@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }: let
+{ lib, ... }: let
   inherit (lib) enabled merge;
 in merge {
   home-manager.sharedModules = [{
@@ -9,7 +9,7 @@ in merge {
         log = {
           enabled = false;
         };
-        manager = {
+        mgr = {
           show_hidden = true;
           sort_by = "mtime";
         };

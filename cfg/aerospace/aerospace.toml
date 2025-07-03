@@ -1,15 +1,12 @@
 # AeroSpace configuration
 # https://nikitabobko.github.io/AeroSpace/guide
 
-# Start AeroSpace at login
 start-at-login = true
 
-# Normalize windows on startup
-on-focused-monitor-changed = ['move-node-to-monitor focused']
+# on-focused-monitor-changed = ['move-node-to-monitor focused']
 
 # Mouse follows focus
 [mode.main.binding]
-# Disable default alt+letter workspace switching
 alt-f = 'no-op'
 
 # Window focus navigation
@@ -52,7 +49,6 @@ layout = 'tiles'
 [workspace.4]
 layout = 'tiles'
 
-# Gaps configuration
 [gaps]
 inner.horizontal = 10
 inner.vertical = 10
