@@ -2,6 +2,9 @@
 
 {
   home-manager.sharedModules = [{
-    home.file.".hammerspoon/init.lua".source = ../../cfg/hammerspoon/init.lua;
+    home.file.".hammerspoon" = {
+      source = ../../cfg/hammerspoon;
+      recursive = true;
+    };
   }];
 }
