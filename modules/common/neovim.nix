@@ -1,4 +1,7 @@
-{ pkgs, nixvim, ... }:
+{ pkgs, nixvim, lib, ... }:
+let
+  inherit (lib) mapAttrsToList;
+in
 
 {
   home-manager.sharedModules = [{
@@ -568,53 +571,27 @@
           options.desc = "Trigger completion";
         }
         # Claude Code keymaps
-        {
+      ] ++ (
+        mapAttrsToList (key: { action, desc }: {
           mode = "n";
-          key = "<leader>ac";
-          action = "<cmd>ClaudeCode<cr>";
-          options.desc = "Toggle Claude";
+          key = "<leader>a${key}";
+          action = "<cmd>${action}<cr>";
+          options.desc = desc;
+        }) {
+          c = { action = "ClaudeCode"; desc = "Toggle Claude"; };
+          f = { action = "ClaudeCodeFocus"; desc = "Focus Claude"; };
+          r = { action = "ClaudeCode --resume"; desc = "Resume Claude"; };
+          C = { action = "ClaudeCode --continue"; desc = "Continue Claude"; };
+          b = { action = "ClaudeCodeAdd %"; desc = "Add current buffer to Claude"; };
+          a = { action = "ClaudeCodeDiffAccept"; desc = "Accept Claude diff"; };
+          d = { action = "ClaudeCodeDiffDeny"; desc = "Deny Claude diff"; };
         }
-        {
-          mode = "n";
-          key = "<leader>af";
-          action = "<cmd>ClaudeCodeFocus<cr>";
-          options.desc = "Focus Claude";
-        }
-        {
-          mode = "n";
-          key = "<leader>ar";
-          action = "<cmd>ClaudeCode --resume<cr>";
-          options.desc = "Resume Claude";
-        }
-        {
-          mode = "n";
-          key = "<leader>aC";
-          action = "<cmd>ClaudeCode --continue<cr>";
-          options.desc = "Continue Claude";
-        }
-        {
-          mode = "n";
-          key = "<leader>ab";
-          action = "<cmd>ClaudeCodeAdd %<cr>";
-          options.desc = "Add current buffer to Claude";
-        }
+      ) ++ [
         {
           mode = "v";
           key = "<leader>as";
           action = "<cmd>ClaudeCodeSend<cr>";
           options.desc = "Send selection to Claude";
-        }
-        {
-          mode = "n";
-          key = "<leader>aa";
-          action = "<cmd>ClaudeCodeDiffAccept<cr>";
-          options.desc = "Accept Claude diff";
-        }
-        {
-          mode = "n";
-          key = "<leader>ad";
-          action = "<cmd>ClaudeCodeDiffDeny<cr>";
-          options.desc = "Deny Claude diff";
         }
         
         # LazyVim-style keybindings
@@ -813,18 +790,17 @@
         }
         
         # Git (Gitsigns)
-        {
+      ] ++ (
+        mapAttrsToList (key: { action, desc }: {
           mode = "n";
-          key = "]h";
-          action = "<cmd>Gitsigns next_hunk<cr>";
-          options.desc = "Next hunk";
+          key = key;
+          action = "<cmd>Gitsigns ${action}<cr>";
+          options.desc = desc;
+        }) {
+          "]h" = { action = "next_hunk"; desc = "Next hunk"; };
+          "[h" = { action = "prev_hunk"; desc = "Previous hunk"; };
         }
-        {
-          mode = "n";
-          key = "[h";
-          action = "<cmd>Gitsigns prev_hunk<cr>";
-          options.desc = "Previous hunk";
-        }
+      ) ++ [
         {
           mode = ["n" "v"];
           key = "<leader>ghs";
@@ -837,198 +813,98 @@
           action = "<cmd>Gitsigns reset_hunk<cr>";
           options.desc = "Reset hunk";
         }
-        {
+      ] ++ (
+        mapAttrsToList (key: { action, desc }: {
           mode = "n";
-          key = "<leader>ghS";
-          action = "<cmd>Gitsigns stage_buffer<cr>";
-          options.desc = "Stage buffer";
+          key = "<leader>gh${key}";
+          action = action;
+          options.desc = desc;
+        }) {
+          S = { action = "<cmd>Gitsigns stage_buffer<cr>"; desc = "Stage buffer"; };
+          u = { action = "<cmd>Gitsigns undo_stage_hunk<cr>"; desc = "Undo stage hunk"; };
+          R = { action = "<cmd>Gitsigns reset_buffer<cr>"; desc = "Reset buffer"; };
+          p = { action = "<cmd>Gitsigns preview_hunk<cr>"; desc = "Preview hunk"; };
+          b = { action = "<cmd>lua require('gitsigns').blame_line{full=true}<cr>"; desc = "Blame line"; };
+          d = { action = "<cmd>Gitsigns diffthis<cr>"; desc = "Diff this"; };
+          D = { action = "<cmd>lua require('gitsigns').diffthis('~')<cr>"; desc = "Diff this ~"; };
         }
-        {
-          mode = "n";
-          key = "<leader>ghu";
-          action = "<cmd>Gitsigns undo_stage_hunk<cr>";
-          options.desc = "Undo stage hunk";
-        }
-        {
-          mode = "n";
-          key = "<leader>ghR";
-          action = "<cmd>Gitsigns reset_buffer<cr>";
-          options.desc = "Reset buffer";
-        }
-        {
-          mode = "n";
-          key = "<leader>ghp";
-          action = "<cmd>Gitsigns preview_hunk<cr>";
-          options.desc = "Preview hunk";
-        }
-        {
-          mode = "n";
-          key = "<leader>ghb";
-          action = "<cmd>lua require('gitsigns').blame_line{full=true}<cr>";
-          options.desc = "Blame line";
-        }
-        {
-          mode = "n";
-          key = "<leader>ghd";
-          action = "<cmd>Gitsigns diffthis<cr>";
-          options.desc = "Diff this";
-        }
-        {
-          mode = "n";
-          key = "<leader>ghD";
-          action = "<cmd>lua require('gitsigns').diffthis('~')<cr>";
-          options.desc = "Diff this ~";
-        }
+      ) ++ [
         
         # Git (Fugitive)
-        {
+      ] ++ (
+        mapAttrsToList (key: { action, desc }: {
           mode = "n";
-          key = "<leader>gs";
-          action = "<cmd>Git<cr>";
-          options.desc = "Git status";
+          key = "<leader>g${key}";
+          action = "<cmd>Git ${action}<cr>";
+          options.desc = desc;
+        }) {
+          s = { action = ""; desc = "Git status"; };
+          c = { action = "commit"; desc = "Git commit"; };
+          p = { action = "push"; desc = "Git push"; };
+          P = { action = "pull"; desc = "Git pull"; };
+          b = { action = "blame"; desc = "Git blame"; };
         }
-        {
-          mode = "n";
-          key = "<leader>gc";
-          action = "<cmd>Git commit<cr>";
-          options.desc = "Git commit";
-        }
-        {
-          mode = "n";
-          key = "<leader>gp";
-          action = "<cmd>Git push<cr>";
-          options.desc = "Git push";
-        }
-        {
-          mode = "n";
-          key = "<leader>gP";
-          action = "<cmd>Git pull<cr>";
-          options.desc = "Git pull";
-        }
-        {
-          mode = "n";
-          key = "<leader>gb";
-          action = "<cmd>Git blame<cr>";
-          options.desc = "Git blame";
-        }
+      ) ++ [
         
         # LSP
-        {
+      ] ++ (
+        mapAttrsToList (key: { action, desc }: {
           mode = "n";
-          key = "gd";
-          action = "<cmd>lua vim.lsp.buf.definition()<cr>";
-          options.desc = "Go to definition";
+          key = key;
+          action = action;
+          options.desc = desc;
+        }) {
+          gd = { action = "<cmd>lua vim.lsp.buf.definition()<cr>"; desc = "Go to definition"; };
+          gr = { action = "<cmd>Telescope lsp_references<cr>"; desc = "References"; };
+          gI = { action = "<cmd>lua vim.lsp.buf.implementation()<cr>"; desc = "Go to implementation"; };
+          gy = { action = "<cmd>lua vim.lsp.buf.type_definition()<cr>"; desc = "Go to type definition"; };
+          gD = { action = "<cmd>lua vim.lsp.buf.declaration()<cr>"; desc = "Go to declaration"; };
+          K = { action = "<cmd>lua vim.lsp.buf.hover()<cr>"; desc = "Hover"; };
+          gK = { action = "<cmd>lua vim.lsp.buf.signature_help()<cr>"; desc = "Signature help"; };
         }
-        {
-          mode = "n";
-          key = "gr";
-          action = "<cmd>Telescope lsp_references<cr>";
-          options.desc = "References";
-        }
-        {
-          mode = "n";
-          key = "gI";
-          action = "<cmd>lua vim.lsp.buf.implementation()<cr>";
-          options.desc = "Go to implementation";
-        }
-        {
-          mode = "n";
-          key = "gy";
-          action = "<cmd>lua vim.lsp.buf.type_definition()<cr>";
-          options.desc = "Go to type definition";
-        }
-        {
-          mode = "n";
-          key = "gD";
-          action = "<cmd>lua vim.lsp.buf.declaration()<cr>";
-          options.desc = "Go to declaration";
-        }
-        {
-          mode = "n";
-          key = "K";
-          action = "<cmd>lua vim.lsp.buf.hover()<cr>";
-          options.desc = "Hover";
-        }
-        {
-          mode = "n";
-          key = "gK";
-          action = "<cmd>lua vim.lsp.buf.signature_help()<cr>";
-          options.desc = "Signature help";
-        }
+      ) ++ [
         {
           mode = ["n" "v"];
           key = "<leader>ca";
           action = "<cmd>lua vim.lsp.buf.code_action()<cr>";
           options.desc = "Code action";
         }
-        {
+      ] ++ (
+        mapAttrsToList (key: { action, desc }: {
           mode = "n";
-          key = "<leader>cc";
-          action = "<cmd>lua vim.lsp.codelens.run()<cr>";
-          options.desc = "Run codelens";
+          key = "<leader>c${key}";
+          action = "<cmd>${action}<cr>";
+          options.desc = desc;
+        }) {
+          c = { action = "lua vim.lsp.codelens.run()"; desc = "Run codelens"; };
+          C = { action = "lua vim.lsp.codelens.refresh()"; desc = "Refresh codelens"; };
+          r = { action = "lua vim.lsp.buf.rename()"; desc = "Rename"; };
+          d = { action = "lua vim.diagnostic.open_float()"; desc = "Line diagnostics"; };
         }
-        {
-          mode = "n";
-          key = "<leader>cC";
-          action = "<cmd>lua vim.lsp.codelens.refresh()<cr>";
-          options.desc = "Refresh codelens";
-        }
-        {
-          mode = "n";
-          key = "<leader>cr";
-          action = "<cmd>lua vim.lsp.buf.rename()<cr>";
-          options.desc = "Rename";
-        }
+      ) ++ [
         {
           mode = ["n" "v"];
           key = "<leader>cf";
           action = "<cmd>lua vim.lsp.buf.format({async = true})<cr>";
           options.desc = "Format";
         }
-        {
-          mode = "n";
-          key = "<leader>cd";
-          action = "<cmd>lua vim.diagnostic.open_float()<cr>";
-          options.desc = "Line diagnostics";
-        }
         
         # Diagnostic navigation
-        {
+      ] ++ (
+        mapAttrsToList (key: { action, desc }: {
           mode = "n";
-          key = "]d";
-          action = "<cmd>lua vim.diagnostic.goto_next()<cr>";
-          options.desc = "Next diagnostic";
+          key = key;
+          action = "<cmd>lua vim.diagnostic.${action}<cr>";
+          options.desc = desc;
+        }) {
+          "]d" = { action = "goto_next()"; desc = "Next diagnostic"; };
+          "[d" = { action = "goto_prev()"; desc = "Previous diagnostic"; };
+          "]e" = { action = "goto_next({severity = vim.diagnostic.severity.ERROR})"; desc = "Next error"; };
+          "[e" = { action = "goto_prev({severity = vim.diagnostic.severity.ERROR})"; desc = "Previous error"; };
+          "]w" = { action = "goto_next({severity = vim.diagnostic.severity.WARN})"; desc = "Next warning"; };
+          "[w" = { action = "goto_prev({severity = vim.diagnostic.severity.WARN})"; desc = "Previous warning"; };
         }
-        {
-          mode = "n";
-          key = "[d";
-          action = "<cmd>lua vim.diagnostic.goto_prev()<cr>";
-          options.desc = "Previous diagnostic";
-        }
-        {
-          mode = "n";
-          key = "]e";
-          action = "<cmd>lua vim.diagnostic.goto_next({severity = vim.diagnostic.severity.ERROR})<cr>";
-          options.desc = "Next error";
-        }
-        {
-          mode = "n";
-          key = "[e";
-          action = "<cmd>lua vim.diagnostic.goto_prev({severity = vim.diagnostic.severity.ERROR})<cr>";
-          options.desc = "Previous error";
-        }
-        {
-          mode = "n";
-          key = "]w";
-          action = "<cmd>lua vim.diagnostic.goto_next({severity = vim.diagnostic.severity.WARN})<cr>";
-          options.desc = "Next warning";
-        }
-        {
-          mode = "n";
-          key = "[w";
-          action = "<cmd>lua vim.diagnostic.goto_prev({severity = vim.diagnostic.severity.WARN})<cr>";
-          options.desc = "Previous warning";
-        }
+      ) ++ [
         
         # Debug (DAP)
         {

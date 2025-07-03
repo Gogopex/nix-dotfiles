@@ -30,36 +30,48 @@ in merge <| mkIf config.isDesktop {
         
         keybind = [
           "global:shift+alt+t=toggle_quick_terminal"
-          
-          "ctrl+space=toggle_fullscreen"
-          "super+shift+t=new_tab"
-          
-          "ctrl+h=unbind"
-          "ctrl+j=unbind"
-          "ctrl+k=unbind"
-          "ctrl+l=unbind"
-          "super+h=unbind"
-          "super+l=unbind"
-          "super+t=unbind"
-          "super+w=unbind"
-          "super+d=unbind"
-          "super+shift+d=unbind"
-          "super+shift+w=unbind"
-          "super+ctrl+h=unbind"
-          "super+ctrl+j=unbind"
-          "super+ctrl+k=unbind"
-          "super+ctrl+l=unbind"
-          "super+ctrl+shift+h=unbind"
-          "super+ctrl+shift+l=unbind"
         ] ++ (
+          mapAttrsToList (name: value: "ctrl+${name}=${value}") {
+            space = "toggle_fullscreen";
+            h = "unbind";
+            j = "unbind";
+            k = "unbind";
+            l = "unbind";
+          }
+        ) ++ (
           mapAttrsToList (name: value: "ctrl+shift+${name}=${value}") {
             c = "copy_to_clipboard";
             v = "paste_from_clipboard";
             
-            # Font size controls
             enter = "reset_font_size";
             plus  = "increase_font_size:1";
             minus = "decrease_font_size:1";
+          }
+        ) ++ (
+          mapAttrsToList (name: value: "super+${name}=${value}") {
+            h = "unbind";
+            l = "unbind";
+            t = "unbind";
+            w = "unbind";
+            d = "unbind";
+          }
+        ) ++ (
+          mapAttrsToList (name: value: "super+shift+${name}=${value}") {
+            t = "new_tab";
+            d = "unbind";
+            w = "unbind";
+          }
+        ) ++ (
+          mapAttrsToList (name: value: "super+ctrl+${name}=${value}") {
+            h = "unbind";
+            j = "unbind";
+            k = "unbind";
+            l = "unbind";
+          }
+        ) ++ (
+          mapAttrsToList (name: value: "super+ctrl+shift+${name}=${value}") {
+            h = "unbind";
+            l = "unbind";
           }
         );
       };

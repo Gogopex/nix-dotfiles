@@ -1,5 +1,5 @@
 { lib, ... }: let
-  inherit (lib) mkValue;
+  inherit (lib) mkValue mapAttrsToList;
 in {
   options.editorSettings = mkValue {
     "editor.fontFamily" = "Berkeley Mono";
@@ -15,24 +15,16 @@ in {
     "terminal.integrated.fontFamily" = "'Berkeley Mono', monospace";
     "terminal.integrated.fontSize" = 16;
     
-    "vim.normalModeKeyBindingsNonRecursive" = [
-      { 
-        "before" = ["g" "h"];
-        "after" = ["^"];
-      }
-      { 
-        "before" = ["g" "l"];
-        "after" = ["$"];
-      }
-      { 
-        "before" = ["<space>" "y"];
-        "commands" = ["editor.action.clipboardCopyAction"];
-      }
-      { 
-        "before" = ["<space>" "d"];
-        "after" = ["\"" "_" "d"];
-      }
-    ];
+    "vim.normalModeKeyBindingsNonRecursive" = mapAttrsToList (key: value: 
+      if value ? "commands"
+      then { "before" = key; "commands" = value.commands; }
+      else { "before" = key; "after" = value; }
+    ) {
+      ["g" "h"] = ["^"];
+      ["g" "l"] = ["$"];
+      ["<space>" "y"] = { commands = ["editor.action.clipboardCopyAction"]; };
+      ["<space>" "d"] = ["\"" "_" "d"];
+    };
     
     "diffEditor.ignoreTrimWhitespace" = false;
     "[javascript]" = {
@@ -53,23 +45,22 @@ in {
     "emmet.includeLanguages" = {
       "twig" = "html";
     };
-    "files.exclude" = {
-      "**/.DS_Store" = true;
-      "**/.git" = true;
-      "**/.hg" = true;
-      "**/.svn" = true;
-      "**/*.js" = {
-        "when" = "$(basename).ts";
-      };
-      "**/**.js" = {
-        "when" = "$(basename).tsx";
-      };
-      "**/app/cache/**" = true;
-      "**/CVS" = true;
-      "app/cache/**" = true;
-      "**/node_modules/**" = true;
-      "**/.venv/**" = true;
-    };
+    "files.exclude" = lib.listToAttrs (
+      (map (path: lib.nameValuePair path true) [
+        "**/.DS_Store"
+        "**/.git"
+        "**/.hg"
+        "**/.svn"
+        "**/app/cache/**"
+        "**/CVS"
+        "app/cache/**"
+        "**/node_modules/**"
+        "**/.venv/**"
+      ]) ++ [
+        (lib.nameValuePair "**/*.js" { "when" = "$(basename).ts"; })
+        (lib.nameValuePair "**/**.js" { "when" = "$(basename).tsx"; })
+      ]
+    );
     "rust-analyzer.checkOnSave.command" = "clippy";
     "rust-analyzer.cargo.loadOutDirsFromCheck" = true;
     "rust-analyzer.debug.engine" = "vadimcn.vscode-lldb";
@@ -121,13 +112,15 @@ in {
       "app/cache/*.xml" = true;
       "app/cache/**" = true;
     };
-    "files.watcherExclude" = {
-      "**/app/cache/**" = true;
-      "**/var/cache/**" = true;
-      "**/var/logs/**" = true;
-      "**/node_modules/**" = true;
-      "**/.venv/**" = true;
-    };
+    "files.watcherExclude" = lib.listToAttrs (
+      map (path: lib.nameValuePair path true) [
+        "**/app/cache/**"
+        "**/var/cache/**"
+        "**/var/logs/**"
+        "**/node_modules/**"
+        "**/.venv/**"
+      ]
+    );
     "[python]" = {
       "editor.defaultFormatter" = "ms-python.python";
       "editor.formatOnType" = true;
