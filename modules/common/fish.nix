@@ -29,6 +29,7 @@ in merge {
       
       shellInit = /* fish */ ''
         if status is-interactive
+          fish_add_path -g /opt/homebrew/bin
           fish_add_path -g ~/.nix-profile/bin
           fish_add_path -g /etc/profiles/per-user/bin
           fish_add_path -g /run/current-system/sw/bin
@@ -57,6 +58,10 @@ in merge {
           if test -f /run/agenix/$key-api-key
             set -gx (string upper $key)_API_KEY (cat /run/agenix/$key-api-key)
           end
+        end
+        
+        if test -f /run/agenix/gemini-api-gcp-project-id
+          set -gx GOOGLE_CLOUD_PROJECT (cat /run/agenix/gemini-api-gcp-project-id)
         end
       '';
       

@@ -2,6 +2,7 @@
   homebrew = {
     enable = true;
     global.brewfile = true;
+    onActivation.cleanup = "uninstall";
     
     casks = [
       "orbstack"
@@ -13,4 +14,6 @@
       "gh"
     ];
   };
+  
+  environment.systemPath = [ "/opt/homebrew/bin" ];
 }

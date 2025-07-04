@@ -16,5 +16,9 @@
       file = ../../secrets/deepseek-api-key.age;
       mode = "444";
     };
+    gemini-api-gcp-project-id = {
+      file = ../../secrets/gemini-api-gcp-project-id.age;
+      mode = "444";
+    };
   };
 }

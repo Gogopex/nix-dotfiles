@@ -130,7 +130,11 @@ in
         
         telescope = {
           enable = true;
-          color_devicons = false;
+          settings = {
+            defaults = {
+              disable_devicons = true;
+            };
+          };
           keymaps = {
             "<leader>ff" = "find_files";
             "<leader>fg" = "live_grep";

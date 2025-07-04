@@ -15,16 +15,24 @@ in {
     "terminal.integrated.fontFamily" = "'Berkeley Mono', monospace";
     "terminal.integrated.fontSize" = 16;
     
-    "vim.normalModeKeyBindingsNonRecursive" = mapAttrsToList (key: value: 
-      if value ? "commands"
-      then { "before" = key; "commands" = value.commands; }
-      else { "before" = key; "after" = value; }
-    ) {
-      ["g" "h"] = ["^"];
-      ["g" "l"] = ["$"];
-      ["<space>" "y"] = { commands = ["editor.action.clipboardCopyAction"]; };
-      ["<space>" "d"] = ["\"" "_" "d"];
-    };
+    "vim.normalModeKeyBindingsNonRecursive" = [
+      { 
+        "before" = ["g" "h"];
+        "after" = ["^"];
+      }
+      { 
+        "before" = ["g" "l"];
+        "after" = ["$"];
+      }
+      { 
+        "before" = ["<space>" "y"];
+        "commands" = ["editor.action.clipboardCopyAction"];
+      }
+      { 
+        "before" = ["<space>" "d"];
+        "after" = ["\"" "_" "d"];
+      }
+    ];
     
     "diffEditor.ignoreTrimWhitespace" = false;
     "[javascript]" = {

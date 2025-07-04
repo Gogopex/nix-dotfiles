@@ -7,4 +7,5 @@ in
   "secrets/openai-api-key.age".publicKeys = [ ludwig system ];
   "secrets/gemini-api-key.age".publicKeys = [ ludwig system ];
   "secrets/deepseek-api-key.age".publicKeys = [ ludwig system ];
+  "secrets/gemini-api-gcp-project-id.age".publicKeys = [ ludwig system ];
 }
