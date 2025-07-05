@@ -22,7 +22,11 @@ in merge {
         zig
         zls
         odin
+        ols
         go
+        gopls
+        gofumpt
+        delve
         rustc
         cargo
         rustfmt
@@ -30,9 +34,17 @@ in merge {
         nodejs
         bun
         deno
+        typescript-language-server
+        vscode-js-debug
+        prettier
+        vscode-langservers-extracted
+        yaml-language-server
         python311
         poetry
         uv
+        pyright
+        ruff
+        black
         
         ghc
         cabal-install
@@ -41,13 +53,14 @@ in merge {
         
         maven
         openjdk
+        jdt-language-server
         
         elan
         
         volta
         
         nixfmt-rfc-style
-        nil
+        nixd
         nh
         
         tokei

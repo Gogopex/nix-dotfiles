@@ -270,7 +270,7 @@ in
         lsp = {
           enable = true;
           servers = {
-            nil_ls.enable = true;
+            nixd.enable = true;
             rust_analyzer = {
               enable = true;
               installCargo = false;

@@ -4,12 +4,216 @@ in merge {
   home-manager.sharedModules = [{
     programs.helix = enabled {
       languages = {
-        language = [{
-          name = "nix";
-          formatter = {
-            command = "nixfmt-rfc-style";
+        language = [
+          {
+            name = "nix";
+            formatter = {
+              command = "nixfmt-rfc-style";
+            };
+            language-servers = ["nixd"];
+          }
+          {
+            name = "rust";
+            auto-format = true;
+            formatter = {
+              command = "rustfmt";
+            };
+            language-servers = ["rust-analyzer"];
+          }
+          {
+            name = "go";
+            auto-format = true;
+            formatter = {
+              command = "gofumpt";
+            };
+            language-servers = ["gopls"];
+          }
+          {
+            name = "python";
+            auto-format = true;
+            formatter = {
+              command = "ruff";
+              args = ["format", "-"];
+            };
+            language-servers = ["pyright"];
+          }
+          {
+            name = "javascript";
+            auto-format = true;
+            formatter = {
+              command = "prettier";
+              args = ["--parser", "babel"];
+            };
+            language-servers = ["typescript-language-server"];
+          }
+          {
+            name = "typescript";
+            auto-format = true;
+            formatter = {
+              command = "prettier";
+              args = ["--parser", "typescript"];
+            };
+            language-servers = ["typescript-language-server"];
+          }
+          {
+            name = "jsx";
+            auto-format = true;
+            formatter = {
+              command = "prettier";
+              args = ["--parser", "babel"];
+            };
+            language-servers = ["typescript-language-server"];
+          }
+          {
+            name = "tsx";
+            auto-format = true;
+            formatter = {
+              command = "prettier";
+              args = ["--parser", "typescript"];
+            };
+            language-servers = ["typescript-language-server"];
+          }
+          {
+            name = "json";
+            formatter = {
+              command = "prettier";
+              args = ["--parser", "json"];
+            };
+            language-servers = ["vscode-json-language-server"];
+          }
+          {
+            name = "html";
+            formatter = {
+              command = "prettier";
+              args = ["--parser", "html"];
+            };
+            language-servers = ["vscode-html-language-server"];
+          }
+          {
+            name = "css";
+            formatter = {
+              command = "prettier";
+              args = ["--parser", "css"];
+            };
+            language-servers = ["vscode-css-language-server"];
+          }
+          {
+            name = "markdown";
+            formatter = {
+              command = "prettier";
+              args = ["--parser", "markdown"];
+            };
+          }
+          {
+            name = "yaml";
+            formatter = {
+              command = "prettier";
+              args = ["--parser", "yaml"];
+            };
+            language-servers = ["yaml-language-server"];
+          }
+          {
+            name = "zig";
+            auto-format = true;
+            formatter = {
+              command = "zig";
+              args = ["fmt", "--stdin"];
+            };
+            language-servers = ["zls"];
+          }
+          {
+            name = "odin";
+            language-servers = ["ols"];
+          }
+          {
+            name = "java";
+            language-servers = ["jdtls"];
+          }
+          {
+            name = "haskell";
+            auto-format = true;
+            language-servers = ["haskell-language-server"];
+          }
+        ];
+        
+        language-server = {
+          nixd = {
+            command = "nixd";
           };
-        }];
+          rust-analyzer = {
+            command = "rust-analyzer";
+            config = {
+              checkOnSave = {
+                command = "clippy";
+              };
+            };
+          };
+          gopls = {
+            command = "gopls";
+            config = {
+              analyses = {
+                unusedparams = true;
+                staticcheck = true;
+              };
+            };
+          };
+          pyright = {
+            command = "pyright-langserver";
+            args = ["--stdio"];
+            config = {
+              python.analysis = {
+                typeCheckingMode = "basic";
+                autoSearchPaths = true;
+                useLibraryCodeForTypes = true;
+              };
+            };
+          };
+          typescript-language-server = {
+            command = "typescript-language-server";
+            args = ["--stdio"];
+            config = {
+              typescript = {
+                inlayHints = {
+                  parameterNames.enabled = "all";
+                  parameterTypes.enabled = true;
+                  variableTypes.enabled = true;
+                  propertyDeclarationTypes.enabled = true;
+                  functionLikeReturnTypes.enabled = true;
+                  enumMemberValues.enabled = true;
+                };
+              };
+            };
+          };
+          vscode-json-language-server = {
+            command = "vscode-json-language-server";
+            args = ["--stdio"];
+          };
+          vscode-html-language-server = {
+            command = "vscode-html-language-server";
+            args = ["--stdio"];
+          };
+          vscode-css-language-server = {
+            command = "vscode-css-language-server";
+            args = ["--stdio"];
+          };
+          yaml-language-server = {
+            command = "yaml-language-server";
+            args = ["--stdio"];
+          };
+          zls = {
+            command = "zls";
+          };
+          ols = {
+            command = "ols";
+          };
+          jdtls = {
+            command = "jdt-language-server";
+          };
+          haskell-language-server = {
+            command = "haskell-language-server-wrapper";
+            args = ["--lsp"];
+          };
+        };
       };
       
       settings = {
@@ -18,6 +222,12 @@ in merge {
           bufferline = "multiple";
           line-number = "absolute";              
           auto-completion = true;
+          soft_wrap = {
+            enable = true;
+          };
+          auto-save = {
+            focus-lost = true;
+          };
           completion-trigger-len = 0;
           mouse = false;
           cursor-shape = {
