@@ -19,6 +19,24 @@ in merge {
               command = "rustfmt";
             };
             language-servers = ["rust-analyzer"];
+            debugger = {
+              name = "lldb-dap";
+              transport = "stdio";
+              command = "lldb-dap";
+              templates = [
+                {
+                  name = "binary";
+                  request = "launch";
+                  completion = [{
+                    name = "binary";
+                    completion = "filename";
+                  }];
+                  args = {
+                    program = "{0}";
+                  };
+                }
+              ];
+            };
           }
           {
             name = "go";
@@ -27,22 +45,65 @@ in merge {
               command = "gofumpt";
             };
             language-servers = ["gopls"];
+            debugger = {
+              name = "delve";
+              transport = "tcp";
+              command = "dlv";
+              args = ["dap"];
+              port-arg = "-l 127.0.0.1:{port}";
+              templates = [
+                {
+                  name = "source";
+                  request = "launch";
+                  completion = [{
+                    name = "entrypoint";
+                    completion = "filename";
+                    default = ".";
+                  }];
+                  args = {
+                    mode = "debug";
+                    program = "{0}";
+                  };
+                }
+              ];
+            };
           }
           {
             name = "python";
             auto-format = true;
             formatter = {
               command = "ruff";
-              args = ["format", "-"];
+              args = ["format" "-"];
             };
             language-servers = ["pyright"];
+            debugger = {
+              name = "debugpy";
+              transport = "stdio";
+              command = "python";
+              args = ["-m" "debugpy.adapter"];
+              templates = [
+                {
+                  name = "source";
+                  request = "launch";
+                  completion = [{
+                    name = "entrypoint";
+                    completion = "filename";
+                    default = ".";
+                  }];
+                  args = {
+                    mode = "debug";
+                    program = "{0}";
+                  };
+                }
+              ];
+            };
           }
           {
             name = "javascript";
             auto-format = true;
             formatter = {
               command = "prettier";
-              args = ["--parser", "babel"];
+              args = ["--parser" "babel"];
             };
             language-servers = ["typescript-language-server"];
           }
@@ -51,7 +112,7 @@ in merge {
             auto-format = true;
             formatter = {
               command = "prettier";
-              args = ["--parser", "typescript"];
+              args = ["--parser" "typescript"];
             };
             language-servers = ["typescript-language-server"];
           }
@@ -60,7 +121,7 @@ in merge {
             auto-format = true;
             formatter = {
               command = "prettier";
-              args = ["--parser", "babel"];
+              args = ["--parser" "babel"];
             };
             language-servers = ["typescript-language-server"];
           }
@@ -69,7 +130,7 @@ in merge {
             auto-format = true;
             formatter = {
               command = "prettier";
-              args = ["--parser", "typescript"];
+              args = ["--parser" "typescript"];
             };
             language-servers = ["typescript-language-server"];
           }
@@ -77,7 +138,7 @@ in merge {
             name = "json";
             formatter = {
               command = "prettier";
-              args = ["--parser", "json"];
+              args = ["--parser" "json"];
             };
             language-servers = ["vscode-json-language-server"];
           }
@@ -85,7 +146,7 @@ in merge {
             name = "html";
             formatter = {
               command = "prettier";
-              args = ["--parser", "html"];
+              args = ["--parser" "html"];
             };
             language-servers = ["vscode-html-language-server"];
           }
@@ -93,7 +154,7 @@ in merge {
             name = "css";
             formatter = {
               command = "prettier";
-              args = ["--parser", "css"];
+              args = ["--parser" "css"];
             };
             language-servers = ["vscode-css-language-server"];
           }
@@ -101,14 +162,14 @@ in merge {
             name = "markdown";
             formatter = {
               command = "prettier";
-              args = ["--parser", "markdown"];
+              args = ["--parser" "markdown"];
             };
           }
           {
             name = "yaml";
             formatter = {
               command = "prettier";
-              args = ["--parser", "yaml"];
+              args = ["--parser" "yaml"];
             };
             language-servers = ["yaml-language-server"];
           }
@@ -117,7 +178,7 @@ in merge {
             auto-format = true;
             formatter = {
               command = "zig";
-              args = ["fmt", "--stdin"];
+              args = ["fmt" "--stdin"];
             };
             language-servers = ["zls"];
           }
@@ -222,7 +283,7 @@ in merge {
           bufferline = "multiple";
           line-number = "absolute";              
           auto-completion = true;
-          soft_wrap = {
+          soft-wrap = {
             enable = true;
           };
           auto-save = {

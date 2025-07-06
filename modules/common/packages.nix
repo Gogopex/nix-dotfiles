@@ -31,6 +31,7 @@ in merge {
         cargo
         rustfmt
         rust-analyzer
+        lldb
         nodejs
         bun
         deno
