@@ -188,12 +188,41 @@ in merge {
           }
           {
             name = "java";
+            auto-format = true;
+            formatter = {
+              command = "google-java-format";
+              args = ["-"];
+            };
             language-servers = ["jdtls"];
           }
           {
             name = "haskell";
             auto-format = true;
+            formatter = {
+              command = "fourmolu";
+              args = ["--stdin-input-file" "."];
+            };
             language-servers = ["haskell-language-server"];
+            debugger = {
+              name = "haskell-debug-adapter";
+              transport = "stdio";
+              command = "haskell-debug-adapter";
+              args = ["--hackage-version=0.0.42.0"];
+              templates = [
+                {
+                  name = "launch";
+                  request = "launch";
+                  completion = [{
+                    name = "program";
+                    completion = "filename";
+                  }];
+                  args = {
+                    program = "{0}";
+                    stopOnEntry = true;
+                  };
+                }
+              ];
+            };
           }
         ];
         
@@ -268,7 +297,7 @@ in merge {
             command = "ols";
           };
           jdtls = {
-            command = "jdt-language-server";
+            command = "jdtls";
           };
           haskell-language-server = {
             command = "haskell-language-server-wrapper";

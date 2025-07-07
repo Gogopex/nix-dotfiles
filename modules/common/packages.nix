@@ -51,10 +51,14 @@ in merge {
         cabal-install
         stack
         haskell-language-server
+        ormolu
+        fourmolu
+        stylish-haskell
         
         maven
         openjdk
         jdt-language-server
+        google-java-format
         
         elan
         
@@ -98,6 +102,8 @@ in merge {
         ;
       
       agenix = inputs.agenix.packages.${pkgs.system}.default;
+      haskell-debug-adapter = pkgs.haskellPackages.haskell-debug-adapter;
+      ghci-dap = pkgs.haskellPackages.ghci-dap;
     } // optionalAttrs config.isDesktop {
       inherit (pkgs)
         aerospace
