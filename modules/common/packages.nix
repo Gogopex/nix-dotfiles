@@ -92,6 +92,7 @@ in merge {
         postgresql
         redis
         sqlite
+        duckdb
         
         git-recent
         gh

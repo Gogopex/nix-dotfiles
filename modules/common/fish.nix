@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }: let
+{ lib, pkgs, ... }: let
   inherit (lib) enabled merge;
 in merge {
   home-manager.sharedModules = [{
@@ -20,8 +20,10 @@ in merge {
         zls = "zellij list-sessions";
         zdel = "zellij delete-session";
         zforce = "zellij attach --force-run-commands";
+        # @FIX: broken 
         zt = "zellij_tab_switcher";
         notify = "run_with_notify";
+        # @FIX: broken 
         claude-check = "check_claude_sessions";
         zm = "zmain";
         zw = "zwork";

@@ -1393,12 +1393,17 @@ in
         vim.keymap.set("n", "<C-p>", function() mc.addCursor("#") end, { desc = "Add cursor at previous match" })
         vim.keymap.set("n", "<C-x>", function() mc.skipCursor("*") end, { desc = "Skip current match" })
         vim.keymap.set("n", "<Esc>", function() 
+          -- Don't interfere with telescope pickers
+          if vim.bo.filetype == "TelescopePrompt" then
+            return "<Esc>"
+          end
+          
           if mc.hasCursors() then
             mc.clearCursors()
           else
             vim.cmd("nohl")
           end
-        end, { desc = "Clear cursors/search" })
+        end, { desc = "Clear cursors/search", expr = true })
         
         
         -- Yanky (yank history)
