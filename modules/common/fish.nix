@@ -1,8 +1,6 @@
 { lib, pkgs, ... }: let
   inherit (lib) enabled merge;
-  # Set this to true if you want Zellij to auto-start
   zellijAutoStart = false;
-  # Main session name for zmain command (can be changed)
   mainSessionName = "main";
 in merge {
   home-manager.sharedModules = [{
@@ -71,7 +69,7 @@ in merge {
         end
       '';
       
-      interactiveShellInit = ''
+      interactiveShellInit = /* fish */ ''
         set -gx EDITOR hx
         set -gx PHP_VERSION 8.3
         set -gx GHCUP_INSTALL_BASE_PREFIX $HOME
@@ -86,7 +84,6 @@ in merge {
         set -g fish_cursor_external line
         set -g fish_cursor_visual block
         
-        # Hide username and hostname in hydro prompt
         set -g hydro_multiline false
         set -g hydro_prompt_show_user false
         set -g hydro_prompt_show_host false
@@ -97,7 +94,6 @@ in merge {
         zoxide init fish | source
         source ~/.orbstack/shell/init2.fish 2>/dev/null || true
         
-        # Override hydro's fish_mode_prompt with our custom one
         functions -e fish_mode_prompt 2>/dev/null
         function fish_mode_prompt --description 'Display the current vi mode'
           switch $fish_bind_mode
@@ -134,16 +130,13 @@ in merge {
         '' else ""}
         
         if not functions -q fisher
-          # Install fisher if not present
           curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
         end
         
         function fish_user_key_bindings
-          # Use Ctrl+Alt combinations to avoid conflicts
           bind \e\cv 'toggle_vim_mode'
           bind \e\cl 'open_links'
           
-          # Ctrl+; toggles between vi mode and default mode
           bind \c\; 'toggle_vim_mode'
         end
         
@@ -244,25 +237,30 @@ in merge {
         
         open_links = ''
           function open_links
-            # Extract URLs from Zellij scrollback and open with fzf selection
-            # Create a temporary file to capture Zellij scrollback
-            set -l temp_file (mktemp)
-            
-            # Use Zellij to dump the current pane's scrollback
-            zellij action dump-screen $temp_file
-            
-            # Extract URLs from the dumped content
-            set -l urls (cat $temp_file | grep -oE 'https?://[^\s]+' | sort -u)
-            
-            # Clean up temp file
-            rm -f $temp_file
-            
-            if test (count $urls) -eq 0
-              echo "No URLs found in current Zellij pane output"
+            # Check if we're in a Zellij session
+            if not set -q ZELLIJ
+              echo "Error: Not in a Zellij session"
               return 1
             end
             
-            set -l selected (printf '%s\n' $urls | fzf --prompt="Select URL to open: ")
+            # Extract URLs directly from Zellij scrollback without temp file
+            # Improved regex handles common URL patterns and edge cases
+            set -l urls (zellij action dump-screen - 2>/dev/null | \
+              string match -ra 'https?://[^\s<>"{}|\\^`\[\]]+' | \
+              string replace -r '[.,;:!?]$' '' | \
+              sort -u)
+            
+            if test (count $urls) -eq 0
+              echo "No URLs found in current Zellij pane"
+              return 1
+            end
+            
+            # Use fzf with preview showing line count
+            set -l selected (printf '%s\n' $urls | \
+              fzf --prompt="Select URL to open: " \
+                  --preview-window=hidden \
+                  --height=40%)
+            
             if test -n "$selected"
               echo "Opening: $selected"
               open "$selected"
@@ -270,31 +268,13 @@ in merge {
           end
         '';
         
-        zres = ''
-          function zres
-            if test (count $argv) -eq 0
-              echo "Usage: zres <session-name>"
-              echo "Available sessions:"
-              zellij list-sessions
-              return 1
-            end
-            
-            set -l session_name $argv[1]
-            echo "Resurrecting session: $session_name"
-            zellij attach $session_name
-          end
-        '';
-        
         notify_completion = ''
           function notify_completion
-            # Get the command that just finished
             set -l last_command (history | head -n 1)
             set -l exit_status $status
             
-            # Send bell signal to trigger zjstatus notification
             printf "\a"
             
-            # Optional: show completion status
             if test $exit_status -eq 0
               echo "[OK] Command completed: $last_command"
             else

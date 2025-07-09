@@ -4,12 +4,11 @@ in {
   home-manager.sharedModules = [{
     programs.aerospace = mkIf pkgs.stdenv.isDarwin {
       enable = true;
-      launchd.enable = true;  # Use built-in launchd support
+      launchd.enable = true;  
       
       userSettings = {
         start-at-login = true;
         
-        # Gaps configuration
         gaps = {
           inner.horizontal = 10;
           inner.vertical = 10;
@@ -21,7 +20,6 @@ in {
           };
         };
         
-        # Workspace configurations
         workspace = {
           "1" = { layout = "tiles"; };
           "2" = { layout = "tiles"; };
@@ -29,14 +27,12 @@ in {
           "4" = { layout = "tiles"; };
         };
         
-        # Main mode keybindings
         mode.main.binding = lib.mkMerge [
-          # Single keys
           {
             "alt-f" = "no-op";
           }
           
-          # Window focus navigation (cmd-alt + hjkl)
+          # window focus navigation (cmd-alt + hjkl)
           (mapAttrs' (key: action: nameValuePair "cmd-alt-${key}" action) {
             h = "focus left";
             j = "focus down";
@@ -44,7 +40,7 @@ in {
             l = "focus right";
           })
           
-          # Window movement (cmd-alt-shift + hjkl)
+          # window movement (cmd-alt-shift + hjkl)
           (mapAttrs' (key: action: nameValuePair "cmd-alt-shift-${key}" action) {
             h = "move left";
             j = "move down";
@@ -52,19 +48,19 @@ in {
             l = "move right";
           })
           
-          # Window resizing (cmd-alt-shift + ui)
+          # window resizing (cmd-alt-shift + ui)
           (mapAttrs' (key: action: nameValuePair "cmd-alt-shift-${key}" action) {
             u = "resize smart -50";
             i = "resize smart +50";
           })
           
-          # Window joining (cmd-alt-shift + yo)
+          # window joining (cmd-alt-shift + yo)
           (mapAttrs' (key: action: nameValuePair "cmd-alt-shift-${key}" action) {
             y = "join-with right";
             o = "join-with down";
           })
           
-          # Layout and focus management (cmd-alt-shift + nmp)
+          # layout and focus management (cmd-alt-shift + nmp)
           (mapAttrs' (key: action: nameValuePair "cmd-alt-shift-${key}" action) {
             n = "layout floating tiling";
             m = "layout tiles";

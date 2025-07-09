@@ -19,8 +19,7 @@ in merge <| mkIf config.isDesktop {
       };
     };
     
-    xdg.configFile."zellij/config.kdl".text = ''
-      // Zellij configuration
+    xdg.configFile."zellij/config.kdl".text = /* kdl */ ''
       simplified_ui true
       default_shell "fish"
       theme "gruvbox-dark"
@@ -28,14 +27,11 @@ in merge <| mkIf config.isDesktop {
       copy_on_select true
       show_startup_tips false
       
-      // session management
       session_serialization true
       pane_viewport_serialization true
       scrollback_lines_to_serialize 10000
       serialization_interval 60
       
-      // on_force_close determines what to do when receiving SIGTERM, SIGINT, SIGQUIT or SIGHUP
-      // Options: quit (default), detach
       on_force_close "detach"
       
       ui {
@@ -46,7 +42,6 @@ in merge <| mkIf config.isDesktop {
       
       keybinds {
           shared_except "locked" {
-              // Room plugin for tab switching
               bind "Ctrl y" {
                   LaunchOrFocusPlugin "file:${room}" {
                       floating true
@@ -56,51 +51,39 @@ in merge <| mkIf config.isDesktop {
           }
           
           normal {
-              // tab navigation 
               bind "Super h" { GoToPreviousTab; }
               bind "Super l" { GoToNextTab; }
               bind "Super t" { NewTab; }
               bind "Super w" { CloseTab; }
               
-              // pane navigation 
               bind "Ctrl h" { MoveFocus "Left"; }
               bind "Ctrl j" { MoveFocus "Down"; }
               bind "Ctrl k" { MoveFocus "Up"; }
               bind "Ctrl l" { MoveFocus "Right"; }
               
-              // pane resizing
               bind "Super Ctrl h" { Resize "Increase Left"; }
               bind "Super Ctrl j" { Resize "Increase Down"; }
               bind "Super Ctrl k" { Resize "Increase Up"; }
               bind "Super Ctrl l" { Resize "Increase Right"; }
               
-              // pane management
               bind "Super d" { NewPane "Right"; }
               bind "Super Shift d" { NewPane "Down"; }
               bind "Super Shift w" { CloseFocus; }
               
-              // pane movement
               bind "Super Shift h" { MovePane "Left"; }
               bind "Super Shift j" { MovePane "Down"; }
               bind "Super Shift k" { MovePane "Up"; }
               bind "Super Shift l" { MovePane "Right"; }
               
-              // stacked panes management (swap layouts)
               bind "Super b" { NextSwapLayout; }
               bind "Super Shift b" { PreviousSwapLayout; }
               bind "Super e" { TogglePaneEmbedOrFloating; }
               
-              // fullscreen and frames
               bind "Super f" { ToggleFocusFullscreen; }
               bind "Super z" { TogglePaneFrames; }
               
-              // tab movement
               bind "Super Ctrl Shift h" { MoveTab "Left"; }
               bind "Super Ctrl Shift l" { MoveTab "Right"; }
-              
-              // mode switching
-              bind "Ctrl a" { SwitchToMode "Tmux"; }
-              bind "Super s" { SwitchToMode "Session"; }
               
           }
           
@@ -148,26 +131,22 @@ in merge <| mkIf config.isDesktop {
       }
     '';
     
-    # Create default layout file with zjstatus
-    xdg.configFile."zellij/layouts/default.kdl".text = ''
+    xdg.configFile."zellij/layouts/default.kdl".text = /* kdl */ ''
       layout {
           default_tab_template {
               children
               pane size=1 borderless=true {
                   plugin location="file:${zjstatus.packages.${pkgs.system}.default}/bin/zjstatus.wasm" {
-                      // format for notifications and status
-                      format_left  "#[fg=#${stripHash colors.yellow},bold]#[bg=#${stripHash colors.bg1}] {mode}#[bg=#${stripHash colors.yellow},fg=#${stripHash colors.bg0_h},bold] {session} "
+                      format_left  "#[fg=#${stripHash colors.yellow},bold]#[bg=#${stripHash colors.bg1}] {mode} | #[bg=#${stripHash colors.yellow},fg=#${stripHash colors.bg0_h},bold] {session} "
                       format_center "#[fg=#${stripHash colors.fg2},bg=#${stripHash colors.bg1}]{tabs}"
                       format_right "#[fg=#${stripHash colors.fg2},bg=#${stripHash colors.bg1}] {notifications}"
                       format_space "#[bg=#${stripHash colors.bg0_h}]"
                       format_hide_on_overlength true
                       format_precedence "crl"
               
-                      // notification settings for Claude Code sessions and commands
                       notification_format_unread           "#[fg=#${stripHash colors.yellow},bold]●"
                       notification_format_no_notifications "#[fg=#${stripHash colors.bg2}]○"
                       
-                      // tab formatting with bell alerts
                       tab_normal               "#[fg=#${stripHash colors.fg4}] {name} "
                       tab_normal_fullscreen    "#[fg=#${stripHash colors.fg4}] {name}[] "
                       tab_normal_sync          "#[fg=#${stripHash colors.fg4}] {name}<> "
@@ -179,7 +158,6 @@ in merge <| mkIf config.isDesktop {
                       tab_bell_fullscreen      "#[fg=#${stripHash colors.bright_red},bold]!{name}[] "
                       tab_bell_sync            "#[fg=#${stripHash colors.bright_red},bold]!{name}<> "
               
-                      // mode indicators
                       mode_normal        "#[fg=#${stripHash colors.yellow},bold] NORMAL"
                       mode_locked        "#[fg=#${stripHash colors.yellow},bold] LOCKED"
                       mode_resize        "#[fg=#${stripHash colors.bright_purple},bold] RESIZE"
@@ -203,7 +181,6 @@ in merge <| mkIf config.isDesktop {
               }
           }
           
-          // Swap layouts for different pane arrangements
           swap_tiled_layout name="vertical" {
               tab max_panes=5 {
                   pane split_direction="vertical" {
