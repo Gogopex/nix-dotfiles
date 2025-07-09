@@ -104,6 +104,7 @@ in merge <| mkIf config.isDesktop {
               // mode switching
               bind "Ctrl a" { SwitchToMode "Tmux"; }
               bind "Super s" { SwitchToMode "Session"; }
+              
           }
           
           session {
