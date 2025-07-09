@@ -156,44 +156,44 @@ in merge <| mkIf config.isDesktop {
               pane size=1 borderless=true {
                   plugin location="file:${zjstatus.packages.${pkgs.system}.default}/bin/zjstatus.wasm" {
                       // format for notifications and status
-                      format_left  "#[fg=fabd2f,bold]#[bg=3c3836] {mode}#[bg=fabd2f,fg=1d2021,bold] {session} "
-                      format_center "#[fg=${stripHash colors.fg2},bg=${stripHash colors.bg1}]{tabs}"
-                      format_right "#[fg=${stripHash colors.fg2},bg=${stripHash colors.bg1}] {notifications}"
-                      format_space "#[bg=${stripHash colors.bg0_h}]"
+                      format_left  "#[fg=#${stripHash colors.yellow},bold]#[bg=#${stripHash colors.bg1}] {mode}#[bg=#${stripHash colors.yellow},fg=#${stripHash colors.bg0_h},bold] {session} "
+                      format_center "#[fg=#${stripHash colors.fg2},bg=#${stripHash colors.bg1}]{tabs}"
+                      format_right "#[fg=#${stripHash colors.fg2},bg=#${stripHash colors.bg1}] {notifications}"
+                      format_space "#[bg=#${stripHash colors.bg0_h}]"
                       format_hide_on_overlength true
                       format_precedence "crl"
               
                       // notification settings for Claude Code sessions and commands
-                      notification_format_unread           "#[fg=${stripHash colors.yellow},bold]●"
-                      notification_format_no_notifications "#[fg=${stripHash colors.bg2}]○"
+                      notification_format_unread           "#[fg=#${stripHash colors.yellow},bold]●"
+                      notification_format_no_notifications "#[fg=#${stripHash colors.bg2}]○"
                       
                       // tab formatting with bell alerts
-                      tab_normal               "#[fg=${stripHash colors.fg4}] {name} "
-                      tab_normal_fullscreen    "#[fg=${stripHash colors.fg4}] {name}[] "
-                      tab_normal_sync          "#[fg=${stripHash colors.fg4}] {name}<> "
-                      tab_active               "#[fg=${stripHash colors.bright_yellow},bold] {name} "
-                      tab_active_fullscreen    "#[fg=${stripHash colors.bright_yellow},bold] {name}[] "
-                      tab_active_sync          "#[fg=${stripHash colors.bright_yellow},bold] {name}<> "
+                      tab_normal               "#[fg=#${stripHash colors.fg4}] {name} "
+                      tab_normal_fullscreen    "#[fg=#${stripHash colors.fg4}] {name}[] "
+                      tab_normal_sync          "#[fg=#${stripHash colors.fg4}] {name}<> "
+                      tab_active               "#[fg=#${stripHash colors.bright_yellow},bold] {name} "
+                      tab_active_fullscreen    "#[fg=#${stripHash colors.bright_yellow},bold] {name}[] "
+                      tab_active_sync          "#[fg=#${stripHash colors.bright_yellow},bold] {name}<> "
                       
-                      tab_bell                 "#[fg=${stripHash colors.bright_red},bold]!{name} "
-                      tab_bell_fullscreen      "#[fg=${stripHash colors.bright_red},bold]!{name}[] "
-                      tab_bell_sync            "#[fg=${stripHash colors.bright_red},bold]!{name}<> "
+                      tab_bell                 "#[fg=#${stripHash colors.bright_red},bold]!{name} "
+                      tab_bell_fullscreen      "#[fg=#${stripHash colors.bright_red},bold]!{name}[] "
+                      tab_bell_sync            "#[fg=#${stripHash colors.bright_red},bold]!{name}<> "
               
                       // mode indicators
-                      mode_normal        "#[fg=${stripHash colors.yellow},bold] NORMAL"
-                      mode_locked        "#[fg=${stripHash colors.yellow},bold] LOCKED"
-                      mode_resize        "#[fg=${stripHash colors.bright_purple},bold] RESIZE"
-                      mode_pane          "#[fg=${stripHash colors.blue},bold] PANE"
-                      mode_tab           "#[fg=${stripHash colors.purple},bold] TAB"
-                      mode_scroll        "#[fg=${stripHash colors.yellow},bold] SCROLL"
-                      mode_enter_search  "#[fg=${stripHash colors.yellow},bold] SEARCH"
-                      mode_search        "#[fg=${stripHash colors.yellow},bold] SEARCH"
-                      mode_rename_tab    "#[fg=${stripHash colors.purple},bold] RENAME"
-                      mode_rename_pane   "#[fg=${stripHash colors.blue},bold] RENAME"
-                      mode_session       "#[fg=${stripHash colors.bright_purple},bold] SESSION"
-                      mode_move          "#[fg=${stripHash colors.yellow},bold] MOVE"
-                      mode_prompt        "#[fg=${stripHash colors.yellow},bold] PROMPT"
-                      mode_tmux          "#[fg=${stripHash colors.green},bold] TMUX"
+                      mode_normal        "#[fg=#${stripHash colors.yellow},bold] NORMAL"
+                      mode_locked        "#[fg=#${stripHash colors.yellow},bold] LOCKED"
+                      mode_resize        "#[fg=#${stripHash colors.bright_purple},bold] RESIZE"
+                      mode_pane          "#[fg=#${stripHash colors.blue},bold] PANE"
+                      mode_tab           "#[fg=#${stripHash colors.purple},bold] TAB"
+                      mode_scroll        "#[fg=#${stripHash colors.yellow},bold] SCROLL"
+                      mode_enter_search  "#[fg=#${stripHash colors.yellow},bold] SEARCH"
+                      mode_search        "#[fg=#${stripHash colors.yellow},bold] SEARCH"
+                      mode_rename_tab    "#[fg=#${stripHash colors.purple},bold] RENAME"
+                      mode_rename_pane   "#[fg=#${stripHash colors.blue},bold] RENAME"
+                      mode_session       "#[fg=#${stripHash colors.bright_purple},bold] SESSION"
+                      mode_move          "#[fg=#${stripHash colors.yellow},bold] MOVE"
+                      mode_prompt        "#[fg=#${stripHash colors.yellow},bold] PROMPT"
+                      mode_tmux          "#[fg=#${stripHash colors.green},bold] TMUX"
               
                       // datetime
                       // datetime        "#[fg=${stripHash colors.fg4},bold] {format} "
