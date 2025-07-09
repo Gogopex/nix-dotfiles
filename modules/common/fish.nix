@@ -1,5 +1,9 @@
 { lib, pkgs, ... }: let
   inherit (lib) enabled merge;
+  # Set this to true if you want Zellij to auto-start
+  zellijAutoStart = false;
+  # Main session name for zmain command (can be changed)
+  mainSessionName = "main";
 in merge {
   home-manager.sharedModules = [{
     programs.fish = enabled {
@@ -20,8 +24,8 @@ in merge {
         zls = "zellij list-sessions";
         zdel = "zellij delete-session";
         zforce = "zellij attach --force-run-commands";
+        zclean = "zclean";
         # @FIX: broken 
-        zt = "zellij_tab_switcher";
         notify = "run_with_notify";
         # @FIX: broken 
         claude-check = "check_claude_sessions";
@@ -120,11 +124,14 @@ in merge {
           end
         end
         
+        ${if zellijAutoStart then ''
         if test "$TERM" = "xterm-ghostty"; and test -z "$ZELLIJ"; and test -z "$NO_ZELLIJ"; and test -z "$GHOSTTY_QUICK_TERMINAL"
           if command -v zellij >/dev/null 2>&1
-            zellij attach circular-crab
+            # Attach to an existing session or create a new one
+            zellij attach -c
           end
         end
+        '' else ""}
         
         if not functions -q fisher
           # Install fisher if not present
@@ -331,50 +338,51 @@ in merge {
           end
         '';
         
-        zellij_tab_switcher = ''
-          function zellij_tab_switcher
-            # Get all tab names from zellij
-            set -l tabs (zellij action query-tab-names 2>/dev/null)
-            
-            if test -z "$tabs"
-              echo "No tabs found"
-              return 1
-            end
-            
-            # Add line numbers for quick selection and pipe to fzf
-            set -l selected (printf '%s\n' $tabs | nl -w2 -s': ' | \
-              fzf --height=40% --layout=reverse --border \
-                  --prompt="Select tab (or press number): " \
-                  --preview-window=hidden \
-                  --bind='1:accept,2:accept,3:accept,4:accept,5:accept,6:accept,7:accept,8:accept,9:accept')
-            
-            if test -n "$selected"
-              # Extract the tab name (remove the line number prefix)
-              set -l tab_name (echo $selected | sed 's/^[[:space:]]*[0-9]*:[[:space:]]*//')
-              
-              # Switch to the selected tab
-              zellij action go-to-tab-name "$tab_name"
-              
-              # Close the floating pane (if we're in one)
-              zellij action toggle-floating-panes 2>/dev/null
-            end
-          end
-        '';
-        
         zmain = ''
           function zmain
-            echo "Switching to main session (circular-crab)..."
-            zellij attach circular-crab
+            echo "Switching to main session (${mainSessionName})..."
+            zellij attach ${mainSessionName} -c
           end
         '';
         
         zwork = ''
           function zwork
             echo "Switching to work session..."
-            # Create work session with layout if it doesn't exist, otherwise just attach
-            zellij --layout work --session work
+            zellij attach work -c
           end
         '';
+        
+        zclean = ''
+          function zclean
+            # Clean up EXITED Zellij sessions
+            set -l exited_sessions (zellij list-sessions | grep "EXITED" | awk '{print $1}' | sed 's/\x1b\[[0-9;]*m//g')
+            set -l count (count $exited_sessions)
+            
+            if test $count -eq 0
+              echo "No exited sessions to clean up."
+              return 0
+            end
+            
+            echo "Found $count exited sessions to clean up:"
+            for session in $exited_sessions
+              echo "  - $session"
+            end
+            
+            read -P "Delete all exited sessions? [y/N] " -n 1 confirm
+            echo
+            
+            if test "$confirm" = "y" -o "$confirm" = "Y"
+              for session in $exited_sessions
+                echo "Deleting session: $session"
+                zellij delete-session $session
+              end
+              echo "Cleaned up $count exited sessions."
+            else
+              echo "Cleanup cancelled."
+            end
+          end
+        '';
+        
       };
       
       plugins = [

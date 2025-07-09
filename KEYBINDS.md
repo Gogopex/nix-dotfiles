@@ -69,33 +69,32 @@ keybind = cmd+shift+t=new_tab
 - `Cmd + f`: Toggle pane fullscreen (zoom / unzoom)
 - `Cmd + z`: Toggle pane frames (stack view)
 
-#### Stacked Panes Management
-- `Cmd + b`: Next swap layout (cycle through layouts including stacked)
+#### Swap Layouts (Pane Arrangements)
+- `Cmd + b`: Next swap layout (cycle through vertical, horizontal, and stacked layouts)
 - `Cmd + Shift + b`: Previous swap layout (reverse cycle)
+- `Cmd + e`: Toggle pane embed or floating
+
+Available swap layouts:
+- **vertical**: Panes arranged in vertical columns
+- **horizontal**: Panes arranged in horizontal rows  
+- **stacked**: Panes stacked on top of each other (requires 5+ panes)
 
 #### Tab Movement
 - `Opt + i`: Move tab left
 - `Opt + o`: Move tab right
 
-#### Legend
-zoom = focused pane takes full tab size but layout is preserved
-stack view = borders hidden so panes appear overlapped
-
-- `Cmd + Shift + t`: New Ghostty tab (handled by Ghostty)
-- `Cmd + t`: New Zellij tab/session (passed through to Zellij)
-- `Cmd + d`: New Zellij pane split right (passed through to Zellij)
-- `Cmd + Shift + d`: New Zellij pane split down (passed through to Zellij)
-- `Cmd + Ctrl + Shift + Left/Right`: Move Ghostty tab left/right (handled by Ghostty)
-- `Cmd + Ctrl + Shift + h/l`: Move Zellij tab left/right (passed through to Zellij)
-
 #### Session Management
-- `Ctrl + o` + `w`: Open session-manager
+- `Cmd + s` then `w`: Open session-manager
 
 #### Mode Switching
 - `Ctrl + a`: Switch to Tmux mode
 - `Ctrl + g`: Switch to Locked mode
 - `Ctrl + ;`: Switch to Scroll mode
 - `Ctrl + g`: Switch back to Normal mode
+
+#### Legend
+- **zoom**: Focused pane takes full tab size but layout is preserved
+- **stack view**: Borders hidden so panes appear overlapped
 
 ## Integration Notes
 - Ghostty window management uses `Cmd + Shift` combinations to avoid conflicts
@@ -159,21 +158,22 @@ stack view = borders hidden so panes appear overlapped
 
 ## Fish Shell & FZF Integration
 
-### FZF Keybindings 
+### FZF Keybindings (fzf.fish plugin defaults)
 - `Ctrl + Alt + f`: Search files and directories with fzf
-- `Ctrl + Alt + l`: **Search Git Log** 
-- `Ctrl + Alt + s`: **Search Git Status** 
+- `Ctrl + Alt + s`: Search Git status with fzf
 - `Ctrl + r`: Search command history with fzf
 - `Ctrl + Alt + p`: Search running processes with fzf
 - `Ctrl + v`: Search shell variables with fzf
+
+### Custom Fish Keybindings
 - `Ctrl + Alt + v`: Toggle vim mode in Fish shell
-- `Ctrl + Alt + l`: Open links from Zellij scrollback with fzf selection
+- `Ctrl + Alt + l`: Open links from Zellij scrollback with fzf selection (overrides default Git log search)
 - `Ctrl + ;`: Toggle between vi mode and default mode
 
 ## Hammerspoon (App Switching)
 
-- `Ctrl + Shift + 1`: Ghostty
-- `Ctrl + Shift + 2`: Arc
-- `Ctrl + Shift + 3`: Obsidian
-- `Ctrl + Shift + 4`: Sublime Text
+- `Shift + Ctrl + Alt + Cmd + 1`: Ghostty
+- `Shift + Ctrl + Alt + Cmd + 2`: Arc
+- `Shift + Ctrl + Alt + Cmd + 3`: Obsidian
+- `Shift + Ctrl + Alt + Cmd + 4`: Sublime Text
 
