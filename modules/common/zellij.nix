@@ -2,13 +2,10 @@
   inherit (lib) enabled merge mkIf;
   zjstatus = inputs.zjstatus or null;
   
-  # Theme colors
   colors = config.theme.colors;
   
-  # Helper function to strip # from color values for zjstatus
   stripHash = color: builtins.substring 1 6 color;
   
-  # Fetch room plugin
   room = pkgs.fetchurl {
     url = "https://github.com/rvcas/room/releases/download/v1.2.0/room.wasm";
     sha256 = "sha256-t6GPP7OOztf6XtBgzhLF+edUU294twnu0y5uufXwrkw=";
@@ -159,7 +156,7 @@ in merge <| mkIf config.isDesktop {
               pane size=1 borderless=true {
                   plugin location="file:${zjstatus.packages.${pkgs.system}.default}/bin/zjstatus.wasm" {
                       // format for notifications and status
-                      format_left  "#[fg=${stripHash colors.yellow},bold]#[bg=${stripHash colors.bg1}] {mode}#[bg=${stripHash colors.yellow},fg=${stripHash colors.bg0_h},bold] {session} "
+                      format_left  "#[fg=fabd2f,bold]#[bg=3c3836] {mode}#[bg=fabd2f,fg=1d2021,bold] {session} "
                       format_center "#[fg=${stripHash colors.fg2},bg=${stripHash colors.bg1}]{tabs}"
                       format_right "#[fg=${stripHash colors.fg2},bg=${stripHash colors.bg1}] {notifications}"
                       format_space "#[bg=${stripHash colors.bg0_h}]"
