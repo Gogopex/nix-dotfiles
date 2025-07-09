@@ -243,19 +243,33 @@ in merge {
               return 1
             end
             
-            # Extract URLs directly from Zellij scrollback without temp file
-            # Improved regex handles common URL patterns and edge cases
-            set -l urls (zellij action dump-screen - 2>/dev/null | \
-              string match -ra 'https?://[^\s<>"{}|\\^`\[\]]+' | \
-              string replace -r '[.,;:!?]$' '' | \
+            # Create temp file for processing
+            set -l temp_file (mktemp)
+            
+            # Dump the full scrollback
+            zellij action dump-screen $temp_file 2>/dev/null
+            
+            # Process the dump to handle wrapped URLs
+            # First, join lines that might be wrapped URLs
+            set -l content (cat $temp_file | tr '\n' ' ')
+            
+            # Extract URLs with comprehensive pattern
+            set -l urls (echo $content | \
+              rg -o 'https?://[a-zA-Z0-9][a-zA-Z0-9\-._~:/?#\[\]@!$&()*+,;=%]+' | \
+              string replace -r '[\s\|│┃].*$' "" | \
+              string replace -r '[.,;:!?\])\"]+$' "" | \
+              string match -r 'https?://[^/]+\.[^/]+.*' | \
               sort -u)
+            
+            # Clean up temp file
+            rm -f $temp_file
             
             if test (count $urls) -eq 0
               echo "No URLs found in current Zellij pane"
               return 1
             end
             
-            # Use fzf with preview showing line count
+            # Use fzf for selection
             set -l selected (printf '%s\n' $urls | \
               fzf --prompt="Select URL to open: " \
                   --preview-window=hidden \

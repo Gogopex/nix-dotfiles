@@ -135,8 +135,10 @@ in merge <| mkIf config.isDesktop {
       layout {
           default_tab_template {
               children
-              pane size=1 borderless=true {
+OI
+              pane size=2 borderless=true {
                   plugin location="file:${zjstatus.packages.${pkgs.system}.default}/bin/zjstatus.wasm" {
+
                       format_left  "#[fg=#${stripHash colors.yellow},bold]#[bg=#${stripHash colors.bg1}] {mode} | #[bg=#${stripHash colors.yellow},fg=#${stripHash colors.bg0_h},bold] {session} "
                       format_center "#[fg=#${stripHash colors.fg2},bg=#${stripHash colors.bg1}]{tabs}"
                       format_right "#[fg=#${stripHash colors.fg2},bg=#${stripHash colors.bg1}] {notifications}"
