@@ -135,45 +135,44 @@ in merge <| mkIf config.isDesktop {
       layout {
           default_tab_template {
               children
-OI
               pane size=2 borderless=true {
                   plugin location="file:${zjstatus.packages.${pkgs.system}.default}/bin/zjstatus.wasm" {
 
-                      format_left  "#[fg=#${stripHash colors.yellow},bold]#[bg=#${stripHash colors.bg1}] {mode} | #[bg=#${stripHash colors.yellow},fg=#${stripHash colors.bg0_h},bold] {session} "
-                      format_center "#[fg=#${stripHash colors.fg2},bg=#${stripHash colors.bg1}]{tabs}"
-                      format_right "#[fg=#${stripHash colors.fg2},bg=#${stripHash colors.bg1}] {notifications}"
-                      format_space "#[bg=#${stripHash colors.bg0_h}]"
+                      format_left  "#[fg=#ffffff,bold]#[bg=#000000] {mode} #[bg=#000000]    #[bg=#ffffff,fg=#000000,bold] {session} "
+                      format_center "#[fg=#ffffff,bg=#000000]{tabs}"
+                      format_right "#[fg=#ffffff,bg=#000000] {notifications}"
+                      format_space "#[bg=#000000]"
                       format_hide_on_overlength true
                       format_precedence "crl"
               
-                      notification_format_unread           "#[fg=#${stripHash colors.yellow},bold]●"
-                      notification_format_no_notifications "#[fg=#${stripHash colors.bg2}]○"
+                      notification_format_unread           "#[fg=#ffffff,bold]●"
+                      notification_format_no_notifications "#[fg=#808080]○"
                       
-                      tab_normal               "#[fg=#${stripHash colors.fg4}] {name} "
-                      tab_normal_fullscreen    "#[fg=#${stripHash colors.fg4}] {name}[] "
-                      tab_normal_sync          "#[fg=#${stripHash colors.fg4}] {name}<> "
-                      tab_active               "#[fg=#${stripHash colors.bright_yellow},bold] {name} "
-                      tab_active_fullscreen    "#[fg=#${stripHash colors.bright_yellow},bold] {name}[] "
-                      tab_active_sync          "#[fg=#${stripHash colors.bright_yellow},bold] {name}<> "
+                      tab_normal               "#[fg=#808080] {name} "
+                      tab_normal_fullscreen    "#[fg=#808080] {name}[] "
+                      tab_normal_sync          "#[fg=#808080] {name}<> "
+                      tab_active               "#[fg=#ffffff,bold] {name} "
+                      tab_active_fullscreen    "#[fg=#ffffff,bold] {name}[] "
+                      tab_active_sync          "#[fg=#ffffff,bold] {name}<> "
                       
-                      tab_bell                 "#[fg=#${stripHash colors.bright_red},bold]!{name} "
-                      tab_bell_fullscreen      "#[fg=#${stripHash colors.bright_red},bold]!{name}[] "
-                      tab_bell_sync            "#[fg=#${stripHash colors.bright_red},bold]!{name}<> "
+                      tab_bell                 "#[fg=#ffffff,bold]!{name} "
+                      tab_bell_fullscreen      "#[fg=#ffffff,bold]!{name}[] "
+                      tab_bell_sync            "#[fg=#ffffff,bold]!{name}<> "
               
-                      mode_normal        "#[fg=#${stripHash colors.yellow},bold] NORMAL"
-                      mode_locked        "#[fg=#${stripHash colors.yellow},bold] LOCKED"
-                      mode_resize        "#[fg=#${stripHash colors.bright_purple},bold] RESIZE"
-                      mode_pane          "#[fg=#${stripHash colors.blue},bold] PANE"
-                      mode_tab           "#[fg=#${stripHash colors.purple},bold] TAB"
-                      mode_scroll        "#[fg=#${stripHash colors.yellow},bold] SCROLL"
-                      mode_enter_search  "#[fg=#${stripHash colors.yellow},bold] SEARCH"
-                      mode_search        "#[fg=#${stripHash colors.yellow},bold] SEARCH"
-                      mode_rename_tab    "#[fg=#${stripHash colors.purple},bold] RENAME"
-                      mode_rename_pane   "#[fg=#${stripHash colors.blue},bold] RENAME"
-                      mode_session       "#[fg=#${stripHash colors.bright_purple},bold] SESSION"
-                      mode_move          "#[fg=#${stripHash colors.yellow},bold] MOVE"
-                      mode_prompt        "#[fg=#${stripHash colors.yellow},bold] PROMPT"
-                      mode_tmux          "#[fg=#${stripHash colors.green},bold] TMUX"
+                      mode_normal        "#[fg=#ffffff,bold] NORMAL"
+                      mode_locked        "#[fg=#ffffff,bold] LOCKED"
+                      mode_resize        "#[fg=#ffffff,bold] RESIZE"
+                      mode_pane          "#[fg=#ffffff,bold] PANE"
+                      mode_tab           "#[fg=#ffffff,bold] TAB"
+                      mode_scroll        "#[fg=#ffffff,bold] SCROLL"
+                      mode_enter_search  "#[fg=#ffffff,bold] SEARCH"
+                      mode_search        "#[fg=#ffffff,bold] SEARCH"
+                      mode_rename_tab    "#[fg=#ffffff,bold] RENAME"
+                      mode_rename_pane   "#[fg=#ffffff,bold] RENAME"
+                      mode_session       "#[fg=#ffffff,bold] SESSION"
+                      mode_move          "#[fg=#ffffff,bold] MOVE"
+                      mode_prompt        "#[fg=#ffffff,bold] PROMPT"
+                      mode_tmux          "#[fg=#ffffff,bold] TMUX"
               
                       // datetime
                       // datetime        "#[fg=${stripHash colors.fg4},bold] {format} "
