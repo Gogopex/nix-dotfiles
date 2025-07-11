@@ -22,13 +22,10 @@ in merge {
         zls = "zellij list-sessions";
         zdel = "zellij delete-session";
         zforce = "zellij attach --force-run-commands";
-        zclean = "zclean";
         # @FIX: broken 
         notify = "run_with_notify";
         # @FIX: broken 
         claude-check = "check_claude_sessions";
-        zm = "zmain";
-        zw = "zwork";
       };
       
       shellInit = /* fish */ ''
@@ -247,19 +244,56 @@ in merge {
             set -l temp_file (mktemp)
             
             # Dump the full scrollback
-            zellij action dump-screen $temp_file 2>/dev/null
+            if not zellij action dump-screen $temp_file
+              echo "Error: Failed to dump Zellij screen"
+              rm -f $temp_file
+              return 1
+            end
             
-            # Process the dump to handle wrapped URLs
-            # First, join lines that might be wrapped URLs
-            set -l content (cat $temp_file | tr '\n' ' ')
+            # Initialize empty URL list
+            set -l all_urls
             
-            # Extract URLs with comprehensive pattern
-            set -l urls (echo $content | \
-              rg -o 'https?://[a-zA-Z0-9][a-zA-Z0-9\-._~:/?#\[\]@!$&()*+,;=%]+' | \
-              string replace -r '[\s\|│┃].*$' "" | \
-              string replace -r '[.,;:!?\])\"]+$' "" | \
-              string match -r 'https?://[^/]+\.[^/]+.*' | \
-              sort -u)
+            # Pass 1: Extract standard URLs (http, https, ftp, file)
+            # Based on John Gruber's improved regex, adapted for ripgrep
+            set -l standard_urls (cat $temp_file | \
+              rg -o -i '\b(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]' | \
+              string collect)
+            
+            # Pass 2: Extract URLs from markdown links [text](url)
+            set -l markdown_urls (cat $temp_file | \
+              rg -o '\[([^\]]+)\]\(([^)]+)\)' -r '$2' | \
+              string match -r '^https?://.*')
+            
+            # Pass 3: Extract bare domains that look like URLs
+            set -l bare_domains (cat $temp_file | \
+              rg -o '\b([a-zA-Z0-9][-a-zA-Z0-9]*\.)+[a-zA-Z]{2,}\b(/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])?' | \
+              string match -r -v '^(com|org|net|edu|gov|mil|int|example|test|localhost|invalid)$' | \
+              string replace -r '^' 'https://')
+            
+            # Combine all URLs
+            for url in $standard_urls $markdown_urls
+              set all_urls $all_urls $url
+            end
+            
+            # Optionally add bare domains (commented out by default)
+            # for url in $bare_domains
+            #   set all_urls $all_urls $url
+            # end
+            
+            # Post-process URLs
+            set -l clean_urls
+            for url in $all_urls
+              # Remove trailing punctuation but keep it if it's part of the URL structure
+              set -l cleaned (echo $url | string replace -r '([),;:!?\\."\']+)$' ''' | string trim)
+              
+              # Validate URL has a valid structure
+              if string match -q -r '^(https?|ftp|file)://[^/]+' $cleaned
+                set clean_urls $clean_urls $cleaned
+              end
+            end
+            
+            # Remove duplicates and sort
+            set -l urls (printf '%s\n' $clean_urls | sort -u)
             
             # Clean up temp file
             rm -f $temp_file
@@ -269,7 +303,8 @@ in merge {
               return 1
             end
             
-            # Use fzf for selection
+            # Show count and use fzf for selection
+            echo "Found "(count $urls)" URL(s)"
             set -l selected (printf '%s\n' $urls | \
               fzf --prompt="Select URL to open: " \
                   --preview-window=hidden \
@@ -332,50 +367,6 @@ in merge {
           end
         '';
         
-        zmain = ''
-          function zmain
-            echo "Switching to main session (${mainSessionName})..."
-            zellij attach ${mainSessionName} -c
-          end
-        '';
-        
-        zwork = ''
-          function zwork
-            echo "Switching to work session..."
-            zellij attach work -c
-          end
-        '';
-        
-        zclean = ''
-          function zclean
-            # Clean up EXITED Zellij sessions
-            set -l exited_sessions (zellij list-sessions | grep "EXITED" | awk '{print $1}' | sed 's/\x1b\[[0-9;]*m//g')
-            set -l count (count $exited_sessions)
-            
-            if test $count -eq 0
-              echo "No exited sessions to clean up."
-              return 0
-            end
-            
-            echo "Found $count exited sessions to clean up:"
-            for session in $exited_sessions
-              echo "  - $session"
-            end
-            
-            read -P "Delete all exited sessions? [y/N] " -n 1 confirm
-            echo
-            
-            if test "$confirm" = "y" -o "$confirm" = "Y"
-              for session in $exited_sessions
-                echo "Deleting session: $session"
-                zellij delete-session $session
-              end
-              echo "Cleaned up $count exited sessions."
-            else
-              echo "Cleanup cancelled."
-            end
-          end
-        '';
         
       };
       

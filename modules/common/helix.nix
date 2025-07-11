@@ -374,11 +374,6 @@ in merge {
             
             "{" = ["goto_prev_paragraph" "collapse_selection"];
             "}" = ["goto_next_paragraph" "collapse_selection"];
-            "0" = "goto_line_start";
-            "$" = "goto_line_end";
-            "^" = "goto_first_nonwhitespace";
-            G = "goto_file_end";
-            "%" = "match_brackets";
             V = ["select_mode" "extend_to_line_bounds"];
             
             C = [
@@ -394,8 +389,6 @@ in merge {
               "delete_selection"
             ];
             
-            S = "surround_add";
-            
             x = "delete_selection";
             p = ["paste_clipboard_after" "collapse_selection"];
             P = ["paste_clipboard_before" "collapse_selection"];
@@ -405,20 +398,6 @@ in merge {
               "yank_main_selection_to_clipboard"
               "collapse_selection"
             ];
-            
-            # Word movement
-            w = ["move_next_word_start" "move_char_right" "collapse_selection"];
-            W = ["move_next_long_word_start" "move_char_right" "collapse_selection"];
-            e = ["move_next_word_end" "collapse_selection"];
-            E = ["move_next_long_word_end" "collapse_selection"];
-            b = ["move_prev_word_start" "collapse_selection"];
-            B = ["move_prev_long_word_start" "collapse_selection"];
-            
-            # Mode changes
-            i = ["insert_mode" "collapse_selection"];
-            a = ["append_mode" "collapse_selection"];
-            
-            u = ["undo" "collapse_selection"];
             
             esc = ["collapse_selection" "keep_primary_selection"];
             
@@ -437,9 +416,6 @@ in merge {
               "search_selection"
               "search_prev"
             ];
-            
-            j = "move_line_down";
-            k = "move_line_up";
             
             # Delete operations
             d = {
@@ -564,14 +540,8 @@ in merge {
           select = {
             "{" = ["extend_to_line_bounds" "goto_prev_paragraph"];
             "}" = ["extend_to_line_bounds" "goto_next_paragraph"];
-            "0" = "goto_line_start";
-            "$" = "goto_line_end";
-            "^" = "goto_first_nonwhitespace";
-            G = "goto_file_end";
             D = ["extend_to_line_bounds" "delete_selection" "normal_mode"];
             C = ["goto_line_start" "extend_to_line_bounds" "change_selection"];
-            "%" = "match_brackets";
-            S = "surround_add";
             u = ["switch_to_lowercase" "collapse_selection" "normal_mode"];
             U = ["switch_to_uppercase" "collapse_selection" "normal_mode"];
             
