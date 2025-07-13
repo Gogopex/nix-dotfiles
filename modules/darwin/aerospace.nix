@@ -9,6 +9,15 @@ in {
       userSettings = {
         start-at-login = true;
         
+        # Prevent ribbon/accordion layouts
+        default-root-container-layout = "tiles";
+        default-root-container-orientation = "auto";
+        
+        # Keep normalizations for proper tiling
+        enable-normalization-flatten-containers = true;
+        enable-normalization-opposite-orientation-for-nested-containers = true;
+        
+        
         gaps = {
           inner.horizontal = 10;
           inner.vertical = 10;
@@ -20,53 +29,52 @@ in {
           };
         };
         
-        workspace = {
-          "1" = { layout = "tiles"; };
-          "2" = { layout = "tiles"; };
-          "3" = { layout = "tiles"; };
-          "4" = { layout = "tiles"; };
+        workspace-to-monitor-force-assignment = {
+          "1" = "main";
+          "2" = "main";
         };
         
-        mode.main.binding = lib.mkMerge [
-          {
-            "alt-f" = "no-op";
-          }
+        # Main mode - Single entry point
+        mode.main.binding = {
+          "alt-w" = "mode window";      # All window operations
+        };
+        
+        # Window mode - All operations in one place
+        mode.window.binding = {
+          # Focus navigation (switch between windows)
+          h = "focus left";
+          j = "focus down";
+          k = "focus up";
+          l = "focus right";
           
-          # window focus navigation (cmd-alt + hjkl)
-          (mapAttrs' (key: action: nameValuePair "cmd-alt-${key}" action) {
-            h = "focus left";
-            j = "focus down";
-            k = "focus up";
-            l = "focus right";
-          })
+          # Move windows (with Shift)
+          "shift-h" = "move left";
+          "shift-j" = "move down";
+          "shift-k" = "move up";
+          "shift-l" = "move right";
           
-          # window movement (cmd-alt-shift + hjkl)
-          (mapAttrs' (key: action: nameValuePair "cmd-alt-shift-${key}" action) {
-            h = "move left";
-            j = "move down";
-            k = "move up";
-            l = "move right";
-          })
+          # Basic tiling
+          m = "layout tiles";  # Maximize/fill
           
-          # window resizing (cmd-alt-shift + ui)
-          (mapAttrs' (key: action: nameValuePair "cmd-alt-shift-${key}" action) {
-            u = "resize smart -50";
-            i = "resize smart +50";
-          })
+          # Window resizing
+          i = "resize smart +50";
+          o = "resize smart -50";
           
-          # window joining (cmd-alt-shift + yo)
-          (mapAttrs' (key: action: nameValuePair "cmd-alt-shift-${key}" action) {
-            y = "join-with right";
-            o = "join-with down";
-          })
+          # Workspace navigation
+          "1" = "workspace 1";
+          "2" = "workspace 2";
+          "shift-1" = "move-node-to-workspace 1";
+          "shift-2" = "move-node-to-workspace 2";
           
-          # layout and focus management (cmd-alt-shift + nmp)
-          (mapAttrs' (key: action: nameValuePair "cmd-alt-shift-${key}" action) {
-            n = "layout floating tiling";
-            m = "layout tiles";
-            p = "focus-back-and-forth";
-          })
-        ];
+          # Utility
+          f = "layout floating tiling";
+          c = "close";
+          
+          # Exit mode
+          esc = "mode main";
+          enter = "mode main";
+          "alt-w" = "mode main";  # Toggle back
+        };
       };
     };
   }];

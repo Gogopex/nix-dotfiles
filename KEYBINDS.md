@@ -99,39 +99,40 @@ Available swap layouts:
 ## Integration Notes
 - Ghostty window management uses `Cmd + Shift` combinations to avoid conflicts
 
-## AeroSpace Configuration (macOS tiling WM)
+## AeroSpace Configuration (macOS tiling WM - Simplified)
 
-**Layout**: Automatic 2x2 grid arrangement - windows arrange optimally from 1 (fullscreen) to 4 (2x2 grid)
-**Two-tier hierarchy:** `Cmd + Opt + hjkl` for frequent operations, `Cmd + Opt + Shift + right-hand keys` for less frequent
+**Minimal Setup**: Single window mode for basic tiling operations
+**Two workspaces only**: Keeps things simple and focused
 
-#### Frequent Operations (Cmd + Opt + hjkl)
-- `Cmd + Opt + h`: Focus left
-- `Cmd + Opt + j`: Focus down
-- `Cmd + Opt + k`: Focus up
-- `Cmd + Opt + l`: Focus right
+### Window Mode Entry
+- `Alt + w`: Enter Window mode (all operations)
 
-#### Window Movement (Cmd + Opt + Shift + hjkl)
-- `Cmd + Opt + Shift + h`: Move window left
-- `Cmd + Opt + Shift + j`: Move window down
-- `Cmd + Opt + Shift + k`: Move window up
-- `Cmd + Opt + Shift + l`: Move window right
+### Window Mode Operations (Alt + w, then...)
 
-#### Less Frequent Operations (Cmd + Opt + Shift + right-hand keys)
+**Focus Navigation:**
+- `h/j/k/l`: Focus left/down/up/right window
+
+**Move Windows:**
+- `Shift + h/j/k/l`: Move window left/down/up/right
+
+**Basic Tiling:**
+- `m`: Maximize/fill current window
 
 **Window Resizing:**
-- `Cmd + Opt + Shift + u`: Resize smart -50
-- `Cmd + Opt + Shift + i`: Resize smart +50
+- `i`: Increase window size (+50 pixels)
+- `o`: Decrease window size (-50 pixels)
 
-**Window Splits:**
-- `Cmd + Opt + Shift + y`: Join with right (side-by-side)
-- `Cmd + Opt + Shift + o`: Join with down (stacked)
+**Workspace Navigation:**
+- `1`: Switch to workspace 1
+- `2`: Switch to workspace 2
+- `Shift + 1`: Move window to workspace 1
+- `Shift + 2`: Move window to workspace 2
 
-**Layout Management:**
-- `Cmd + Opt + Shift + n`: Toggle floating/tiling
-- `Cmd + Opt + Shift + m`: Tiles (default tiling layout)
+**Utility:**
+- `f`: Toggle floating/tiling
+- `c`: Close window
 
-**Focus Management:**
-- `Cmd + Opt + Shift + p`: Focus back-and-forth (toggle last two windows)
+**Exit:** `Escape`, `Enter`, or `Alt + w`
 
 ## Terminal Output & Link Management
 

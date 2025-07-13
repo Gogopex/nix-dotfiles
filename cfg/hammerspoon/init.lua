@@ -4,6 +4,7 @@ local apps = {
   { key = "2", app = "Arc" },
   { key = "3", app = "Obsidian" },
   { key = "4", app = "Sublime Text" },
+  { key = "5", app = "ChatGPT" },
 }
 
 for _, binding in ipairs(apps) do

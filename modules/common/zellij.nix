@@ -46,6 +46,7 @@ in merge <| mkIf config.isDesktop {
                   LaunchOrFocusPlugin "file:${room}" {
                       floating true
                       ignore_case true
+                      quick_jump true
                   }
               }
           }
@@ -54,12 +55,12 @@ in merge <| mkIf config.isDesktop {
               bind "Super h" { GoToPreviousTab; }
               bind "Super l" { GoToNextTab; }
               bind "Super t" { NewTab; }
-              bind "Super w" { CloseTab; }
+              bind "Super Shift w" { CloseTab; }
               
-              bind "Ctrl h" { MoveFocus "Left"; }
-              bind "Ctrl j" { MoveFocus "Down"; }
-              bind "Ctrl k" { MoveFocus "Up"; }
-              bind "Ctrl l" { MoveFocus "Right"; }
+              // bind "Ctrl h" { MoveFocus "Left"; }
+              // bind "Ctrl j" { MoveFocus "Down"; }
+              // bind "Ctrl k" { MoveFocus "Up"; }
+              // bind "Ctrl l" { MoveFocus "Right"; }
               
               bind "Super Ctrl h" { Resize "Increase Left"; }
               bind "Super Ctrl j" { Resize "Increase Down"; }
@@ -68,7 +69,7 @@ in merge <| mkIf config.isDesktop {
               
               bind "Super d" { NewPane "Right"; }
               bind "Super Shift d" { NewPane "Down"; }
-              bind "Super Shift w" { CloseFocus; }
+              bind "Super w" { CloseFocus; }
               
               bind "Super Shift h" { MovePane "Left"; }
               bind "Super Shift j" { MovePane "Down"; }
@@ -82,9 +83,8 @@ in merge <| mkIf config.isDesktop {
               bind "Super f" { ToggleFocusFullscreen; }
               bind "Super z" { TogglePaneFrames; }
               
-              bind "Super Ctrl Shift h" { MoveTab "Left"; }
-              bind "Super Ctrl Shift l" { MoveTab "Right"; }
-              
+              // bind "Super Ctrl Shift h" { MoveTab "Left"; }
+              // bind "Super Ctrl Shift l" { MoveTab "Right"; }
           }
           
           session {
@@ -140,7 +140,7 @@ in merge <| mkIf config.isDesktop {
 
                       format_left  "#[fg=#${stripHash colors.fg2},bold,bg=#${stripHash colors.bg0_h}] {mode} #[bg=#${stripHash colors.bg0}]    #[bg=#${stripHash colors.bg1},fg=#${stripHash colors.fg1},bold] {session} "
                       format_center "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}]{tabs}"
-                      format_right "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}] {notifications}"
+                      format_right "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}] {notifications} #[fg=#${stripHash colors.fg2},bg=#${stripHash colors.bg0}] {swap_layout}"
                       format_space "#[bg=#${stripHash colors.bg0}]"
                       format_hide_on_overlength true
                       format_precedence "crl"
@@ -159,6 +159,7 @@ in merge <| mkIf config.isDesktop {
                       tab_bell_fullscreen      "#[fg=#${stripHash colors.bright_red},bold]!{name}[] "
                       tab_bell_sync            "#[fg=#${stripHash colors.bright_red},bold]!{name}<> "
               
+                      // @TODO: switch to {name}
                       mode_normal        "#[fg=#${stripHash colors.fg2},bold] NORMAL"
                       mode_locked        "#[fg=#${stripHash colors.fg2},bold] LOCKED"
                       mode_resize        "#[fg=#${stripHash colors.fg2},bold] RESIZE"
@@ -225,7 +226,7 @@ in merge <| mkIf config.isDesktop {
           }
           
           swap_tiled_layout name="stacked" {
-              tab min_panes=5 {
+              tab min_panes=3 {
                   pane split_direction="vertical" {
                       pane
                       pane stacked=true { children; }

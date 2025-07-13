@@ -374,6 +374,7 @@ in merge {
         { name = "grc";     src = pkgs.fishPlugins.grc.src; }
         { name = "hydro";   src = pkgs.fishPlugins.hydro.src; }
         { name = "gruvbox"; src = pkgs.fishPlugins.gruvbox.src; }
+        { name = "fzf-fish"; src = pkgs.fishPlugins.fzf-fish.src; }
       ];
     };
   }];
