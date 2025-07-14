@@ -1,0 +1,153 @@
+{ config, lib, pkgs, ... }: let
+  inherit (lib) merge mkIf;
+  inherit (builtins) toJSON;
+  
+  # Zed settings using theme configuration
+  zedSettings = {
+    # Auto-install extensions for common languages
+    auto_install_extensions = {
+      json = true;
+      markdown = true;
+      nix = true;
+      python = true;
+      rust = true;
+      swift = true;
+      toml = true;
+    };
+    
+    # Disable auto-update since Nix manages the package
+    auto_update = false;
+    
+    # Font configuration from theme
+    buffer_font_family = config.theme.font.mono.name;
+    buffer_font_size = config.theme.font.size.normal;
+    ui_font_family = config.theme.font.sans.name;
+    ui_font_size = config.theme.font.size.normal;
+    
+    # Preserve existing preferences
+    confirm_quit = true;
+    features = {
+      copilot = false;
+    };
+    restore_on_startup = "last_workspace";
+    telemetry = {
+      diagnostics = false;
+      metrics = false;
+    };
+    theme = "Gruvbox Dark";
+    vim_mode = true;
+    
+    # Editor settings similar to other editors
+    tab_size = 2;
+    hard_tabs = false;
+    soft_wrap = "none";
+    show_whitespaces = "selection";
+    show_indent_guides = true;
+    indent_guides = {
+      enabled = true;
+      coloring = "indent_aware";
+    };
+    
+    # Terminal settings
+    terminal = {
+      font_family = config.theme.font.mono.name;
+      font_size = config.theme.font.size.normal;
+    };
+    
+    # Git settings
+    git = {
+      inline_blame = {
+        enabled = true;
+      };
+    };
+    
+    # Language-specific settings
+    languages = {
+      Nix = {
+        tab_size = 2;
+        formatter = {
+          external = {
+            command = "nixfmt";
+            arguments = [];
+          };
+        };
+      };
+      Rust = {
+        tab_size = 4;
+        formatter = {
+          external = {
+            command = "rustfmt";
+            arguments = ["--edition=2021"];
+          };
+        };
+      };
+      Python = {
+        tab_size = 4;
+        formatter = {
+          external = {
+            command = "ruff";
+            arguments = ["format" "-"];
+          };
+        };
+      };
+      JavaScript = {
+        tab_size = 2;
+        formatter = {
+          external = {
+            command = "prettier";
+            arguments = ["--parser" "babel"];
+          };
+        };
+      };
+      TypeScript = {
+        tab_size = 2;
+        formatter = {
+          external = {
+            command = "prettier";
+            arguments = ["--parser" "typescript"];
+          };
+        };
+      };
+    };
+  };
+  
+  # Zed keymap configuration (optional, can be extended)
+  zedKeymap = [
+    # Vim-style navigation enhancements
+    {
+      context = "Editor && vim_mode == normal";
+      bindings = {
+        # Line navigation like in helix/neovim configs
+        "g h" = "editor::MoveToBeginningOfLine";
+        "g l" = "editor::MoveToEndOfLine";
+        "g g" = "editor::MoveToBeginning";
+        "G" = "editor::MoveToEnd";
+        
+        # Clipboard operations with space leader
+        "space y" = "editor::Copy";
+        "space d" = "editor::Delete";
+      };
+    }
+    {
+      context = "Editor && vim_mode == visual";
+      bindings = {
+        # Visual mode clipboard operations
+        "space y" = "editor::Copy";
+        "space d" = "editor::Delete";
+      };
+    }
+  ];
+
+in merge {
+  home-manager.sharedModules = [{
+    # Ensure Zed configuration directory exists
+    home.file.".config/zed/settings.json" = mkIf pkgs.stdenv.isDarwin {
+      text = toJSON zedSettings;
+    };
+    
+    # Optional: Add keymap configuration
+    home.file.".config/zed/keymap.json" = mkIf pkgs.stdenv.isDarwin {
+      text = toJSON zedKeymap;
+    };
+  }];
+}

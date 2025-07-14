@@ -15,6 +15,7 @@ in merge {
         curl
         wget
         direnv
+        broot
         
         zellij
         delta

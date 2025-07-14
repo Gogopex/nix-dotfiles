@@ -15,7 +15,7 @@ in merge {
           auto-save = {
             focus-lost = true;
           };
-          completion-trigger-len = 0;
+          completion-trigger-len = 2;
           mouse = false;
           cursor-shape = {
             insert = "bar";
@@ -258,7 +258,7 @@ in merge {
             "^" = "goto_first_nonwhitespace";
             G = "goto_file_end";
             D = ["extend_to_line_bounds" "delete_selection" "normal_mode"];
-            C = ["goto_line_start" "extend_to_line_bounds" "change_selection"];
+            # C = ["goto_line_start" "extend_to_line_bounds" "change_selection"];
             "%" = "match_brackets";
             S = "surround_add";
             u = ["switch_to_lowercase" "collapse_selection" "normal_mode"];
@@ -300,7 +300,7 @@ in merge {
           {
             name = "nix";
             formatter = {
-              command = "nixfmt-rfc-style";
+              command = "nixfmt";
             };
             language-servers = ["nixd"];
           }

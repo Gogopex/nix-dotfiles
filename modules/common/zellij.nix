@@ -10,6 +10,10 @@
     url = "https://github.com/rvcas/room/releases/download/v1.2.0/room.wasm";
     sha256 = "sha256-t6GPP7OOztf6XtBgzhLF+edUU294twnu0y5uufXwrkw=";
   };
+  forgot = pkgs.fetchurl {
+    url = "https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm";
+    sha256 = "sha256-MRlBRVGdvcEoaFtFb5cDdDePoZ/J2nQvvkoyG6zkSds=";
+  };
 in merge <| mkIf config.isDesktop {
   home-manager.sharedModules = [{
     programs.zellij = enabled {
@@ -41,15 +45,60 @@ in merge <| mkIf config.isDesktop {
       }
       
       keybinds {
-          shared_except "locked" {
+            shared_except "locked" {
+              bind "Ctrl x" {
+                 LaunchOrFocusPlugin "file:${forgot}" {
+                    floating true
+                    "lock"                  "ctrl + g"
+                    "unlock"                "ctrl + g"
+                    "new pane"              "ctrl + p + n"
+                    "change focus of pane"  "ctrl + p + arrow key"
+                    "close pane"            "ctrl + p + x"
+                    "rename pane"           "ctrl + p + c"
+                    "toggle fullscreen"     "ctrl + p + f"
+                    "toggle floating pane"  "ctrl + p + w"
+                    "toggle embed pane"     "ctrl + p + e"
+                    "choose right pane"     "ctrl + p + l"
+                    "choose left pane"      "ctrl + p + r"
+                    "choose upper pane"     "ctrl + p + k"
+                    "choose lower pane"     "ctrl + p + j"
+                    "new tab"               "ctrl + t + n"
+                    "close tab"             "ctrl + t + x"
+                    "change focus of tab"   "ctrl + t + arrow key"
+                    "rename tab"            "ctrl + t + r"
+                    "sync tab"              "ctrl + t + s"
+                    "brake pane to new tab" "ctrl + t + b"
+                    "brake pane left"       "ctrl + t + ["
+                    "brake pane right"      "ctrl + t + ]"
+                    "toggle tab"            "ctrl + t + tab"
+                    "increase pane size"    "ctrl + n + +"
+                    "decrease pane size"    "ctrl + n + -"
+                    "increase pane top"     "ctrl + n + k"
+                    "increase pane right"   "ctrl + n + l"
+                    "increase pane bottom"  "ctrl + n + j"
+                    "increase pane left"    "ctrl + n + h"
+                    "decrease pane top"     "ctrl + n + K"
+                    "decrease pane right"   "ctrl + n + L"
+                    "decrease pane bottom"  "ctrl + n + J"
+                    "decrease pane left"    "ctrl + n + H"
+                    "move pane to top"      "ctrl + h + k"
+                    "move pane to right"    "ctrl + h + l"
+                    "move pane to bottom"   "ctrl + h + j"
+                    "move pane to left"     "ctrl + h + h"
+                    "search"                "ctrl + s + s"
+                    "go into edit mode"     "ctrl + s + e"
+                    "detach session"        "ctrl + o + w"
+                    "open session manager"  "ctrl + o + w"
+                    }
+            }
               bind "Ctrl y" {
                   LaunchOrFocusPlugin "file:${room}" {
                       floating true
                       ignore_case true
                       quick_jump true
-                  }
-              }
-          }
+                    }
+                }
+            }
           
           normal {
               bind "Super h" { GoToPreviousTab; }
@@ -140,8 +189,9 @@ in merge <| mkIf config.isDesktop {
 
                       format_left  "#[fg=#${stripHash colors.fg2},bold,bg=#${stripHash colors.bg0_h}] {mode} #[bg=#${stripHash colors.bg0}]    #[bg=#${stripHash colors.bg1},fg=#${stripHash colors.fg1},bold] {session} "
                       format_center "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}]{tabs}"
-                      format_right "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}] {notifications} #[fg=#${stripHash colors.fg2},bg=#${stripHash colors.bg0}] {swap_layout}"
-                      format_space "#[bg=#${stripHash colors.bg0}]"
+                      // format_right "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}] {notifications} #[fg=#${stripHash colors.fg2},bg=#${stripHash colors.bg0}] {swap_layout}"
+                      format_right "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}] {swap_layout}"
+                      format_space "#[bg=#${stripHash colors.bg0_h}]"
                       format_hide_on_overlength true
                       format_precedence "crl"
               

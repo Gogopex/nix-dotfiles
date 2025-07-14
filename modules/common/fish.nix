@@ -1,7 +1,6 @@
 { lib, pkgs, ... }: let
   inherit (lib) enabled merge;
   zellijAutoStart = false;
-  mainSessionName = "main";
 in merge {
   home-manager.sharedModules = [{
     programs.fish = enabled {
@@ -133,6 +132,7 @@ in merge {
         function fish_user_key_bindings
           bind \e\cv 'toggle_vim_mode'
           bind \e\cl 'open_links'
+          bind \ca\cb 'br; commandline -f repaint'
           
           bind \c\; 'toggle_vim_mode'
         end
@@ -367,6 +367,20 @@ in merge {
           end
         '';
         
+        br = ''
+          function br --wraps=broot
+            set -l cmd_file (mktemp)
+            if broot --outcmd $cmd_file $argv
+              set -l cmd (cat $cmd_file)
+              rm -f $cmd_file
+              eval $cmd
+            else
+              set -l exit_code $status
+              rm -f $cmd_file
+              return $exit_code
+            end
+          end
+        '';
         
       };
       
