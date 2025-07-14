@@ -1,7 +1,13 @@
-{ config, lib, pkgs, ... }: let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
   inherit (lib) merge mkIf;
   inherit (builtins) toJSON;
-  
+
   # Zed settings using theme configuration
   zedSettings = {
     # Auto-install extensions for common languages
@@ -14,16 +20,16 @@
       swift = true;
       toml = true;
     };
-    
+
     # Disable auto-update since Nix manages the package
     auto_update = false;
-    
+
     # Font configuration from theme
     buffer_font_family = config.theme.font.mono.name;
     buffer_font_size = config.theme.font.size.normal;
     ui_font_family = config.theme.font.sans.name;
     ui_font_size = config.theme.font.size.normal;
-    
+
     # Preserve existing preferences
     confirm_quit = true;
     features = {
@@ -36,7 +42,7 @@
     };
     theme = "Gruvbox Dark";
     vim_mode = true;
-    
+
     # Editor settings similar to other editors
     tab_size = 2;
     hard_tabs = false;
@@ -47,20 +53,20 @@
       enabled = true;
       coloring = "indent_aware";
     };
-    
+
     # Terminal settings
     terminal = {
       font_family = config.theme.font.mono.name;
       font_size = config.theme.font.size.normal;
     };
-    
+
     # Git settings
     git = {
       inline_blame = {
         enabled = true;
       };
     };
-    
+
     # Language-specific settings
     languages = {
       Nix = {
@@ -68,7 +74,7 @@
         formatter = {
           external = {
             command = "nixfmt";
-            arguments = [];
+            arguments = [ ];
           };
         };
       };
@@ -77,7 +83,7 @@
         formatter = {
           external = {
             command = "rustfmt";
-            arguments = ["--edition=2021"];
+            arguments = [ "--edition=2021" ];
           };
         };
       };
@@ -86,7 +92,10 @@
         formatter = {
           external = {
             command = "ruff";
-            arguments = ["format" "-"];
+            arguments = [
+              "format"
+              "-"
+            ];
           };
         };
       };
@@ -95,7 +104,10 @@
         formatter = {
           external = {
             command = "prettier";
-            arguments = ["--parser" "babel"];
+            arguments = [
+              "--parser"
+              "babel"
+            ];
           };
         };
       };
@@ -104,13 +116,16 @@
         formatter = {
           external = {
             command = "prettier";
-            arguments = ["--parser" "typescript"];
+            arguments = [
+              "--parser"
+              "typescript"
+            ];
           };
         };
       };
     };
   };
-  
+
   # Zed keymap configuration (optional, can be extended)
   zedKeymap = [
     # Vim-style navigation enhancements
@@ -122,7 +137,7 @@
         "g l" = "editor::MoveToEndOfLine";
         "g g" = "editor::MoveToBeginning";
         "G" = "editor::MoveToEnd";
-        
+
         # Clipboard operations with space leader
         "space y" = "editor::Copy";
         "space d" = "editor::Delete";
@@ -138,16 +153,19 @@
     }
   ];
 
-in merge {
-  home-manager.sharedModules = [{
-    # Ensure Zed configuration directory exists
-    home.file.".config/zed/settings.json" = mkIf pkgs.stdenv.isDarwin {
-      text = toJSON zedSettings;
-    };
-    
-    # Optional: Add keymap configuration
-    home.file.".config/zed/keymap.json" = mkIf pkgs.stdenv.isDarwin {
-      text = toJSON zedKeymap;
-    };
-  }];
+in
+merge {
+  home-manager.sharedModules = [
+    {
+      # Ensure Zed configuration directory exists
+      home.file.".config/zed/settings.json" = mkIf pkgs.stdenv.isDarwin {
+        text = toJSON zedSettings;
+      };
+
+      # Optional: Add keymap configuration
+      home.file.".config/zed/keymap.json" = mkIf pkgs.stdenv.isDarwin {
+        text = toJSON zedKeymap;
+      };
+    }
+  ];
 }

@@ -1,6 +1,7 @@
-{ config, lib, ... }: let
+{ config, lib, ... }:
+let
   inherit (lib) merge;
-  
+
   cursorSettings = config.editorSettings // {
     "workbench.colorTheme" = "Gruvbox Dark Soft";
     "editor.fontSize" = 18;
@@ -33,8 +34,12 @@
     "terminal.integrated.shell.osx" = "/run/current-system/sw/bin/fish";
     "terminal.integrated.automationShell.osx" = "/run/current-system/sw/bin/fish";
   };
-in merge {
-  home-manager.sharedModules = [{
-    home.file."Library/Application Support/Cursor/User/settings.json".text = builtins.toJSON cursorSettings;
-  }];
+in
+merge {
+  home-manager.sharedModules = [
+    {
+      home.file."Library/Application Support/Cursor/User/settings.json".text =
+        builtins.toJSON cursorSettings;
+    }
+  ];
 }

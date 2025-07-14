@@ -1,6 +1,8 @@
-{ lib, ... }: let
+{ lib, ... }:
+let
   inherit (lib) mkValue mapAttrsToList;
-in {
+in
+{
   options.editorSettings = mkValue {
     "editor.fontFamily" = "Berkeley Mono";
     "editor.fontSize" = 16;
@@ -14,26 +16,42 @@ in {
     "editor.fontLigatures" = true;
     "terminal.integrated.fontFamily" = "'Berkeley Mono', monospace";
     "terminal.integrated.fontSize" = 16;
-    
+
     "vim.normalModeKeyBindingsNonRecursive" = [
-      { 
-        "before" = ["g" "h"];
-        "after" = ["^"];
+      {
+        "before" = [
+          "g"
+          "h"
+        ];
+        "after" = [ "^" ];
       }
-      { 
-        "before" = ["g" "l"];
-        "after" = ["$"];
+      {
+        "before" = [
+          "g"
+          "l"
+        ];
+        "after" = [ "$" ];
       }
-      { 
-        "before" = ["<space>" "y"];
-        "commands" = ["editor.action.clipboardCopyAction"];
+      {
+        "before" = [
+          "<space>"
+          "y"
+        ];
+        "commands" = [ "editor.action.clipboardCopyAction" ];
       }
-      { 
-        "before" = ["<space>" "d"];
-        "after" = ["\"" "_" "d"];
+      {
+        "before" = [
+          "<space>"
+          "d"
+        ];
+        "after" = [
+          "\""
+          "_"
+          "d"
+        ];
       }
     ];
-    
+
     "diffEditor.ignoreTrimWhitespace" = false;
     "[javascript]" = {
       "editor.defaultFormatter" = "vscode.typescript-language-features";
@@ -64,7 +82,8 @@ in {
         "app/cache/**"
         "**/node_modules/**"
         "**/.venv/**"
-      ]) ++ [
+      ])
+      ++ [
         (lib.nameValuePair "**/*.js" { "when" = "$(basename).ts"; })
         (lib.nameValuePair "**/**.js" { "when" = "$(basename).tsx"; })
       ]
@@ -102,7 +121,7 @@ in {
     };
     "workbench.startupEditor" = "none";
     "amp.url" = "https://ampcode.com/";
-    
+
     # Missing configurations from flake.nix
     "emmet.triggerExpansionOnTab" = true;
     "emmet.syntaxProfiles" = {

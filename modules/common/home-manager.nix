@@ -1,20 +1,29 @@
-{ config, lib, inputs, ... }: let
+{
+  config,
+  lib,
+  inputs,
+  ...
+}:
+let
   inherit (lib) mkIf;
-in {
+in
+{
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "backup";
-    
+
     extraSpecialArgs = {
       inherit inputs;
       inherit (inputs) ghosttySrc zjstatus;
     };
-    
-    sharedModules = [{
-      imports = [ ./theme.nix ];
-      home.username = config.system.primaryUser or "ludwig";
-      programs.home-manager.enable = true;
-    }];
+
+    sharedModules = [
+      {
+        imports = [ ./theme.nix ];
+        home.username = config.system.primaryUser or "ludwig";
+        programs.home-manager.enable = true;
+      }
+    ];
   };
 }

@@ -170,6 +170,23 @@ Available swap layouts:
 - `Ctrl + Alt + v`: Toggle vim mode in Fish shell
 - `Ctrl + Alt + l`: Open links from Zellij scrollback with fzf selection (overrides default Git log search)
 - `Ctrl + ;`: Toggle between vi mode and default mode
+- `Ctrl + Alt + b`: Launch broot file manager
+
+## Broot File Manager
+
+### Navigation (Modal)
+- `h/j/k/l`: Navigate files (left/down/up/right)
+- `Enter`: Open directory or file
+- `Escape`: Go back/cancel
+
+### Commands
+- `e`: Edit file in $EDITOR
+- `v`: View file with bat
+- `c`: Create new file
+- `cd`: Change directory (quit broot and cd to selected directory)
+
+### Aliases
+- `br`: Shell function that properly handles broot's directory changes
 
 ## Hammerspoon (App Switching)
 

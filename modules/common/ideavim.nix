@@ -1,7 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  home-manager.sharedModules = [{
-    home.file.".ideavimrc".source = ../../cfg/ideavimrc;
-  }];
+  home-manager.sharedModules = [
+    {
+      home.file.".ideavimrc".source = ../../cfg/ideavimrc;
+    }
+  ];
 }
