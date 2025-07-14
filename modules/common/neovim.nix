@@ -22,6 +22,8 @@ in
         globals.mapleader = " ";
 
         opts = {
+          breakindent = true;
+          
           number = true;
           relativenumber = true;
 
@@ -95,7 +97,9 @@ in
               comment
             ];
             settings = {
-              highlight.enable = true;
+              highlight = {
+                enable = true;
+              };
               indent.enable = true;
               incremental_selection = {
                 enable = true;
@@ -413,7 +417,7 @@ in
               phpactor.enable = true;
               hls = {
                 enable = true;
-                installGhc = false;
+                installGhc = true;
               };
             };
           };

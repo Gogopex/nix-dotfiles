@@ -11,7 +11,7 @@
     ];
 
     brews = [
-      "displayplacer"
+      # "displayplacer"
       "gh"
     ];
   };

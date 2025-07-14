@@ -1,4 +1,3 @@
--- app switching with hyper+number (shift+ctrl+alt+cmd)
 local apps = {
   { key = "1", app = "Ghostty" },
   { key = "2", app = "Arc" },
@@ -13,7 +12,6 @@ for _, binding in ipairs(apps) do
   end)
 end
 
--- reload config automatically when this file changes
 function reloadConfig(files)
     doReload = false
     for _,file in pairs(files) do

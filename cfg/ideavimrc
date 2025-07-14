@@ -1,7 +1,5 @@
-" Leader key (matching Helix and all other tools)
 let mapleader = " "
 
-" Basic vim settings
 set clipboard=unnamed
 set ignorecase
 set smartcase
@@ -12,24 +10,19 @@ set number
 set scrolloff=8
 set ideajoin
 
-" Navigation and view centering
 nnoremap <C-j> <C-d>zz
 nnoremap <C-k> <C-u>zz
 nnoremap n nzzzv
 nnoremap N Nzzzv
 
-" Helix-inspired selection expansion/contraction (mimic Ctrl+hjkl behavior)
-" Use IntelliJ's semantic selection features
 nnoremap <C-k> :action EditorSelectWord<CR>
 nnoremap <C-j> :action EditorUnSelectWord<CR>
 nnoremap <C-h> :action EditorLeftWithSelection<CR>
 nnoremap <C-l> :action EditorRightWithSelection<CR>
 
-" Manual completion trigger (matching Helix Ctrl+Space)
 inoremap <C-Space> <C-x><C-o>
 nnoremap <C-Space> :action CodeCompletion<CR>
 
-" Clipboard operations (system clipboard)
 xnoremap <leader>p "_dP
 nnoremap <leader>y "+y
 vnoremap <leader>y "+y
@@ -37,78 +30,64 @@ nnoremap <leader>Y "+Y
 nnoremap <leader>d "_d
 vnoremap <leader>d "_d
 
-" Line manipulation
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
-" Navigation shortcuts (matching Helix 0/$)
 nnoremap gh 0
 vnoremap gh 0
 nnoremap gl $
 vnoremap gl $
 
-" Tab navigation (matching Zellij/Ghostty pattern)
 nnoremap <D-h> :action PreviousTab<CR>
 nnoremap <D-l> :action NextTab<CR>
 nnoremap <D-t> :action NewTab<CR>
 nnoremap <D-w> :action CloseContent<CR>
 
-" Pane navigation (Alt+hjkl - matching Aerospace/Zellij)
 nnoremap <A-h> <C-w>h
 nnoremap <A-j> <C-w>j
 nnoremap <A-k> <C-w>k
 nnoremap <A-l> <C-w>l
 
-" Pane splitting (matching Zellij/Ghostty pattern)
 nnoremap <D-d> :action SplitVertically<CR>
 nnoremap <D-S-d> :action SplitHorizontally<CR>
 nnoremap <D-S-w> :action Unsplit<CR>
 
-" Indentation in visual mode
 vnoremap < <gv
 vnoremap > >gv
 
-" Clear search highlighting
 nnoremap <leader>h :nohlsearch<CR>
 
-" File operations (matching Helix space+f patterns)
 nnoremap <leader>f :action GotoFile<CR>
 nnoremap <leader><space> :action GotoFile<CR>
 nnoremap <leader>ff :action GotoFile<CR>
 nnoremap <leader>fr :action RecentFiles<CR>
 nnoremap <leader>fs :action SaveDocument<CR>
 
-" Buffer/Tab management (matching Helix space+b patterns)
 nnoremap <leader>b :action RecentFiles<CR>
 nnoremap <leader>bb :action RecentFiles<CR>
 nnoremap <leader>bd :action CloseContent<CR>
 nnoremap <leader>bn :action NextTab<CR>
 nnoremap <leader>bp :action PreviousTab<CR>
 
-" Search operations (matching Helix space+s patterns)
 nnoremap <leader>s :action GotoSymbol<CR>
 nnoremap <leader>ss :action GotoSymbol<CR>
 nnoremap <leader>sg :action FindInPath<CR>
 nnoremap <leader>sf :action Find<CR>
 
-" Window/Explorer operations (matching Helix space+w patterns)
 nnoremap <leader>e :action ActivateProjectToolWindow<CR>
 nnoremap <leader>w :action ActivateProjectToolWindow<CR>
 
-" Git operations (space+g patterns)
 nnoremap <leader>g :action Git.Menu<CR>
 nnoremap <leader>gs :action Vcs.Show.Local.Changes<CR>
 nnoremap <leader>gc :action Vcs.QuickListPopupAction<CR>
 nnoremap <leader>gb :action Git.Branches<CR>
 
-" LSP/Code operations (space+l patterns, matching Helix LSP bindings)
 nnoremap <leader>la :action ShowIntentionActions<CR>
 nnoremap <leader>lf :action ReformatCode<CR>
 nnoremap <leader>lr :action RenameElement<CR>
 nnoremap <leader>ld :action ShowErrorDescription<CR>
 nnoremap <leader>li :action OptimizeImports<CR>
 
-" Go to operations (standard vim/Helix gd, gy, etc.)
 nnoremap gd :action GotoDeclaration<CR>
 nnoremap gy :action GotoTypeDeclaration<CR>
 nnoremap gi :action GotoImplementation<CR>
@@ -116,34 +95,28 @@ nnoremap gr :action FindUsages<CR>
 nnoremap <C-o> :action Back<CR>
 nnoremap <C-i> :action Forward<CR>
 
-" Diagnostics navigation (matching Helix ]d [d pattern)
 nnoremap ]d :action GotoNextError<CR>
 nnoremap [d :action GotoPreviousError<CR>
 nnoremap ]e :action GotoNextError<CR>
 nnoremap [e :action GotoPreviousError<CR>
 
-" Method navigation
 nnoremap ]m :action MethodDown<CR>
 nnoremap [m :action MethodUp<CR>
 
-" Refactoring (space+r patterns)
 vnoremap <leader>rm :action ExtractMethod<CR>
 vnoremap <leader>rv :action IntroduceVariable<CR>
 vnoremap <leader>rr :action Refactor.This<CR>
 nnoremap <leader>im :action ImplementMethods<CR>
 nnoremap <leader>om :action OverrideMethods<CR>
 
-" Debug operations (space+d patterns)
 nnoremap <leader>db :action ToggleLineBreakpoint<CR>
 nnoremap <leader>dc :action Debug<CR>
 nnoremap <leader>dr :action Run<CR>
 nnoremap <leader>dd :action Debug<CR>
 
-" Toggle features (space+u patterns, matching Helix toggle concept)
 nnoremap <leader>uw :action EditorToggleUseSoftWraps<CR>
 nnoremap <leader>ul :action EditorToggleShowLineNumbers<CR>
 nnoremap <leader>ur :action EditorToggleShowRightMargin<CR>
 
-" AI/LLM Assistant (cmd+i for quick access)
 nnoremap <D-i> :action ActivateAIAssistantToolWindow<CR>
 nnoremap <leader>ai :action ActivateAIAssistantToolWindow<CR>
