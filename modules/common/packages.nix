@@ -9,7 +9,6 @@ let
   inherit (lib)
     attrValues
     merge
-    mkIf
     optionalAttrs
     ;
 in
