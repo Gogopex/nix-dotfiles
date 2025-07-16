@@ -23,4 +23,8 @@ in
     ludwig
     system
   ];
+  "secrets/openrouter-api-key.age".publicKeys = [
+    ludwig
+    system
+  ];
 }

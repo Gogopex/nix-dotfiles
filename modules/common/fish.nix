@@ -58,7 +58,7 @@ merge {
               set -gx VOLTA_HOME ~/.volta
             end
 
-            for key in anthropic openai gemini deepseek
+            for key in anthropic openai gemini deepseek openrouter
               if test -f /run/agenix/$key-api-key
                 set -gx (string upper $key)_API_KEY (cat /run/agenix/$key-api-key)
               end

@@ -21,5 +21,9 @@
       file = ../../secrets/gemini-api-gcp-project-id.age;
       mode = "444";
     };
+    openrouter-api-key = {
+      file = ../../secrets/openrouter-api-key.age;
+      mode = "444";
+    };
   };
 }

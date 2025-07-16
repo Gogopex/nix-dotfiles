@@ -47,6 +47,13 @@ merge {
                 select = "SELECT";
               };
             };
+            inline-diagnostics = {
+              cursor-line = "warning";
+              other-lines = "error";
+            };
+            lsp = {
+              display-inlay-hints = true;
+            };
           };
 
           keys = {
@@ -405,7 +412,7 @@ merge {
               formatter = {
                 command = "rustfmt";
               };
-              language-servers = [ "rust-analyzer" ];
+              language-servers = [ "rust-analyzer" "lsp-ai" ];
               debugger = {
                 name = "lldb-dap";
                 transport = "stdio";
@@ -433,7 +440,7 @@ merge {
               formatter = {
                 command = "gofumpt";
               };
-              language-servers = [ "gopls" ];
+              language-servers = [ "gopls" "lsp-ai" ];
               debugger = {
                 name = "delve";
                 transport = "tcp";
@@ -469,7 +476,7 @@ merge {
                   "-"
                 ];
               };
-              language-servers = [ "pyright" ];
+              language-servers = [ "pyright" "lsp-ai" ];
               debugger = {
                 name = "debugpy";
                 transport = "stdio";
@@ -507,7 +514,7 @@ merge {
                   "babel"
                 ];
               };
-              language-servers = [ "typescript-language-server" ];
+              language-servers = [ "typescript-language-server" "lsp-ai" ];
             }
             {
               name = "typescript";
@@ -519,7 +526,7 @@ merge {
                   "typescript"
                 ];
               };
-              language-servers = [ "typescript-language-server" ];
+              language-servers = [ "typescript-language-server" "lsp-ai" ];
             }
             {
               name = "jsx";
@@ -531,7 +538,7 @@ merge {
                   "babel"
                 ];
               };
-              language-servers = [ "typescript-language-server" ];
+              language-servers = [ "typescript-language-server" "lsp-ai" ];
             }
             {
               name = "tsx";
@@ -543,7 +550,7 @@ merge {
                   "typescript"
                 ];
               };
-              language-servers = [ "typescript-language-server" ];
+              language-servers = [ "typescript-language-server" "lsp-ai" ];
             }
             {
               name = "json";
@@ -634,7 +641,7 @@ merge {
                   "."
                 ];
               };
-              language-servers = [ "haskell-language-server" ];
+              language-servers = [ "haskell-language-server" "lsp-ai" ];
               debugger = {
                 name = "haskell-debug-adapter";
                 transport = "stdio";
@@ -667,7 +674,7 @@ merge {
             rust-analyzer = {
               command = "rust-analyzer";
               config = {
-                checkOnSave = {
+                check = {
                   command = "clippy";
                 };
               };
@@ -736,6 +743,129 @@ merge {
             haskell-language-server = {
               command = "haskell-language-server-wrapper";
               args = [ "--lsp" ];
+            };
+            lsp-ai = {
+              command = "lsp-ai";
+              config = {
+                memory = {
+                  file_store = { };
+                };
+                models = {
+                  gpt4 = {
+                    type = "open_ai";
+                    chat_endpoint = "https://api.openai.com/v1/chat/completions";
+                    model = "gpt-4-turbo-preview";
+                    auth_token_env_var_name = "OPENAI_API_KEY";
+                  };
+                  gpt4o = {
+                    type = "open_ai";
+                    chat_endpoint = "https://api.openai.com/v1/chat/completions";
+                    model = "gpt-4o";
+                    auth_token_env_var_name = "OPENAI_API_KEY";
+                  };
+                  claude35 = {
+                    type = "anthropic";
+                    chat_endpoint = "https://api.anthropic.com/v1/messages";
+                    model = "claude-3-5-sonnet-20241022";
+                    auth_token_env_var_name = "ANTHROPIC_API_KEY";
+                  };
+                  deepseek = {
+                    type = "open_ai";
+                    chat_endpoint = "https://api.deepseek.com/v1/chat/completions";
+                    model = "deepseek-coder";
+                    auth_token_env_var_name = "DEEPSEEK_API_KEY";
+                  };
+                };
+                completion = {
+                  model = "gpt4o";
+                  parameters = {
+                    max_context = 8192;
+                    max_tokens = 512;
+                    temperature = 0.1;
+                    top_p = 0.95;
+                    presence_penalty = 0.0;
+                    frequency_penalty = 0.0;
+                  };
+                };
+                chat = [
+                  {
+                    trigger = "!C";
+                    action_display_name = "Claude Assistant";
+                    model = "claude35";
+                    parameters = {
+                      system = "You are an expert code assistant. Provide concise, accurate, and idiomatic code solutions. Focus on best practices and clean code principles.";
+                      max_context = 16384;
+                      max_tokens = 2048;
+                      temperature = 0.1;
+                    };
+                  }
+                  {
+                    trigger = "!G";
+                    action_display_name = "GPT-4 Assistant";
+                    model = "gpt4o";
+                    parameters = {
+                      max_context = 8192;
+                      max_tokens = 1024;
+                      temperature = 0.2;
+                    };
+                  }
+                  {
+                    trigger = "!D";
+                    action_display_name = "DeepSeek Coder";
+                    model = "deepseek";
+                    parameters = {
+                      max_context = 4096;
+                      max_tokens = 1024;
+                      temperature = 0.1;
+                    };
+                  }
+                ];
+                actions = [
+                  {
+                    action_type = "code_action";
+                    action_display_name = "Explain Code";
+                    model = "gpt4o";
+                    parameters = {
+                      max_context = 4096;
+                      max_tokens = 512;
+                      temperature = 0.3;
+                      messages = [
+                        {
+                          role = "system";
+                          content = "Explain the selected code concisely, focusing on what it does and how it works.";
+                        }
+                      ];
+                    };
+                  }
+                  {
+                    action_type = "code_action";
+                    action_display_name = "Find Bugs";
+                    model = "claude35";
+                    parameters = {
+                      system = "Analyze the code for potential bugs, edge cases, and improvements. Be specific and actionable.";
+                      max_context = 8192;
+                      max_tokens = 1024;
+                      temperature = 0.2;
+                    };
+                  }
+                  {
+                    action_type = "code_action";
+                    action_display_name = "Optimize Code";
+                    model = "deepseek";
+                    parameters = {
+                      max_context = 4096;
+                      max_tokens = 1024;
+                      temperature = 0.1;
+                      messages = [
+                        {
+                          role = "system";
+                          content = "Optimize the selected code for performance and readability. Provide the optimized version with brief explanations.";
+                        }
+                      ];
+                    };
+                  }
+                ];
+              };
             };
           };
         };

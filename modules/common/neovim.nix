@@ -298,7 +298,12 @@ in
                   {
                     mode = "n";
                     keys = "<Leader>a";
-                    desc = "+AI/Claude";
+                    desc = "+AI";
+                  }
+                  {
+                    mode = "n";
+                    keys = "<Leader>ai";
+                    desc = "+LSP-AI";
                   }
                   {
                     mode = "n";
@@ -419,11 +424,97 @@ in
                 enable = true;
                 installGhc = true;
               };
+              lsp_ai = {
+                enable = true;
+                settings = {
+                  memory = {
+                    file_store = { };
+                  };
+                  models = {
+                    openai = {
+                      type = "open_ai";
+                      chat_endpoint = "https://api.openai.com/v1/chat/completions";
+                      model = "gpt-4o";
+                      auth_token_env_var_name = "OPENAI_API_KEY";
+                    };
+                    anthropic = {
+                      type = "anthropic";
+                      chat_endpoint = "https://api.anthropic.com/v1/messages";
+                      model = "claude-3-5-sonnet-20241022";
+                      auth_token_env_var_name = "ANTHROPIC_API_KEY";
+                    };
+                    ollama = {
+                      type = "ollama";
+                      model = "llama3";
+                    };
+                  };
+                  completion = {
+                    model = "openai";
+                    parameters = {
+                      max_context = 2048;
+                      max_tokens = 128;
+                      messages = [
+                        {
+                          role = "system";
+                          content = "You are a code completion assistant. Complete the code naturally.";
+                        }
+                      ];
+                    };
+                  };
+                  chat = [
+                    {
+                      trigger = "!chat";
+                      action_display_name = "Chat";
+                      model = "openai";
+                      parameters = {
+                        max_context = 4096;
+                        max_tokens = 1024;
+                        messages = [
+                          {
+                            role = "system";
+                            content = "You are a helpful coding assistant.";
+                          }
+                        ];
+                      };
+                    }
+                    {
+                      trigger = "!explain";
+                      action_display_name = "Explain Code";
+                      model = "openai";
+                      parameters = {
+                        max_context = 4096;
+                        max_tokens = 1024;
+                        messages = [
+                          {
+                            role = "system";
+                            content = "Explain the selected code clearly and concisely.";
+                          }
+                        ];
+                      };
+                    }
+                    {
+                      trigger = "!refactor";
+                      action_display_name = "Refactor Code";
+                      model = "openai";
+                      parameters = {
+                        max_context = 4096;
+                        max_tokens = 1024;
+                        messages = [
+                          {
+                            role = "system";
+                            content = "Refactor the selected code to improve clarity, performance, or maintainability. Explain the changes.";
+                          }
+                        ];
+                      };
+                    }
+                  ];
+                };
+              };
             };
           };
 
           # GitHub Copilot
-          # temporarily disabled - need to handle unfree license properly
+          # Using extraPlugins instead due to unfree license handling
           # copilot-vim = {
           #   enable = true;
           #   settings = {
@@ -771,6 +862,44 @@ in
               key = "<leader>as";
               action = "<cmd>ClaudeCodeSend<cr>";
               options.desc = "Send selection to Claude";
+            }
+
+            # LSP-AI keybindings
+            {
+              mode = [
+                "n"
+                "v"
+              ];
+              key = "<leader>aic";
+              action = "<cmd>lua vim.lsp.buf.code_action({ filter = function(a) return a.title:match('^Chat') end })<cr>";
+              options.desc = "AI Chat";
+            }
+            {
+              mode = [
+                "n"
+                "v"
+              ];
+              key = "<leader>aie";
+              action = "<cmd>lua vim.lsp.buf.code_action({ filter = function(a) return a.title:match('^Explain') end })<cr>";
+              options.desc = "AI Explain Code";
+            }
+            {
+              mode = [
+                "n"
+                "v"
+              ];
+              key = "<leader>air";
+              action = "<cmd>lua vim.lsp.buf.code_action({ filter = function(a) return a.title:match('^Refactor') end })<cr>";
+              options.desc = "AI Refactor Code";
+            }
+            {
+              mode = [
+                "n"
+                "v"
+              ];
+              key = "<leader>ai<space>";
+              action = "<cmd>lua vim.lsp.buf.code_action({ filter = function(a) return a.isPreferred == nil and a.data and a.data.model end })<cr>";
+              options.desc = "All AI Actions";
             }
 
             # LazyVim-style keybindings
@@ -1641,15 +1770,24 @@ in
             }
           ];
 
-        # Extra plugins not directly supported by NixVim
         extraPlugins = with pkgs.vimPlugins; [
-          # Startup screen
           alpha-nvim
-
-          # Git conflict resolution
           git-conflict-nvim
+          yanky-nvim
+          vim-startuptime
+          snacks-nvim
 
-          # Multiple cursors
+          # GitHub Copilot - building manually to bypass unfree check
+          (pkgs.vimUtils.buildVimPlugin {
+            name = "copilot.vim";
+            src = pkgs.fetchFromGitHub {
+              owner = "github";
+              repo = "copilot.vim";
+              rev = "v1.43.0";
+              sha256 = "sha256-IPLaF6qqhMst9uO6QmJV2Y5/MMw15qA//jM0BWz1FaU=";
+            };
+          })
+
           (pkgs.vimUtils.buildVimPlugin {
             name = "multicursor.nvim";
             src = pkgs.fetchFromGitHub {
@@ -1660,7 +1798,6 @@ in
             };
           })
 
-          # File path in statusline
           (pkgs.vimUtils.buildVimPlugin {
             name = "fileline.nvim";
             src = pkgs.fetchFromGitHub {
@@ -1671,24 +1808,10 @@ in
             };
           })
 
-          # Yank history management
-          yanky-nvim
 
-          # Startup time profiling
-          vim-startuptime
+          # Use nixpkgs version of outline.nvim if available, otherwise comment out
+          outline-nvim
 
-          # Code outline - temporarily disabled due to norg provider issue
-          # (pkgs.vimUtils.buildVimPlugin {
-          #   name = "outline.nvim";
-          #   src = pkgs.fetchFromGitHub {
-          #     owner = "hedyhli";
-          #     repo = "outline.nvim";
-          #     rev = "main";
-          #     sha256 = "0hkjnls9lfrb2k6dngdjxp65khwbd91nmq67h0fh8a0fv6p7d5nm";
-          #   };
-          # })
-
-          # Claude AI integration
           (pkgs.vimUtils.buildVimPlugin {
             name = "claudecode.nvim";
             src = pkgs.fetchFromGitHub {
@@ -1699,23 +1822,14 @@ in
             };
           })
 
-          # Required dependency for claudecode.nvim
-          snacks-nvim
         ];
 
-        # Configuration for extra plugins
         extraConfigLua = ''
-          -- Alpha startup screen
           require('alpha').setup(require('alpha.themes.dashboard').config)
-
-          -- Git conflict
           require('git-conflict').setup()
-
-          -- Multicursor
           local mc = require('multicursor-nvim')
           mc.setup()
 
-          -- Multicursor keymaps
           vim.keymap.set("n", "<C-n>", function() mc.addCursor("*") end, { desc = "Add cursor at next match" })
           vim.keymap.set("n", "<C-p>", function() mc.addCursor("#") end, { desc = "Add cursor at previous match" })
           vim.keymap.set("n", "<C-x>", function() mc.skipCursor("*") end, { desc = "Skip current match" })
@@ -1733,7 +1847,6 @@ in
           end, { desc = "Clear cursors/search", expr = true })
 
 
-          -- Yanky (yank history)
           require('yanky').setup({
             ring = {
               history_length = 100,
@@ -1742,7 +1855,7 @@ in
             },
             picker = {
               select = {
-                action = nil, -- default action
+                action = nil, 
               },
             },
             system_clipboard = {
@@ -1758,16 +1871,15 @@ in
           vim.keymap.set("n", "<c-p>", "<Plug>(YankyCycleBackward)")
           vim.keymap.set("n", "<leader>yh", ":YankyRingHistory<CR>", { desc = "Yank history" })
 
-          -- Outline - temporarily disabled
-          -- require('outline').setup({
-          --   outline_window = {
-          --     position = 'right',
-          --     width = 25,
-          --   },
-          --   providers = {
-          --     priority = { 'lsp', 'markdown', 'man' },  -- Exclude 'norg' provider
-          --   },
-          -- })
+          require('outline').setup({
+           outline_window = {
+             position = 'right',
+             width = 25,
+           },
+           providers = {
+             priority = { 'lsp', 'markdown', 'man' },  -- Exclude 'norg' provider
+           },
+          })
 
           require('claudecode').setup({
             port_range = { min = 10000, max = 65535 },
@@ -1781,6 +1893,11 @@ in
               split_side = "right",
             }
           })
+
+          -- GitHub Copilot configuration
+          vim.g.copilot_filetypes = {
+            ["*"] = true,
+          }
         '';
       };
     }

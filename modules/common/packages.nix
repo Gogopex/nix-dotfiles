@@ -81,6 +81,7 @@ merge {
 
             nixfmt-rfc-style
             nixd
+            lsp-ai
             nh
 
             tokei
