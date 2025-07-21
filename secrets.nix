@@ -27,4 +27,8 @@ in
     ludwig
     system
   ];
+  "secrets/groq-api-key.age".publicKeys = [
+    ludwig
+    system
+  ];
 }

@@ -88,6 +88,8 @@ merge {
             mutagen
             hyperfine
             just
+            cmake
+            ninja
             tldr
             glow
             lazygit

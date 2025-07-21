@@ -25,5 +25,9 @@
       file = ../../secrets/openrouter-api-key.age;
       mode = "444";
     };
+    groq-api-key = {
+      file = ../../secrets/groq-api-key.age;
+      mode = "444";
+    };
   };
 }

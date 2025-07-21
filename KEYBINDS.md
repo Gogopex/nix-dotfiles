@@ -99,10 +99,7 @@ Available swap layouts:
 ## Integration Notes
 - Ghostty window management uses `Cmd + Shift` combinations to avoid conflicts
 
-## AeroSpace Configuration (macOS tiling WM - Simplified)
-
-**Minimal Setup**: Single window mode for basic tiling operations
-**Two workspaces only**: Keeps things simple and focused
+## AeroSpace Configuration (macOS tiling WM)
 
 ### Window Mode Entry
 - `Alt + w`: Enter Window mode (all operations)
@@ -111,16 +108,23 @@ Available swap layouts:
 
 **Focus Navigation:**
 - `h/j/k/l`: Focus left/down/up/right window
+- `\`: Focus back and forth between windows
 
 **Move Windows:**
 - `Shift + h/j/k/l`: Move window left/down/up/right
+- `Shift + s`: Move left (alternative binding)
 
-**Basic Tiling:**
-- `m`: Maximize/fill current window
+**Layout Management:**
+- `e`: Join with up and set v_accordion layout
+- `t`: Set tiles layout
+- `/`: Toggle between tiles horizontal and vertical
+- `,`: Toggle between accordion horizontal and vertical
+- `Shift + f`: Toggle between floating and tiling
 
 **Window Resizing:**
-- `i`: Increase window size (+50 pixels)
-- `o`: Decrease window size (-50 pixels)
+- `i`: Increase window size (+50 pixels smart resize)
+- `o`: Decrease window size (-50 pixels smart resize)
+- `Shift + b`: Balance window sizes
 
 **Workspace Navigation:**
 - `1`: Switch to workspace 1
@@ -128,9 +132,10 @@ Available swap layouts:
 - `Shift + 1`: Move window to workspace 1
 - `Shift + 2`: Move window to workspace 2
 
-**Utility:**
-- `f`: Toggle floating/tiling
+**Window Management:**
+- `f`: Toggle fullscreen
 - `c`: Close window
+- `Shift + r`: Flatten workspace tree
 
 **Exit:** `Escape`, `Enter`, or `Alt + w`
 
@@ -187,6 +192,12 @@ Available swap layouts:
 
 ### Aliases
 - `br`: Shell function that properly handles broot's directory changes
+
+## Helix Editor
+
+### File Operations
+- `Space y p`: Copy full absolute path of current buffer to clipboard
+- `Space y g`: Copy GitHub link of current file with line number to clipboard
 
 ## Hammerspoon (App Switching)
 

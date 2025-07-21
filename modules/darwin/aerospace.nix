@@ -17,7 +17,11 @@ in
           start-at-login = true;
 
           after-startup-command = [
-            "exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0"
+            "exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0
+              while [ $(aerospace list-windows --workspace focused | wc -l) -lt 2 ]; do sleep 0.2; done
+              aerospace focus right
+              aerospace join-with up
+              aerospace layout v_accordion"
           ];
 
           accordion-padding = 5;
@@ -49,6 +53,9 @@ in
           };
 
           mode.window.binding = {
+            e = ["join-with up" "layout v_accordion"];
+            t = "layout tiles";
+
             h = "focus left";
             j = "focus down";
             k = "focus up";
@@ -61,6 +68,11 @@ in
             "shift-j" = "move down";
             "shift-k" = "move up";
             "shift-l" = "move right";
+
+            "shift-s" = "move left";
+            "shift-b" = "balance-sizes";
+            "shift-f" = "layout floating tiling";
+            "backslash" = "focus-back-and-forth";
 
             "slash" = "layout tiles horizontal vertical";
             "comma" = "layout accordion horizontal vertical"; 

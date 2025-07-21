@@ -66,6 +66,10 @@ merge {
                   "c" = ":set auto-completion true";
                   "C" = ":set auto-completion false";
                 };
+                "y" = {
+                  "p" = ":sh echo \"$(realpath '%{buffer_name}')\" | pbcopy";
+                  "g" = ":sh git remote get-url origin 2>/dev/null | sed 's/git@github.com:/https:\\/\\/github.com\\//;s/\\.git$//' | xargs -I {} sh -c 'if [ -n \"{}\" ]; then echo \"{}/blob/$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)/$(git ls-files --full-name \"%{buffer_name}\" 2>/dev/null || echo \"%{buffer_name}\")#L%{cursor_line}\" | pbcopy; else echo \"Not in a git repository\" >&2; fi'";
+                };
               };
 
               # selection navigation
@@ -751,72 +755,44 @@ merge {
                   file_store = { };
                 };
                 models = {
-                  gpt4 = {
+                  kimi = {
                     type = "open_ai";
-                    chat_endpoint = "https://api.openai.com/v1/chat/completions";
-                    model = "gpt-4-turbo-preview";
-                    auth_token_env_var_name = "OPENAI_API_KEY";
-                  };
-                  gpt4o = {
-                    type = "open_ai";
-                    chat_endpoint = "https://api.openai.com/v1/chat/completions";
-                    model = "gpt-4o";
-                    auth_token_env_var_name = "OPENAI_API_KEY";
-                  };
-                  claude35 = {
-                    type = "anthropic";
-                    chat_endpoint = "https://api.anthropic.com/v1/messages";
-                    model = "claude-3-5-sonnet-20241022";
-                    auth_token_env_var_name = "ANTHROPIC_API_KEY";
-                  };
-                  deepseek = {
-                    type = "open_ai";
-                    chat_endpoint = "https://api.deepseek.com/v1/chat/completions";
-                    model = "deepseek-coder";
-                    auth_token_env_var_name = "DEEPSEEK_API_KEY";
+                    chat_endpoint = "https://openrouter.ai/api/v1/chat/completions";
+                    model = "moonshotai/kimi-k2";
+                    auth_token_env_var_name = "OPENROUTER_API_KEY";
                   };
                 };
                 completion = {
-                  model = "gpt4o";
+                  model = "kimi";
                   parameters = {
-                    max_context = 8192;
+                    max_context = 16384;
                     max_tokens = 512;
-                    temperature = 0.1;
-                    top_p = 0.95;
-                    presence_penalty = 0.0;
-                    frequency_penalty = 0.0;
+                    temperature = 0.3;
+                    min_p = 0.01;
+                    messages = [
+                      {
+                        role = "system";
+                        content = "You are an AI coding assistant focused on generating immediately runnable, idiomatic code. Prioritize correctness, clarity, and best practices. Complete code based on context, patterns, and intent. Be concise and practical.";
+                      }
+                    ];
                   };
                 };
                 chat = [
                   {
-                    trigger = "!C";
-                    action_display_name = "Claude Assistant";
-                    model = "claude35";
+                    trigger = "!K";
+                    action_display_name = "Kimi Assistant";
+                    model = "kimi";
                     parameters = {
-                      system = "You are an expert code assistant. Provide concise, accurate, and idiomatic code solutions. Focus on best practices and clean code principles.";
-                      max_context = 16384;
+                      max_context = 32768;
                       max_tokens = 2048;
-                      temperature = 0.1;
-                    };
-                  }
-                  {
-                    trigger = "!G";
-                    action_display_name = "GPT-4 Assistant";
-                    model = "gpt4o";
-                    parameters = {
-                      max_context = 8192;
-                      max_tokens = 1024;
-                      temperature = 0.2;
-                    };
-                  }
-                  {
-                    trigger = "!D";
-                    action_display_name = "DeepSeek Coder";
-                    model = "deepseek";
-                    parameters = {
-                      max_context = 4096;
-                      max_tokens = 1024;
-                      temperature = 0.1;
+                      temperature = 0.4;
+                      min_p = 0.01;
+                      messages = [
+                        {
+                          role = "system";
+                          content = "You are a helpful AI coding assistant. Provide clear, practical solutions with working code examples. Focus on solving the problem at hand efficiently.";
+                        }
+                      ];
                     };
                   }
                 ];
@@ -824,42 +800,31 @@ merge {
                   {
                     action_type = "code_action";
                     action_display_name = "Explain Code";
-                    model = "gpt4o";
+                    model = "kimi";
                     parameters = {
-                      max_context = 4096;
-                      max_tokens = 512;
-                      temperature = 0.3;
+                      max_context = 16384;
+                      max_tokens = 1024;
+                      temperature = 0.4;
                       messages = [
                         {
                           role = "system";
-                          content = "Explain the selected code concisely, focusing on what it does and how it works.";
+                          content = "Explain the selected code clearly and concisely. Focus on what it does, how it works, and any important patterns or techniques used.";
                         }
                       ];
                     };
                   }
                   {
                     action_type = "code_action";
-                    action_display_name = "Find Bugs";
-                    model = "claude35";
+                    action_display_name = "Find & Fix Issues";
+                    model = "kimi";
                     parameters = {
-                      system = "Analyze the code for potential bugs, edge cases, and improvements. Be specific and actionable.";
-                      max_context = 8192;
+                      max_context = 16384;
                       max_tokens = 1024;
-                      temperature = 0.2;
-                    };
-                  }
-                  {
-                    action_type = "code_action";
-                    action_display_name = "Optimize Code";
-                    model = "deepseek";
-                    parameters = {
-                      max_context = 4096;
-                      max_tokens = 1024;
-                      temperature = 0.1;
+                      temperature = 0.3;
                       messages = [
                         {
                           role = "system";
-                          content = "Optimize the selected code for performance and readability. Provide the optimized version with brief explanations.";
+                          content = "Analyze the code for bugs, edge cases, and improvements. Provide specific, actionable suggestions with corrected code examples.";
                         }
                       ];
                     };
