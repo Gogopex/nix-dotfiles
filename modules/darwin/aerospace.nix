@@ -26,12 +26,6 @@ in
 
           accordion-padding = 5;
 
-          # default-root-container-layout = "tiles";
-          # default-root-container-orientation = "auto";
-
-          # enable-normalization-flatten-containers = true;
-          # enable-normalization-opposite-orientation-for-nested-containers = true;
-
           gaps = {
             inner.horizontal = 0;
             inner.vertical = 0;
@@ -42,11 +36,6 @@ in
               right = 0;
             };
           };
-
-          # workspace-to-monitor-force-assignment = {
-          #   "1" = "main";
-          #   "2" = "main";
-          # };
 
           mode.main.binding = {
             "alt-w" = "mode window"; 
@@ -69,7 +58,6 @@ in
             "shift-k" = "move up";
             "shift-l" = "move right";
 
-            "shift-s" = "move left";
             "shift-b" = "balance-sizes";
             "shift-f" = "layout floating tiling";
             "backslash" = "focus-back-and-forth";
