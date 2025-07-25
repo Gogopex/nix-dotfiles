@@ -1,6 +1,6 @@
 lib:
 lib.darwinSystem' (
-  { lib, pkgs, ... }:
+  { lib, pkgs, config, ... }:
   let
     inherit (lib) collectNix remove;
   in
@@ -12,10 +12,13 @@ lib.darwinSystem' (
     networking.hostName = "macbook";
     system.primaryUser = "ludwig";
 
+    # Set userShell to "fish" or "nushell" to switch shells
+    userShell = "fish";
+
     users.users.ludwig = {
       name = "ludwig";
       home = "/Users/ludwig";
-      shell = pkgs.fish;
+      shell = if config.userShell == "nushell" then pkgs.nushell else pkgs.fish;
     };
 
     home-manager.users.ludwig.home = {

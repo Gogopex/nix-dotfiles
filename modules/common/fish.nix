@@ -1,9 +1,11 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, config, ... }:
 let
-  inherit (lib) enabled merge;
+  inherit (lib) enabled merge mkIf;
   zellijAutoStart = false;
+  cfg = config.userShell;
+  isFish = cfg == "fish";
 in
-merge {
+mkIf isFish (merge {
   home-manager.sharedModules = [
     {
       programs.fish = enabled {
@@ -415,4 +417,4 @@ merge {
       };
     }
   ];
-}
+})

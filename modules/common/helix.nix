@@ -67,8 +67,8 @@ merge {
                   "C" = ":set auto-completion false";
                 };
                 "y" = {
-                  "p" = ":sh echo \"$(realpath '%{buffer_name}')\" | pbcopy";
-                  "g" = ":sh git remote get-url origin 2>/dev/null | sed 's/git@github.com:/https:\\/\\/github.com\\//;s/\\.git$//' | xargs -I {} sh -c 'if [ -n \"{}\" ]; then echo \"{}/blob/$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)/$(git ls-files --full-name \"%{buffer_name}\" 2>/dev/null || echo \"%{buffer_name}\")#L%{cursor_line}\" | pbcopy; else echo \"Not in a git repository\" >&2; fi'";
+                  "p" = [":sh echo \"%{filename}\" | pbcopy" ":echo Copied file path to clipboard"];
+                  "g" = [":sh echo \"https://github.com/$(git config --get remote.origin.url | sed 's/.*://;s/\\.git$//')/blob/$(git rev-parse --abbrev-ref HEAD)/%{relative_path}#L%{cursor_line}\" | pbcopy" ":echo Copied GitHub link to clipboard"];
                 };
               };
 
