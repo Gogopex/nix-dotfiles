@@ -44,6 +44,8 @@ in
           mode.window.binding = {
             e = ["join-with up" "layout v_accordion"];
             t = "layout tiles";
+            r = ["join-with left" "layout tiles horizontal"];
+            s = ["join-with right" "layout v_accordion"];
 
             h = "focus left";
             j = "focus down";

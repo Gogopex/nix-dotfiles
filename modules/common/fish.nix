@@ -45,6 +45,7 @@ mkIf isFish (merge {
               fish_add_path ~/.local/bin ~/.modular/bin \
                              /Applications/WezTerm.app/Contents/MacOS \
                              $HOME/.cache/lm-studio/bin
+              fish_add_path ~/Downloads/google-cloud-sdk/bin
             end
 
             if not test -d ~/.nvm
@@ -96,6 +97,10 @@ mkIf isFish (merge {
             end
             zoxide init fish | source
             source ~/.orbstack/shell/init2.fish 2>/dev/null || true
+            
+            if test -f ~/Downloads/google-cloud-sdk/path.fish.inc
+              source ~/Downloads/google-cloud-sdk/path.fish.inc
+            end
 
             functions -e fish_mode_prompt 2>/dev/null
             function fish_mode_prompt --description 'Display the current vi mode'

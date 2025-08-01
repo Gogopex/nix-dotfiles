@@ -112,7 +112,6 @@ Available swap layouts:
 
 **Move Windows:**
 - `Shift + h/j/k/l`: Move window left/down/up/right
-- `Shift + s`: Move left (alternative binding)
 
 **Layout Management:**
 - `e`: Join with up and set v_accordion layout

@@ -5,7 +5,7 @@ in
 {
   options.editorSettings = mkValue {
     "editor.fontFamily" = "Berkeley Mono";
-    "editor.fontSize" = 16;
+    "editor.fontSize" = 18;
     "editor.lineNumbers" = "on";
     "editor.wordWrap" = "off";
     "editor.insertSpaces" = false;
