@@ -113,6 +113,10 @@ Available swap layouts:
 **Move Windows:**
 - `Shift + h/j/k/l`: Move window left/down/up/right
 
+- `e`: Join with up and set v_accordion layout
+- `Shift + b`: Balance window sizes
+
+- `Shift + r`: Flatten workspace tree
 **Layout Management:**
 - `e`: Join with up and set v_accordion layout
 - `t`: Set tiles layout

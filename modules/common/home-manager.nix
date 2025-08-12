@@ -15,7 +15,7 @@ in
 
     extraSpecialArgs = {
       inherit inputs;
-      inherit (inputs) ghosttySrc zjstatus;
+      inherit (inputs) zjstatus;
     };
 
     sharedModules = [

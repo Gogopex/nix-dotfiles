@@ -11,7 +11,8 @@
     ];
 
     brews = [
-      "gh"
+      "protobuf"
+      "buf"
     ];
   };
 

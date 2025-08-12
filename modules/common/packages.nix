@@ -42,10 +42,7 @@ merge {
             gopls
             gofumpt
             delve
-            rustc
-            cargo
-            rustfmt
-            rust-analyzer
+            rustup
             lldb
             nodejs
             bun
@@ -118,6 +115,13 @@ merge {
 
             wiki-tui
             tailscale
+            
+            vault
+            argocd
+            
+            claude-code
+            biome
+            llm
             ;
 
           agenix = inputs.agenix.packages.${pkgs.system}.default;

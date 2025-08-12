@@ -62,7 +62,7 @@ in
     "twig-language-2.bracePadding" = true;
     "twig-language-2.spaceClose" = true;
     "liveshare.presence" = true;
-    "intelephense.environment.phpVersion" = "7.4.13";
+    "intelephense.environment.phpVersion" = "8.3";
     "php.suggest.basic" = false;
     "[php]" = {
       "editor.defaultFormatter" = "bmewburn.vscode-intelephense-client";

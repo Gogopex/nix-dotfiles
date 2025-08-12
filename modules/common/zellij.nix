@@ -98,7 +98,7 @@ merge
                         "move pane to left"     "ctrl + h + h"
                         "search"                "ctrl + s + s"
                         "go into edit mode"     "ctrl + s + e"
-                        "detach session"        "ctrl + o + w"
+                        "detach session"        "ctrl + o + d"
                         "open session manager"  "ctrl + o + w"
                         }
                 }
@@ -109,6 +109,8 @@ merge
                           quick_jump true
                         }
                     }
+                    // Directly edit scrollback from normal mode
+                    bind "Ctrl Shift e" { SwitchToMode "Scroll"; EditScrollback; }
                 }
               
               normal {

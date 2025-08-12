@@ -53,15 +53,15 @@ in
             l = "focus right";
 
             f = "fullscreen";
-            "shift-r" = "flatten-workspace-tree";
+            "shift-R" = "flatten-workspace-tree";
 
-            "shift-h" = "move left";
-            "shift-j" = "move down";
-            "shift-k" = "move up";
-            "shift-l" = "move right";
+            "shift-H" = "move left";
+            "shift-J" = "move down";
+            "shift-K" = "move up";
+            "shift-L" = "move right";
 
-            "shift-b" = "balance-sizes";
-            "shift-f" = "layout floating tiling";
+            "shift-B" = "balance-sizes";
+            "shift-F" = "layout floating tiling";
             "backslash" = "focus-back-and-forth";
 
             "slash" = "layout tiles horizontal vertical";

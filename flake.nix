@@ -15,7 +15,6 @@
     ];
 
     experimental-features = [
-      "cgroups"
       "flakes"
       "nix-command"
       "pipe-operators"
@@ -30,7 +29,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.11";
 
     nix-darwin = {
       url = "github:LnL7/nix-darwin/master";
@@ -54,7 +52,6 @@
       inputs.home-manager.follows = "home-manager";
     };
 
-    ghosttySrc.url = "github:ghostty-org/ghostty";
     zjstatus.url = "github:dj95/zjstatus";
   };
 

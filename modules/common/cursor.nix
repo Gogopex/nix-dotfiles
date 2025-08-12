@@ -33,6 +33,9 @@ let
     "lean4.alwaysAskBeforeInstallingLeanVersions" = false;
     "terminal.integrated.shell.osx" = "/run/current-system/sw/bin/fish";
     "terminal.integrated.automationShell.osx" = "/run/current-system/sw/bin/fish";
+    "cursor.ai.enableTodoList" = false;
+    "cursor.ai.includeFullFolderContext" = false;
+    "cursor.ai.enableWebSearch" = false;
   };
 in
 merge {

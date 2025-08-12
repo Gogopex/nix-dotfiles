@@ -1,4 +1,4 @@
-{ lib, pkgs, config, ... }:
+{ lib, config, ... }:
 let
   inherit (lib) enabled merge mkIf;
   cfg = config.userShell;
@@ -29,10 +29,7 @@ mkIf isNushell (merge {
           claude-check = "check_claude_sessions";
         };
 
-        configFile.text = '' 
-          # Nushell Config File
-          
-          # Startup banner with welcome message
+        configFile.text = /*nushell*/ ''
           $env.config = {
             show_banner: false
             edit_mode: vi
@@ -61,7 +58,6 @@ mkIf isNushell (merge {
             ]
           }
           
-          # Custom functions
           def toggle_vim_mode [] {
             if ($env.config.edit_mode == "vi") {
               print "Switching to emacs key bindings"
@@ -112,14 +108,10 @@ mkIf isNushell (merge {
             print "What is impossible for you is not impossible for me."
           }
           
-          # Call greeting on startup
           fish_greeting
         '';
 
-        envFile.text = ''
-          # Nushell Environment Config File
-          
-          # Set up PATH
+        envFile.text = /*nushell*/ ''
           $env.PATH = (
             $env.PATH
             | split row (char esep)
@@ -140,25 +132,14 @@ mkIf isNushell (merge {
           # Environment variables
           $env.EDITOR = "hx"
           $env.PHP_VERSION = "8.3"
-          $env.GHCUP_INSTALL_BASE_PREFIX = $env.HOME
           
-          # NVM setup
-          if not (($"($env.HOME)/.nvm" | path exists)) {
-            print "Installing nvm..."
-            ^curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-          }
-          if (($"($env.HOME)/.nvm" | path exists)) {
-            $env.NVM_DIR = $"($env.HOME)/.nvm"
-          }
-          
-          # Volta setup
           if (($"($env.HOME)/.volta" | path exists)) {
             $env.PATH = ($env.PATH | prepend $"($env.HOME)/.volta/bin")
             $env.VOLTA_HOME = $"($env.HOME)/.volta"
           }
           
           # API keys from agenix
-          for key in [anthropic openai gemini deepseek openrouter] {
+          for key in [anthropic openai gemini deepseek openrouter groq] {
             let key_file = $"/run/agenix/($key)-api-key"
             if ($key_file | path exists) {
               let var_name = ($key | str upcase) + "_API_KEY"
