@@ -12,7 +12,7 @@ lib.darwinSystem' (
     networking.hostName = "macbook";
     system.primaryUser = "ludwig";
 
-    # Set userShell to "fish" or "nushell" to switch shells
+    # set userShell to "fish" or "nushell" to switch shells
     userShell = "fish";
 
     users.users.ludwig = {
