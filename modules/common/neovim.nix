@@ -11,7 +11,7 @@ in
 {
   home-manager.sharedModules = [
     {
-      imports = [ nixvim.homeManagerModules.nixvim ];
+      imports = [ nixvim.homeModules.nixvim ];
 
       programs.nixvim = {
         enable = true;
@@ -1818,7 +1818,7 @@ in
               owner = "coder";
               repo = "claudecode.nvim";
               rev = "main";
-              sha256 = "sha256-h56TYz3SvdYw2R6f+NCtiFk3BRRV1+hOVa+BKjnav8E=";
+              sha256 = "sha256-b4jCKIqowkVuWhI9jxthluZISBOnIc8eOIgkw5++HRY=";
             };
           })
 
