@@ -18,23 +18,6 @@
           '';
         };
 
-        llm-stats = {
-          description = "Show token usage stats from LLM logs";
-          body = ''
-            sqlite3 (llm logs path) "
-              SELECT 
-                model,
-                COUNT(*) as conversations,
-                SUM(input_tokens) as total_input,
-                SUM(output_tokens) as total_output,
-                SUM(input_tokens + output_tokens) as total_tokens
-              FROM responses
-              GROUP BY model
-              ORDER BY total_tokens DESC
-            " | column -t -s '|'
-          '';
-        };
-
         git-commit-ai = {
           description = "Generate commit message from staged changes";
           body = ''
@@ -49,42 +32,19 @@
           '';
         };
 
-        explain-error = {
-          description = "Explain the last command error";
-          body = ''
-            set -l last_status $status
-            set -l last_cmd (history -1)
-            if test $last_status -ne 0
-              echo "Command: $last_cmd" | llm -t explain
-            else
-              echo "Last command succeeded"
-            end
-          '';
-        };
-
-        cmd-helper = {
-          description = "Get CLI command for a task";
-          body = ''
-            set -l task (string join " " $argv)
-            llm -t cmd "$task" | tee /dev/tty | pbcopy
-            echo ""
-            echo "Command copied to clipboard!"
-          '';
-        };
-
         llm-chat = {
           description = "Start interactive chat with continuation";
           body = ''
             set -l model $argv[1]
             if test -z "$model"
-              set model "5m"
+              set model "gpt5"
             end
             llm chat -m $model
           '';
         };
 
         oneliner = {
-          description = "Generate Unix one-liner";
+          description = "Generate cmd one-liner";
           body = ''
             set -l task (string join " " $argv)
             llm -t oneliner "$task" | tee /dev/tty | pbcopy
@@ -114,29 +74,18 @@
             echo "Exported to ~/llm-export-(date +%Y%m%d).md"
           '';
         };
-
-        llm-stream-test = {
-          description = "Test streaming with a model";
-          body = ''
-            set -l model $argv[1]
-            if test -z "$model"
-              set model "5m"
-            end
-            echo "Tell me a haiku about fish" | llm -m $model -s
-          '';
-        };
       };
 
-      programs.fish.shellAbbrs = {
-        ll = "llm";
-        llc = "llm-chat";
-        llr = "llm logs -r";
-        lls = "llm-search";
-        llh = "llm logs -n 10";
-        gcai = "git-commit-ai";
-        cmh = "cmd-helper";
-        ol = "oneliner";
-      };
+      # programs.fish.shellAbbrs = {
+      #   ll = "llm";
+      #   llc = "llm-chat";
+      #   llr = "llm logs -r";
+      #   lls = "llm-search";
+      #   llh = "llm logs -n 10";
+      #   gcai = "git-commit-ai";
+      #   cmh = "cmd-helper";
+      #   ol = "oneliner";
+      # };
     }
   ];
 }

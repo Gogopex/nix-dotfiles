@@ -162,8 +162,8 @@ Available swap layouts:
 - **Mode switching**: `Escape` or `Ctrl + c` - switch between insert/normal mode
 
 ### Link Extraction
-- `Ctrl + Alt + l`: Extract URLs from current Zellij pane scrollback and open with fzf selection
-- `links`: Command alias for URL extraction (same as Ctrl+Alt+l)
+- `Ctrl + Alt + l`: Extract URLs from recent output (Zellij/tmux) or fall back to recent command history; open with fzf selection
+- `links [LINES]`: Command to extract links (optional limit, default 400)
 
 ## Fish Shell & FZF Integration
 
@@ -208,4 +208,3 @@ Available swap layouts:
 - `Shift + Ctrl + Alt + Cmd + 2`: Arc
 - `Shift + Ctrl + Alt + Cmd + 3`: Obsidian
 - `Shift + Ctrl + Alt + Cmd + 4`: Sublime Text
-

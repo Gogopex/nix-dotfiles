@@ -26,10 +26,6 @@ mkIf isFish (merge {
           zls = "zellij list-sessions";
           zdel = "zellij delete-session";
           zforce = "zellij attach --force-run-commands";
-          # @FIX: broken
-          notify = "run_with_notify";
-          # @FIX: broken
-          claude-check = "check_claude_sessions";
         };
 
         shellInit = # fish
@@ -46,8 +42,6 @@ mkIf isFish (merge {
                              $HOME/.cache/lm-studio/bin
               fish_add_path ~/Downloads/google-cloud-sdk/bin
             end
-
-
 
             for key in anthropic openai gemini deepseek openrouter groq
               if test -f /run/agenix/$key-api-key
@@ -96,8 +90,6 @@ mkIf isFish (merge {
               source ~/Downloads/google-cloud-sdk/path.fish.inc
             end
 
-            # fish_mode_prompt is provided in functions below
-
             ${
               if zellijAutoStart then
                 ''
@@ -111,8 +103,6 @@ mkIf isFish (merge {
               else
                 ""
             }
-
-            # Fisher bootstrap disabled (plugins managed via nix)
 
             function fish_user_key_bindings
               bind \e\cv 'toggle_vim_mode'
@@ -217,17 +207,34 @@ mkIf isFish (merge {
 
           open_links = ''
             function open_links
-              if not set -q ZELLIJ
-                echo "Error: Not in a Zellij session"
-                return 1
+              # Usage: links [LINES]
+              set -l limit 400
+              if test (count $argv) -gt 0
+                if string match -rq '^[0-9]+$' -- $argv[1]
+                  set limit $argv[1]
+                end
               end
-              
               set -l temp_file (mktemp)
+              set -l source_desc ""
               
-              if not zellij action dump-screen $temp_file
-                echo "Error: Failed to dump Zellij screen"
-                rm -f $temp_file
-                return 1
+              if set -q ZELLIJ
+                if not zellij action dump-screen $temp_file
+                  echo "Error: Failed to dump Zellij screen"
+                  rm -f $temp_file
+                  return 1
+                end
+                command tail -n $limit $temp_file > $temp_file.tmp; and mv $temp_file.tmp $temp_file
+                set source_desc "Zellij pane"
+              else if set -q TMUX
+                if not tmux capture-pane -p -S -$limit > $temp_file
+                  echo "Error: Failed to capture tmux pane"
+                  rm -f $temp_file
+                  return 1
+                end
+                set source_desc "tmux pane"
+              else
+                history | head -n $limit > $temp_file
+                set source_desc "command history (fallback)"
               end
               
               set -l all_urls
@@ -245,14 +252,14 @@ mkIf isFish (merge {
                 string match -r -v '^(com|org|net|edu|gov|mil|int|example|test|localhost|invalid)$' | \
                 string replace -r '^' 'https://')
               
-              for url in $standard_urls $markdown_urls
+              for url in $standard_urls $markdown_urls $bare_domains
                 set all_urls $all_urls $url
               end
               
               set -l clean_urls
               for url in $all_urls
                 # Remove trailing punctuation but keep it if it's part of the URL structure
-                set -l cleaned (echo $url | string replace -r '([),;:!?\\."\']+)$' ''' | string trim)
+                set -l cleaned (echo $url | string replace -r "([),;:!?\\.\"']+)$" "" | string trim)
                 
                 # Validate URL has a valid structure
                 if string match -q -r '^(https?|ftp|file)://[^/]+' $cleaned
@@ -266,11 +273,11 @@ mkIf isFish (merge {
               rm -f $temp_file
               
               if test (count $urls) -eq 0
-                echo "No URLs found in current Zellij pane"
+                echo "No URLs found in $source_desc"
                 return 1
               end
               
-              echo "Found "(count $urls)" URL(s)"
+              echo "Found "(count $urls)" URL(s) from $source_desc"
               set -l selected (printf '%s\n' $urls | \
                 fzf --prompt="Select URL to open: " \
                     --preview-window=hidden \
@@ -279,56 +286,6 @@ mkIf isFish (merge {
               if test -n "$selected"
                 echo "Opening: $selected"
                 open "$selected"
-              end
-            end
-          '';
-
-          notify_completion = ''
-            function notify_completion
-              set -l last_command (history | head -n 1)
-              set -l exit_status $status
-              
-              printf "\a"
-              
-              if test $exit_status -eq 0
-                echo "[OK] Command completed: $last_command"
-              else
-                echo "[FAIL] Command failed ($exit_status): $last_command"
-              end
-            end
-          '';
-
-          run_with_notify = ''
-            function run_with_notify
-              if test (count $argv) -eq 0
-                echo "Usage: run_with_notify <command> [args...]"
-                return 1
-              end
-              
-              echo ">> Starting: $argv"
-              eval $argv
-              set -l exit_status $status
-              
-              # Trigger notification
-              printf "\a"
-              
-              if test $exit_status -eq 0
-                echo ">> Completed: $argv"
-              else
-                echo ">> Failed ($exit_status): $argv"
-              end
-              
-              return $exit_status
-            end
-          '';
-
-          check_claude_sessions = ''
-            function check_claude_sessions
-              # Look for claude processes that might be waiting
-              set -l claude_procs (ps aux | grep -i claude | grep -v grep)
-              if test -n "$claude_procs"
-                printf "\a"
-                echo ">> Claude Code session detected"
               end
             end
           '';

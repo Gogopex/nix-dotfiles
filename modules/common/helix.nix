@@ -67,8 +67,14 @@ merge {
                   "C" = ":set auto-completion false";
                 };
                 "y" = {
-                  "p" = [":sh echo \"%{filename}\" | pbcopy" ":echo Copied file path to clipboard"];
-                  "g" = [":sh echo \"https://github.com/$(git config --get remote.origin.url | sed 's/.*://;s/\\.git$//')/blob/$(git rev-parse --abbrev-ref HEAD)/%{relative_path}#L%{cursor_line}\" | pbcopy" ":echo Copied GitHub link to clipboard"];
+                  "p" = [
+                    ":sh printf \"%s\" \"{file-path}\" | pbcopy"
+                    ":echo Copied file path to clipboard"
+                  ];
+                  "g" = [
+                    ":sh url=$(git config --get remote.origin.url 2>/dev/null); slug=$(printf %s \"$url\" | sed -E 's#^git@[^:]*:##; s#^ssh://[^/]+/##; s#^https?://[^/]+/##; s#\\.git$##'); branch=$(git rev-parse --abbrev-ref HEAD); echo \"https://github.com/$slug/blob/$branch/{file-path-relative}#L{cursor-line}\" | pbcopy"
+                    ":echo Copied GitHub link to clipboard"
+                  ];
                 };
               };
 
@@ -749,7 +755,11 @@ merge {
               args = [ "--lsp" ];
             };
             lsp-ai = {
-              command = "lsp-ai";
+              command = "bash";
+              args = [
+                "-lc"
+                "if [ -f /run/agenix/openrouter-api-key ]; then export OPENROUTER_API_KEY=$(cat /run/agenix/openrouter-api-key); fi; exec lsp-ai"
+              ];
               config = {
                 memory = {
                   file_store = { };
@@ -834,7 +844,6 @@ merge {
             };
           };
         };
-
       };
     }
   ];
