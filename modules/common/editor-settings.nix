@@ -105,7 +105,7 @@ in
       "uiua" = false;
     };
     "makefile.configureOnOpen" = true;
-    "editor.columnSelection" = true;
+    # "editor.columnSelection" = true;
     "terminal.external.osxExec" = "Ghostty.app";
     "terminal.integrated.fontLigatures.enabled" = true;
     "extensions.experimental.affinity" = {

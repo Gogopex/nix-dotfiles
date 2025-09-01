@@ -1794,7 +1794,7 @@ in
               owner = "jake-stewart";
               repo = "multicursor.nvim";
               rev = "1.0";
-              sha256 = "sha256-bCk/b1LKORvgcpQwAGv9foa9fl4TwHN64UEdzlncAi4=";
+              sha256 = "sha256-NYS/ESrOCdrpdk4OeZhh3a0ll5n/+etTVORQ8xSYRoA=";
             };
           })
 

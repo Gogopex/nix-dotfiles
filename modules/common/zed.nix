@@ -40,7 +40,8 @@ let
 
     tab_size = 2;
     hard_tabs = false;
-    soft_wrap = "none";
+    soft_wrap = "preferred_line_length";
+    preferred_line_length = 80;
     show_whitespaces = "selection";
     show_indent_guides = true;
     indent_guides = {
