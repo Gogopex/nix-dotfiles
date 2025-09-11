@@ -13,6 +13,11 @@ let
     config.allowUnfree = true;
   };
   
+  # Extend lib with our custom functions for modules to use
+  libWithExtensions = inputs.nixpkgs.lib.extend (self: super: 
+    import ../../lib inputs self super
+  );
+  
   # Collect common modules (but filter out Darwin-specific ones)
   commonModules = collectNix ../../modules/common 
     |> remove ../../modules/common/home-manager.nix;  # This is for Darwin/NixOS systems
@@ -25,6 +30,7 @@ let
     
     extraSpecialArgs = {
       inherit inputs;
+      lib = libWithExtensions;  # Pass our extended lib
       zjstatus = inputs.zjstatus;
     };
     
