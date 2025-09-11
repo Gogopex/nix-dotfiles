@@ -76,41 +76,16 @@
       lib' = nixpkgs.lib.extend (_: _: nix-darwin.lib);
       lib = lib'.extend <| import ./lib inputs;
 
-      hostsByType =
-        readDir ./hosts
-        |> mapAttrs (name: const <| import ./hosts/${name} lib)
-        |> attrsToList
-        |> groupBy (
-          { name, value }:
-          if value ? class && value.class == "nixos" then "nixosConfigurations" else "darwinConfigurations"
-        )
-        |> mapAttrs (const listToAttrs);
-
-      darwinConfigs =
-        (hostsByType.darwinConfigurations or { })
-        |> attrsToList
-        |> map ({ name, value }: nameValuePair name value.config)
-        |> listToAttrs;
+      hosts = readDir ./hosts |> mapAttrs (name: const <| import ./hosts/${name} lib);
       
-      nixosConfigs =
-        (hostsByType.nixosConfigurations or { })
-        |> attrsToList
-        |> map ({ name, value }: nameValuePair name value.config)
-        |> listToAttrs;
+      # Separate hosts by type
+      isDarwin = _: host: host ? _type && host._type == "darwin";
+      isHomeManager = _: host: host ? activationPackage;
+      
+      darwinConfigurations = hosts |> lib.filterAttrs isDarwin;
+      homeConfigurations = hosts |> lib.filterAttrs isHomeManager;
     in
-    hostsByType
-    // darwinConfigs
-    // nixosConfigs
-    // {
-      inherit lib;
-      
-      # Add home-manager configurations for standalone Linux systems
-      homeConfigurations = 
-        let
-          quietboxImport = import ./hosts/quietbox lib;
-        in
-        if quietboxImport ? config && quietboxImport ? class then {
-          "ludwig@quietbox" = quietboxImport.config;
-        } else { };
+    {
+      inherit lib darwinConfigurations homeConfigurations;
     };
 }

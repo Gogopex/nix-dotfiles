@@ -78,12 +78,6 @@ merge {
                 };
               };
 
-              # selection navigation
-              # "C-h" = "select_prev_sibling";
-              # "C-j" = "shrink_selection";
-              # "C-k" = "expand_selection";
-              # "C-l" = "select_next_sibling";
-
               "{" = [
                 "goto_prev_paragraph"
                 "collapse_selection"
@@ -99,13 +93,6 @@ merge {
                 "select_mode"
                 "extend_to_line_bounds"
               ];
-
-              # C = [
-              #   "extend_to_line_end"
-              #   "yank_main_selection_to_clipboard"
-              #   "delete_selection"
-              #   "insert_mode"
-              # ];
 
               D = [
                 "extend_to_line_end"
@@ -126,13 +113,6 @@ merge {
                 "collapse_selection"
               ];
 
-              # Y = [
-              #   "extend_to_line_end"
-              #   "yank_main_selection_to_clipboard"
-              #   "collapse_selection"
-              # ];
-
-              # Word movement
               w = [
                 "move_next_word_start"
                 "move_char_right"
@@ -160,7 +140,6 @@ merge {
                 "collapse_selection"
               ];
 
-              # Mode changes
               i = [
                 "insert_mode"
                 "collapse_selection"
@@ -180,7 +159,6 @@ merge {
                 "keep_primary_selection"
               ];
 
-              # Search
               "*" = [
                 "move_char_right"
                 "move_prev_word_start"
@@ -188,14 +166,6 @@ merge {
                 "search_selection"
                 "search_next"
               ];
-
-              # "#" = [
-              #   "move_char_right"
-              #   "move_prev_word_start"
-              #   "move_next_word_end"
-              #   "search_selection"
-              #   "search_prev"
-              # ];
 
               j = "move_line_down";
               k = "move_line_up";
@@ -211,32 +181,6 @@ merge {
                 i = [ "select_textobject_inner" ];
                 a = [ "select_textobject_around" ];
 
-                # Delete with movement
-                # j = [
-                #   "select_mode"
-                #   "extend_to_line_bounds"
-                #   "extend_line_below"
-                #   "yank_main_selection_to_clipboard"
-                #   "delete_selection"
-                #   "normal_mode"
-                # ];
-                # k = [
-                #   "select_mode"
-                #   "extend_to_line_bounds"
-                #   "extend_line_above"
-                #   "yank_main_selection_to_clipboard"
-                #   "delete_selection"
-                #   "normal_mode"
-                # ];
-                # G = [
-                #   "select_mode"
-                #   "extend_to_line_bounds"
-                #   "goto_last_line"
-                #   "extend_to_line_bounds"
-                #   "yank_main_selection_to_clipboard"
-                #   "delete_selection"
-                #   "normal_mode"
-                # ];
                 w = [
                   "move_next_word_start"
                   "yank_main_selection_to_clipboard"
@@ -247,18 +191,8 @@ merge {
                   "yank_main_selection_to_clipboard"
                   "delete_selection"
                 ];
-                # g.g = [
-                #   "select_mode"
-                #   "extend_to_line_bounds"
-                #   "goto_file_start"
-                #   "extend_to_line_bounds"
-                #   "yank_main_selection_to_clipboard"
-                #   "delete_selection"
-                #   "normal_mode"
-                # ];
               };
 
-              # Yank operations
               y = {
                 y = [
                   "extend_to_line_bounds"
@@ -340,7 +274,6 @@ merge {
                 "delete_selection"
                 "normal_mode"
               ];
-              # C = ["goto_line_start" "extend_to_line_bounds" "change_selection"];
               "%" = "match_brackets";
               S = "surround_add";
               u = [

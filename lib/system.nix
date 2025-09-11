@@ -80,4 +80,39 @@ in
         ++ modulesNixOS
         ++ inputModulesNixOS;
     };
+
+  homeManagerConfiguration' =
+    { system, username ? "ludwig", module }:
+    let
+      pkgs = import inputs.nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+        overlays = inputOverlays;
+      };
+    in
+    inputs.home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
+      
+      # Pass our extended lib to modules as a specialArg
+      # But let home-manager use its own lib internally
+      extraSpecialArgs = inputs // {
+        inherit inputs;
+        # Add our extensions to the lib that modules see
+        lib = inputs.nixpkgs.lib // self // {
+          # Keep home-manager's lib extensions
+          hm = inputs.home-manager.lib.hm;
+        };
+      };
+      
+      modules = 
+        [
+          module
+          {
+            home.username = username;
+            home.homeDirectory = "/home/${username}";
+          }
+          ../modules/common/home-manager-compat.nix
+        ]
+        ++ (filter (m: m != ../modules/common/home-manager.nix) modulesCommon);
+    };
 }

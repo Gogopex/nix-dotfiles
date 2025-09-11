@@ -1,25 +1,74 @@
-# Home-manager configuration for quietbox (Arch Linux)
 { config, pkgs, lib, inputs, ... }:
 
 {
-  home = {
-    username = "ludwig";
-    homeDirectory = "/home/ludwig";
-    stateVersion = "24.11";
+  programs.home-manager.enable = true;
+  programs.helix = import ../../modules/common/helix-config.nix;
+  
+  programs.nushell = {
+    enable = true;
+    configFile.text = ''
+      $env.config = {
+        show_banner: false
+      }
+      
+      def welcome_message [] {
+        let quotes = [
+          "The only way to do great work is to love what you do. - Steve Jobs"
+          "Innovation distinguishes between a leader and a follower. - Steve Jobs"  
+          "Stay hungry. Stay foolish. - Steve Jobs"
+          "Think different. - Apple Inc."
+          "Code is poetry. - WordPress"
+          "Simplicity is the ultimate sophistication. - Leonardo da Vinci"
+          "Make it work, make it right, make it fast. - Kent Beck"
+          "Premature optimization is the root of all evil. - Donald Knuth"
+          "Talk is cheap. Show me the code. - Linus Torvalds"
+          "Any fool can write code that a computer can understand. Good programmers write code that humans can understand. - Martin Fowler"
+        ]
+        
+        $quotes | get (random int 0..(($quotes | length) - 1))
+      }
+      
+      print (welcome_message)
+    '';
+    shellAliases = {
+      ll = "ls -alh";
+      dr = "home-manager switch --flake .#quietbox";
+      cat = "bat";
+      ".." = "cd ..";
+      "..." = "cd ../..";
+      "...." = "cd ../../..";
+      q = "exit";
+      x = "exit";
+    };
   };
   
-  # Let home-manager manage itself
-  programs.home-manager.enable = true;
+  programs.git = {
+    enable = true;
+    userName = "Ludwig Austermann";
+    userEmail = "gogopex@gmail.com";
+  };
   
-  # Shell configuration
-  userShell = "fish";
+  programs.zoxide = {
+    enable = true;
+    enableNushellIntegration = true;
+  };
   
-  # System info for modules that need it  
-  system.primaryUser = "ludwig";
+  home.sessionVariables = {
+    EDITOR = "hx";
+  };
   
-  # Type for conditional module loading
-  type = "server";
-  
-  # Set helix as default editor for headless server
-  programs.helix.defaultEditor = true;
+  home.packages = with pkgs; [
+    ripgrep
+    fd
+    bat
+    eza
+    fzf
+    jq
+    curl
+    wget
+    htop
+    btop
+    ncdu
+    tailscale
+  ];
 }
