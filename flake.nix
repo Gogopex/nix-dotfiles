@@ -109,7 +109,7 @@
         let
           quietboxImport = import ./hosts/quietbox lib;
         in
-        if quietboxImport ? config then {
+        if quietboxImport ? config && quietboxImport ? class then {
           "ludwig@quietbox" = quietboxImport.config;
         } else { };
     };
