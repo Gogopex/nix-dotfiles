@@ -24,7 +24,7 @@ let
     inherit pkgs;
     
     extraSpecialArgs = {
-      inherit inputs lib;
+      inherit inputs;
       zjstatus = inputs.zjstatus;
     };
     
