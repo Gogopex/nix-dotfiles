@@ -86,15 +86,31 @@
         )
         |> mapAttrs (const listToAttrs);
 
-      hostConfigs =
+      darwinConfigs =
         (hostsByType.darwinConfigurations or { })
+        |> attrsToList
+        |> map ({ name, value }: nameValuePair name value.config)
+        |> listToAttrs;
+      
+      nixosConfigs =
+        (hostsByType.nixosConfigurations or { })
         |> attrsToList
         |> map ({ name, value }: nameValuePair name value.config)
         |> listToAttrs;
     in
     hostsByType
-    // hostConfigs
+    // darwinConfigs
+    // nixosConfigs
     // {
       inherit lib;
+      
+      # Add home-manager configurations for standalone Linux systems
+      homeConfigurations = 
+        let
+          quietboxImport = import ./hosts/quietbox lib;
+        in
+        if quietboxImport ? config then {
+          "ludwig@quietbox" = quietboxImport.config;
+        } else { };
     };
 }

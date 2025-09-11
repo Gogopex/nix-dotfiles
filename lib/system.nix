@@ -10,6 +10,10 @@ let
 
   modulesCommon = collectNix ../modules/common;
   modulesDarwin = collectNix ../modules/darwin;
+  modulesNixOS = 
+    if builtins.pathExists ../modules/nixos
+    then collectNix ../modules/nixos
+    else [];
 
   collectInputs =
     let
@@ -19,6 +23,11 @@ let
 
   inputModulesDarwin = collectInputs [
     "darwinModules"
+    "default"
+  ];
+
+  inputModulesNixOS = collectInputs [
+    "nixosModules"
     "default"
   ];
 
@@ -49,5 +58,26 @@ in
         ++ modulesCommon
         ++ modulesDarwin
         ++ inputModulesDarwin;
+    };
+
+  nixosSystem' =
+    module:
+    super.nixosSystem {
+      inherit specialArgs;
+
+      modules =
+        [
+          module
+          overlayModule
+          inputs.home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = specialArgs;
+          }
+        ]
+        ++ modulesCommon
+        ++ modulesNixOS
+        ++ inputModulesNixOS;
     };
 }
