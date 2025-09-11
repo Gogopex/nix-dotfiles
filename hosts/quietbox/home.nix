@@ -13,16 +13,11 @@
       
       def welcome_message [] {
         let quotes = [
-          "The only way to do great work is to love what you do. - Steve Jobs"
-          "Innovation distinguishes between a leader and a follower. - Steve Jobs"  
-          "Stay hungry. Stay foolish. - Steve Jobs"
-          "Think different. - Apple Inc."
-          "Code is poetry. - WordPress"
-          "Simplicity is the ultimate sophistication. - Leonardo da Vinci"
-          "Make it work, make it right, make it fast. - Kent Beck"
-          "Premature optimization is the root of all evil. - Donald Knuth"
-          "Talk is cheap. Show me the code. - Linus Torvalds"
-          "Any fool can write code that a computer can understand. Good programmers write code that humans can understand. - Martin Fowler"
+          "I can't put down the chips"
+          "What is impossible for you is not impossible for me."  
+          "Ah, Stil, I live in an apocalyptic dream. My steps fit into it so precisely that I fear most of all I will grow bored reliving the thing so exactly."
+          "Do not compete with what is happening. To compete is to prepare for failure. Do not be trapped by the need to achieve anything. This way, you achieve everything."
+          "Greatness is a transitory experience. It is never consistent. It depends in part upon the myth-making imagination of humankind. The person who experiences greatness must have a feeling for the myth he is in. He must reflect what is projected upon him. And he must have a strong sense of the sardonic. This is what uncouples him from belief in his own pretensions. The sardonic is all that permits him to move within himself. Without this quality, even occasional greatness will destroy a man."
         ]
         
         $quotes | get (random int 0..(($quotes | length) - 1))
@@ -31,20 +26,17 @@
       print (welcome_message)
     '';
     shellAliases = {
-      ll = "ls -alh";
-      dr = "home-manager switch --flake .#quietbox";
+      dr = "home-manager switch --flake .#quietbox --extra-experimental-features 'nix-command flakes pipe-operators'";
       cat = "bat";
       ".." = "cd ..";
       "..." = "cd ../..";
       "...." = "cd ../../..";
-      q = "exit";
-      x = "exit";
     };
   };
   
   programs.git = {
     enable = true;
-    userName = "Ludwig Austermann";
+    userName = "Ludwig Pouey";
     userEmail = "gogopex@gmail.com";
   };
   
@@ -55,6 +47,17 @@
   
   home.sessionVariables = {
     EDITOR = "hx";
+  };
+
+  programs.bash = {
+    enable = true;
+    initExtra = ''
+      # If running interactively and nu exists, exec into it
+      if [[ $- == *i* ]] && [ -z "$IN_NUSHELL" ] && command -v nu &> /dev/null; then
+        export IN_NUSHELL=1
+        exec nu
+      fi
+    '';
   };
   
   home.packages = with pkgs; [
@@ -70,5 +73,7 @@
     btop
     ncdu
     tailscale
+    uv
+    cmake
   ];
 }
