@@ -14,10 +14,8 @@
   # Shell configuration
   userShell = "fish";
   
-  # System info for modules that need it
-  system = {
-    primaryUser = "ludwig";
-  };
+  # System info for modules that need it  
+  system.primaryUser = "ludwig";
   
   # Type for conditional module loading
   type = "server";
