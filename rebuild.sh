@@ -51,7 +51,6 @@ PARSE_EXTRA=false
 USE_NH=true
 ASK_FLAG=false
 
-# Detect system type
 SYSTEM_TYPE="unknown"
 if [[ "$(uname -s)" == "Darwin" ]]; then
     SYSTEM_TYPE="darwin"
@@ -105,7 +104,6 @@ find_host_dir() {
 }
 
 if [[ -z "$HOST" ]]; then
-    # Try hostname command first, fall back to reading /etc/hostname or using hostnamectl
     if command -v hostname &> /dev/null; then
         DETECTED_HOST=$(hostname -s)
     elif [[ -f /etc/hostname ]]; then
@@ -161,7 +159,6 @@ if command -v nh &> /dev/null && [[ "$USE_NH" == "true" ]]; then
     if [[ "$SYSTEM_TYPE" == "darwin" ]]; then
         NH_ARGS=("darwin" "switch" "." "--hostname" "$HOST")
     else
-        # For Linux/home-manager, nh uses different syntax
         NH_ARGS=("home" "switch" ".#homeConfigurations.$HOST.activationPackage")
     fi
     
@@ -222,7 +219,6 @@ else
             exit 1
         fi
     else
-        # Linux/home-manager path
         print_info "Using home-manager..."
 
         HM_ARGS=(
