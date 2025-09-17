@@ -95,6 +95,7 @@ merge {
             yq-go
             tree
             bottom
+            sd
 
             dust
             uutils-coreutils-noprefix

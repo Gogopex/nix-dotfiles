@@ -29,5 +29,9 @@
       file = ../../secrets/groq-api-key.age;
       mode = "444";
     };
+    glm-api-key = {
+      file = ../../secrets/glm-api-key.age;
+      mode = "444";
+    };
   };
 }

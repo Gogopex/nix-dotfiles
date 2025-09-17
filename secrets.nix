@@ -31,4 +31,8 @@ in
     ludwig
     system
   ];
+  "secrets/glm-api-key.age".publicKeys = [
+    ludwig
+    system
+  ];
 }

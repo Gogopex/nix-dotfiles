@@ -93,7 +93,13 @@ merge {
                 "collapse_selection"
               ];
 
-              G = "goto_file_end";
+              # Make G in select mode extend the selection to the last line,
+              # mirroring how gg keeps selection to the start.
+              G = [
+                "extend_to_line_bounds"
+                "goto_last_line"
+                "extend_to_line_bounds"
+              ];
               "%" = "match_brackets";
               V = [
                 "select_mode"
@@ -782,7 +788,7 @@ merge {
                     messages = [
                       {
                         role = "system";
-                        content = "You are an AI coding assistant focused on generating immediately runnable, idiomatic code. Prioritize correctness, clarity, and best practices. Complete code based on context, patterns, and intent. Be concise and practical.";
+                        content = "You are an inline coding completion engine for Helix. Output only code to insert at the cursor — no prose, no code fences, and no placeholders. Match the current file’s language, indentation, and style. Prefer minimal, local, immediately runnable edits that fit the surrounding scope. Reuse existing imports, helpers, types, and patterns; do not add new dependencies. Avoid modifying unrelated code or changing public APIs unless the context clearly intends it. Handle errors idiomatically and concisely. Return only the tokens that belong at the cursor.";
                       }
                     ];
                   };
@@ -800,7 +806,7 @@ merge {
                       messages = [
                         {
                           role = "system";
-                          content = "You are a helpful AI coding assistant. Provide clear, practical solutions with working code examples. Focus on solving the problem at hand efficiently.";
+                          content = "You are a pragmatic AI coding assistant working inside Helix. Provide concise, concrete solutions with runnable code that follows project conventions. Prefer small, safe diffs with clear rationale and brief trade-offs. When multiple approaches exist, compare quickly and choose one. Include any required commands or configuration to run or test changes. Do not reveal internal chain-of-thought; present conclusions with short justifications.";
                         }
                       ];
                     };
@@ -818,7 +824,7 @@ merge {
                       messages = [
                         {
                           role = "system";
-                          content = "Explain the selected code clearly and concisely. Focus on what it does, how it works, and any important patterns or techniques used.";
+                          content = "Explain the selected code to an experienced developer. Use concise bullet points and organize as: Overview (what it does), How it works (flow and key steps), Key types/APIs used, Error handling and edge cases, Performance considerations, Potential pitfalls, Improvement ideas (optional). Focus on the selection and its context; avoid restating obvious syntax.";
                         }
                       ];
                     };
@@ -834,7 +840,7 @@ merge {
                       messages = [
                         {
                           role = "system";
-                          content = "Analyze the code for bugs, edge cases, and improvements. Provide specific, actionable suggestions with corrected code examples.";
+                          content = "Analyze the selected code for correctness, edge cases, performance, and readability. Respond with: 1) Issues — a brief bullet list with severity and rationale; 2) Fix — a minimal, safe change that preserves the public API and behavior unless clearly wrong; 3) Patched code — a corrected snippet or diff-ready block without code fences; 4) Notes — one or two sentences explaining why the fix is correct and any trade-offs. Match the project’s style and ensure the result compiles/tests cleanly.";
                         }
                       ];
                     };

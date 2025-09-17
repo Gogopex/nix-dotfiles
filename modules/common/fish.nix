@@ -26,6 +26,7 @@ mkIf isFish (merge {
           zls = "zellij list-sessions";
           zdel = "zellij delete-session";
           zforce = "zellij attach --force-run-commands";
+          glm = "env ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic ANTHROPIC_AUTH_TOKEN=$GLM_API_KEY claude";
         };
 
         shellInit = # fish
@@ -37,13 +38,14 @@ mkIf isFish (merge {
               fish_add_path -g /run/current-system/sw/bin
               fish_add_path -g /nix/var/nix/profiles/default/bin
               fish_add_path ~/.npm-global/bin
+              fish_add_path ~/.cargo/bin
               fish_add_path ~/.local/bin ~/.modular/bin \
                              /Applications/WezTerm.app/Contents/MacOS \
                              $HOME/.cache/lm-studio/bin
               fish_add_path ~/Downloads/google-cloud-sdk/bin
             end
 
-            for key in anthropic openai gemini deepseek openrouter groq
+            for key in anthropic openai gemini deepseek openrouter groq glm
               if test -f /run/agenix/$key-api-key
                 set -gx (string upper $key)_API_KEY (command cat /run/agenix/$key-api-key)
               end
