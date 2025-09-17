@@ -10,6 +10,10 @@ let
 
   modulesCommon = collectNix ../modules/common;
   modulesDarwin = collectNix ../modules/darwin;
+  modulesNixOS = 
+    if builtins.pathExists ../modules/nixos
+    then collectNix ../modules/nixos
+    else [];
 
   collectInputs =
     let
@@ -19,6 +23,11 @@ let
 
   inputModulesDarwin = collectInputs [
     "darwinModules"
+    "default"
+  ];
+
+  inputModulesNixOS = collectInputs [
+    "nixosModules"
     "default"
   ];
 
@@ -49,5 +58,61 @@ in
         ++ modulesCommon
         ++ modulesDarwin
         ++ inputModulesDarwin;
+    };
+
+  nixosSystem' =
+    module:
+    super.nixosSystem {
+      inherit specialArgs;
+
+      modules =
+        [
+          module
+          overlayModule
+          inputs.home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = specialArgs;
+          }
+        ]
+        ++ modulesCommon
+        ++ modulesNixOS
+        ++ inputModulesNixOS;
+    };
+
+  homeManagerConfiguration' =
+    { system, username ? "ludwig", module }:
+    let
+      pkgs = import inputs.nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+        overlays = inputOverlays;
+      };
+    in
+    inputs.home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
+      
+      # Pass our extended lib to modules as a specialArg
+      # But let home-manager use its own lib internally
+      extraSpecialArgs = inputs // {
+        inherit inputs;
+        # Add our extensions to the lib that modules see
+        lib = inputs.nixpkgs.lib // self // {
+          # Keep home-manager's lib extensions
+          hm = inputs.home-manager.lib.hm;
+        };
+      };
+      
+      modules = 
+        [
+          module
+          {
+            home.username = username;
+            home.homeDirectory = "/home/${username}";
+          }
+          ../modules/common/home-manager-compat.nix
+        ]
+        ++ (filter (m: m != ../modules/common/home-manager.nix) modulesCommon);
     };
 }

@@ -11,4 +11,5 @@ filesystem
 // values
 // {
   filesystem = super.filesystem // filesystem;
+  inherit inputs;  # Make inputs available in lib
 }

@@ -7,8 +7,8 @@ merge {
     {
       programs.jujutsu = enabled {
         settings = {
-          user.name = "ludwig";
-          user.email = "gogopex@gmail.com";
+          user.name = config.user.name;
+          user.email = config.user.email;
 
           ui.default-command = "log";
           ui.diff-editor = ":builtin";

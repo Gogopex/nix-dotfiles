@@ -76,25 +76,16 @@
       lib' = nixpkgs.lib.extend (_: _: nix-darwin.lib);
       lib = lib'.extend <| import ./lib inputs;
 
-      hostsByType =
-        readDir ./hosts
-        |> mapAttrs (name: const <| import ./hosts/${name} lib)
-        |> attrsToList
-        |> groupBy (
-          { name, value }:
-          if value ? class && value.class == "nixos" then "nixosConfigurations" else "darwinConfigurations"
-        )
-        |> mapAttrs (const listToAttrs);
-
-      hostConfigs =
-        (hostsByType.darwinConfigurations or { })
-        |> attrsToList
-        |> map ({ name, value }: nameValuePair name value.config)
-        |> listToAttrs;
+      hosts = readDir ./hosts |> mapAttrs (name: const <| import ./hosts/${name} lib);
+      
+      # Separate hosts by type
+      isDarwin = _: host: host ? _type && host._type == "darwin";
+      isHomeManager = _: host: host ? activationPackage;
+      
+      darwinConfigurations = hosts |> lib.filterAttrs isDarwin;
+      homeConfigurations = hosts |> lib.filterAttrs isHomeManager;
     in
-    hostsByType
-    // hostConfigs
-    // {
-      inherit lib;
+    {
+      inherit lib darwinConfigurations homeConfigurations;
     };
 }
