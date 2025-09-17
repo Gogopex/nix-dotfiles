@@ -162,7 +162,7 @@ if command -v nh &> /dev/null && [[ "$USE_NH" == "true" ]]; then
         NH_ARGS=("darwin" "switch" "." "--hostname" "$HOST")
     else
         # For Linux/home-manager, nh uses different syntax
-        NH_ARGS=("home" "switch" "." "--configuration" "$HOST")
+        NH_ARGS=("home" "switch" ".#homeConfigurations.$HOST.activationPackage")
     fi
     
     if [[ "$ASK_FLAG" == "true" ]]; then
@@ -170,6 +170,7 @@ if command -v nh &> /dev/null && [[ "$USE_NH" == "true" ]]; then
     fi
     
     NIX_ARGS=(
+        "--extra-experimental-features" "pipe-operators"
         "--option" "accept-flake-config" "true"
         "--option" "eval-cache" "false"
     )
