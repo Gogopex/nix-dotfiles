@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ config, lib, ... }:
 let
   inherit (lib) enabled merge;
 in
@@ -11,8 +11,8 @@ merge {
       in
       {
         programs.git = enabled {
-          userName = homeConfig.programs.jujutsu.settings.user.name;
-          userEmail = homeConfig.programs.jujutsu.settings.user.email;
+          userName = config.user.name;
+          userEmail = config.user.email;
 
           extraConfig = {
             pull.rebase = false;
