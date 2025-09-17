@@ -111,7 +111,7 @@
   
   programs.git = {
     enable = true;
-    userName = "Ludwig Pouey";
+    userName = "ludwig";
     userEmail = "gogopex@gmail.com";
   };
   
@@ -155,5 +155,7 @@
     numactl
     openmpi
     gh
+    radicle-node
+    claude-code
   ];
 }
