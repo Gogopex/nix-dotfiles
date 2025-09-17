@@ -27,7 +27,7 @@ print_error() {
 usage() {
     echo "Usage: $0 [hostname] [options]"
     echo ""
-    echo "Rebuild Darwin configuration with enhanced features."
+    echo "Rebuild Nix configuration (Darwin or Home Manager)."
     echo ""
     echo "Arguments:"
     echo "  hostname      The host to build (optional, tries to detect automatically)"
@@ -35,14 +35,14 @@ usage() {
     echo "Options:"
     echo "  -h, --help    Show this help message"
     echo "  --ask         Preview changes before applying (requires nh)"
-    echo "  --no-nh       Force use of darwin-rebuild even if nh is available"
-    echo "  --            Pass remaining arguments to darwin-rebuild/nh"
+    echo "  --no-nh       Force use of native tools even if nh is available"
+    echo "  --            Pass remaining arguments to rebuild tool"
     echo ""
     echo "Examples:"
     echo "  $0                      # Build current host"
     echo "  $0 macbook              # Build specific host"
     echo "  $0 --ask                # Preview changes before applying"
-    echo "  $0 -- --show-trace      # Pass extra args to darwin-rebuild/nh"
+    echo "  $0 -- --show-trace      # Pass extra args to rebuild tool"
 }
 
 HOST=""
@@ -50,6 +50,16 @@ EXTRA_ARGS=()
 PARSE_EXTRA=false
 USE_NH=true
 ASK_FLAG=false
+
+SYSTEM_TYPE="unknown"
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    SYSTEM_TYPE="darwin"
+elif [[ "$(uname -s)" == "Linux" ]]; then
+    SYSTEM_TYPE="linux"
+else
+    print_error "Unsupported system: $(uname -s)"
+    exit 1
+fi
 
 for arg in "$@"; do
     if [[ "$PARSE_EXTRA" == "true" ]]; then
@@ -94,11 +104,22 @@ find_host_dir() {
 }
 
 if [[ -z "$HOST" ]]; then
-    DETECTED_HOST=$(hostname -s)
+    if command -v hostname &> /dev/null; then
+        DETECTED_HOST=$(hostname -s)
+    elif [[ -f /etc/hostname ]]; then
+        DETECTED_HOST=$(cat /etc/hostname)
+    elif command -v hostnamectl &> /dev/null; then
+        DETECTED_HOST=$(hostnamectl --static)
+    else
+        DETECTED_HOST="unknown"
+    fi
     
     if [[ "$DETECTED_HOST" == *"MacBook"* ]] && [[ -d "hosts/macbook" ]]; then
         HOST="macbook"
         print_info "Detected macOS system, using host configuration: $HOST"
+    elif [[ "$DETECTED_HOST" == "archlinux" ]] && [[ -d "hosts/quietbox" ]]; then
+        HOST="quietbox"
+        print_info "Detected Arch Linux system, using host configuration: $HOST"
     elif HOST_DIR=$(find_host_dir "$DETECTED_HOST"); then
         HOST="$HOST_DIR"
         print_info "Auto-detected host configuration: $HOST"
@@ -134,14 +155,19 @@ cd "$SCRIPT_DIR"
 
 if command -v nh &> /dev/null && [[ "$USE_NH" == "true" ]]; then
     print_info "Using nh for rebuild (better UX)..."
-    
-    NH_ARGS=("darwin" "switch" "." "--hostname" "$HOST")
+
+    if [[ "$SYSTEM_TYPE" == "darwin" ]]; then
+        NH_ARGS=("darwin" "switch" "." "--hostname" "$HOST")
+    else
+        NH_ARGS=("home" "switch" ".#homeConfigurations.$HOST.activationPackage")
+    fi
     
     if [[ "$ASK_FLAG" == "true" ]]; then
         NH_ARGS+=("--ask")
     fi
     
     NIX_ARGS=(
+        "--extra-experimental-features" "pipe-operators"
         "--option" "accept-flake-config" "true"
         "--option" "eval-cache" "false"
     )
@@ -152,43 +178,75 @@ if command -v nh &> /dev/null && [[ "$USE_NH" == "true" ]]; then
     
     export NH_FLAKE="$SCRIPT_DIR"
     if nh "${NH_ARGS[@]}" -- "${NIX_ARGS[@]}"; then
-        print_success "Darwin configuration rebuilt successfully with nh!"
+        print_success "Configuration rebuilt successfully with nh!"
     else
-        print_error "Darwin rebuild with nh failed!"
+        print_error "Rebuild with nh failed!"
         exit 1
     fi
 else
     if [[ "$ASK_FLAG" == "true" ]]; then
-        print_warning "--ask flag requires nh, falling back to darwin-rebuild without preview"
+        print_warning "--ask flag requires nh, falling back to native tools without preview"
     fi
-    
-    print_info "Using darwin-rebuild..."
-    
-    DARWIN_ARGS=(
-        "switch"
-        "--flake" ".#$HOST"
-    )
-    
-    NIX_ARGS=(
-        "--option" "accept-flake-config" "true"
-        "--option" "eval-cache" "false"
-        "--option" "experimental-features" "nix-command flakes pipe-operators"
-    )
-    
-    if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
-        NIX_ARGS+=("${EXTRA_ARGS[@]}")
-    fi
-    
-    if sudo darwin-rebuild "${DARWIN_ARGS[@]}" "${NIX_ARGS[@]}"; then
-        print_success "Darwin configuration rebuilt successfully!"
-        
-        if ! command -v nh &> /dev/null; then
-            echo ""
-            print_info "Tip: nh has been added to your packages but requires a rebuild to activate"
-            echo "      After this rebuild, you'll get nice diffs and an --ask flag!"
+
+    if [[ "$SYSTEM_TYPE" == "darwin" ]]; then
+        print_info "Using darwin-rebuild..."
+
+        DARWIN_ARGS=(
+            "switch"
+            "--flake" ".#$HOST"
+        )
+
+        NIX_ARGS=(
+            "--option" "accept-flake-config" "true"
+            "--option" "eval-cache" "false"
+            "--option" "experimental-features" "nix-command flakes pipe-operators"
+        )
+
+        if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
+            NIX_ARGS+=("${EXTRA_ARGS[@]}")
+        fi
+
+        if sudo darwin-rebuild "${DARWIN_ARGS[@]}" "${NIX_ARGS[@]}"; then
+            print_success "Darwin configuration rebuilt successfully!"
+
+            if ! command -v nh &> /dev/null; then
+                echo ""
+                print_info "Tip: nh has been added to your packages but requires a rebuild to activate"
+                echo "      After this rebuild, you'll get nice diffs and an --ask flag!"
+            fi
+        else
+            print_error "Darwin rebuild failed!"
+            exit 1
         fi
     else
-        print_error "Darwin rebuild failed!"
-        exit 1
+        print_info "Using home-manager..."
+
+        HM_ARGS=(
+            "switch"
+            "--flake" ".#$HOST"
+            "-b" "backup"
+        )
+
+        if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
+            HM_ARGS+=("${EXTRA_ARGS[@]}")
+        fi
+
+        HM_ARGS+=(
+            "--extra-experimental-features" "pipe-operators"
+            "--option" "accept-flake-config" "true"
+            "--option" "eval-cache" "false"
+        )
+
+        if home-manager "${HM_ARGS[@]}"; then
+            print_success "Home Manager configuration rebuilt successfully!"
+
+            if ! command -v nh &> /dev/null; then
+                echo ""
+                print_info "Tip: Consider installing nh for better rebuild UX with diffs and --ask flag"
+            fi
+        else
+            print_error "Home Manager rebuild failed!"
+            exit 1
+        fi
     fi
 fi

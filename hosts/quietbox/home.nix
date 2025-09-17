@@ -157,5 +157,6 @@
     gh
     radicle-node
     claude-code
+    nh
   ];
 }
