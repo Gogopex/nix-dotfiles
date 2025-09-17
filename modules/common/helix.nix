@@ -93,8 +93,6 @@ merge {
                 "collapse_selection"
               ];
 
-              # Make G in select mode extend the selection to the last line,
-              # mirroring how gg keeps selection to the start.
               G = [
                 "extend_to_line_bounds"
                 "goto_last_line"
