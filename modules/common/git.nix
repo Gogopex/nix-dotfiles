@@ -11,10 +11,12 @@ merge {
       in
       {
         programs.git = enabled {
-          userName = config.user.name;
-          userEmail = config.user.email;
+          settings = {
+            user = {
+              name = config.user.name;
+              email = config.user.email;
+            };
 
-          extraConfig = {
             pull.rebase = false;
             init.defaultBranch = "main";
             push.autoSetupRemote = true;
@@ -32,27 +34,27 @@ merge {
               side-by-side = false;
               syntax-theme = "gruvbox-dark";
             };
-          };
 
-          aliases = {
-            st = "status";
-            co = "checkout";
-            br = "branch";
-            last = "log -1 HEAD";
+            alias = {
+              st = "status";
+              co = "checkout";
+              br = "branch";
+              last = "log -1 HEAD";
 
-            l = "log --oneline --graph --decorate";
-            la = "log --oneline --graph --decorate --all";
+              l = "log --oneline --graph --decorate";
+              la = "log --oneline --graph --decorate --all";
 
-            d = "diff";
-            dc = "diff --cached";
+              d = "diff";
+              dc = "diff --cached";
 
-            a = "add";
-            c = "commit";
-            ca = "commit -a";
+              a = "add";
+              c = "commit";
+              ca = "commit -a";
 
-            unstage = "reset HEAD --";
+              unstage = "reset HEAD --";
 
-            visual = "!gitk";
+              visual = "!gitk";
+            };
           };
         };
       }

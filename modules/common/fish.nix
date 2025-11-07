@@ -1,7 +1,8 @@
 { lib, pkgs, config, ... }:
 let
   inherit (lib) enabled merge mkIf;
-  zellijAutoStart = false;
+  zellijAutoStart = true;
+  zellijBaseSession = "main";
   cfg = config.userShell;
   isFish = cfg == "fish";
 in
@@ -27,7 +28,6 @@ mkIf isFish (merge {
           zdel = "zellij delete-session";
           zforce = "zellij attach --force-run-commands";
           cdx = "codex --search --model=gpt-5-codex -c model_reasoning_effort=\"high\" --sandbox workspace-write -c sandbox_workspace_write.network_access=true";
-          glm = "env ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic ANTHROPIC_AUTH_TOKEN=$GLM_API_KEY command claude chat";
         };
 
         shellInit = # fish
@@ -98,8 +98,14 @@ mkIf isFish (merge {
                 ''
                   if test "$TERM" = "xterm-ghostty"; and test -z "$ZELLIJ"; and test -z "$NO_ZELLIJ"; and test -z "$GHOSTTY_QUICK_TERMINAL"
                     if command -v zellij >/dev/null 2>&1
-                      # Attach to an existing session or create a new one
-                      zellij attach -c
+                      set -l base_session "${zellijBaseSession}"
+                      if test -n "$base_session"
+                        # Attach to the named base session, creating if needed
+                        zellij attach --create "$base_session"
+                      else
+                        # Fallback: attach/create using zellij's default name
+                        zellij attach -c
+                      end
                     end
                   end
                 ''
@@ -190,6 +196,57 @@ mkIf isFish (merge {
               bind -M visual '$' 'commandline -f end-of-line'
               bind -M visual gg 'commandline -f beginning-of-buffer'
               bind -M visual G 'commandline -f end-of-buffer'
+            end
+          '';
+
+          glm = ''
+            function glm --description 'Launch Claude Code via the GLM Coding Plan'
+              if not type -q claude
+                echo "Error: claude CLI is not installed (npm install -g @anthropic-ai/claude-code)."
+                return 127
+              end
+
+              if not set -q GLM_API_KEY
+                echo "Error: GLM_API_KEY is not set (expected from /run/agenix/glm-api-key)."
+                return 1
+              end
+
+              set -l settings_file (mktemp /tmp/glm-claude-settings.XXXXXX)
+              if test $status -ne 0
+                echo "Error: failed to create a temporary settings file."
+                return 1
+              end
+
+              env GLM_ALIAS_KEY=$GLM_API_KEY CLAUDE_SETTINGS_FILE=$settings_file python3 -c "
+import json
+import os
+import pathlib
+
+settings_path = pathlib.Path(os.environ['CLAUDE_SETTINGS_FILE'])
+payload = {
+    'env': {
+        'ANTHROPIC_AUTH_TOKEN': os.environ['GLM_ALIAS_KEY'],
+        'ANTHROPIC_BASE_URL': 'https://api.z.ai/api/anthropic',
+        'API_TIMEOUT_MS': '3000000',
+        'ANTHROPIC_DEFAULT_HAIKU_MODEL': 'glm-4.5-air',
+        'ANTHROPIC_DEFAULT_SONNET_MODEL': 'glm-4.6',
+        'ANTHROPIC_DEFAULT_OPUS_MODEL': 'glm-4.6',
+    }
+}
+settings_path.write_text(json.dumps(payload, indent=2))
+"
+
+              env \
+                ANTHROPIC_AUTH_TOKEN=$GLM_API_KEY \
+                ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic \
+                API_TIMEOUT_MS=3000000 \
+                ANTHROPIC_DEFAULT_HAIKU_MODEL=glm-4.5-air \
+                ANTHROPIC_DEFAULT_SONNET_MODEL=glm-4.6 \
+                ANTHROPIC_DEFAULT_OPUS_MODEL=glm-4.6 \
+                claude --settings $settings_file $argv
+              set -l status $status
+              command rm -f $settings_file
+              return $status
             end
           '';
 

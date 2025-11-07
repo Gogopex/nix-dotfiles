@@ -111,8 +111,10 @@
   
   programs.git = {
     enable = true;
-    userName = "ludwig";
-    userEmail = "gogopex@gmail.com";
+    settings.user = {
+      name = "ludwig";
+      email = "gogopex@gmail.com";
+    };
   };
   
   programs.zoxide = {
