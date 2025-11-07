@@ -113,34 +113,6 @@ in
             };
           };
 
-          treesitter-textobjects = {
-            enable = true;
-            select = {
-              enable = true;
-              keymaps = {
-                "af" = "@function.outer";
-                "if" = "@function.inner";
-                "ac" = "@class.outer";
-                "ic" = "@class.inner";
-                "ab" = "@block.outer";
-                "ib" = "@block.inner";
-                "ap" = "@parameter.outer";
-                "ip" = "@parameter.inner";
-              };
-            };
-            move = {
-              enable = true;
-              gotoNextStart = {
-                "]f" = "@function.outer";
-                "]c" = "@class.outer";
-              };
-              gotoPreviousStart = {
-                "[f" = "@function.outer";
-                "[c" = "@class.outer";
-              };
-            };
-          };
-
           telescope = {
             enable = true;
             settings = {
@@ -1794,7 +1766,7 @@ in
               owner = "jake-stewart";
               repo = "multicursor.nvim";
               rev = "1.0";
-              sha256 = "sha256-NYS/ESrOCdrpdk4OeZhh3a0ll5n/+etTVORQ8xSYRoA=";
+              sha256 = "sha256-QhYUwFGYXoeXr2dRraHvpYx4z/7R9TyL9OC2sGmIAMY=";
             };
           })
 
@@ -1818,7 +1790,7 @@ in
               owner = "coder";
               repo = "claudecode.nvim";
               rev = "main";
-              sha256 = "sha256-b4jCKIqowkVuWhI9jxthluZISBOnIc8eOIgkw5++HRY=";
+              sha256 = "sha256-XYmf1RQ2bVK6spINZW4rg6OQQ5CWWcR0Tw4QX8ZDjgs=";
             };
           })
 

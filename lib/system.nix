@@ -8,7 +8,10 @@ let
     collectNix
     ;
 
-  modulesCommon = collectNix ../modules/common;
+  modulesCommonRaw = collectNix ../modules/common;
+  homeManagerCompatModule = ../modules/common/home-manager-compat.nix;
+  homeManagerCompatModuleStr = builtins.toString homeManagerCompatModule;
+  modulesCommon = modulesCommonRaw |> filter (m: builtins.toString m != homeManagerCompatModuleStr);
   modulesDarwin = collectNix ../modules/darwin;
   modulesNixOS = 
     if builtins.pathExists ../modules/nixos

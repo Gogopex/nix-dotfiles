@@ -157,7 +157,7 @@ if command -v nh &> /dev/null && [[ "$USE_NH" == "true" ]]; then
     print_info "Using nh for rebuild (better UX)..."
 
     if [[ "$SYSTEM_TYPE" == "darwin" ]]; then
-        NH_ARGS=("darwin" "switch" "." "--hostname" "$HOST")
+        NH_ARGS=("darwin" "switch" ".#darwinConfigurations.$HOST")
     else
         NH_ARGS=("home" "switch" ".#homeConfigurations.$HOST.activationPackage")
     fi

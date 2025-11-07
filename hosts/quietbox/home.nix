@@ -2,7 +2,7 @@
 
 {
   programs.home-manager.enable = true;
-  programs.helix = import ../../modules/common/helix-config.nix;
+  programs.helix = import ../../cfg/helix-config.nix;
   
   programs.fish = {
     enable = true;

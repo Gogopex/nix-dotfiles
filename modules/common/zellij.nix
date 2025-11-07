@@ -289,6 +289,22 @@ merge
                   }
               }
               
+              swap_tiled_layout name="three-column-sides" {
+                  tab min_panes=3 {
+                      pane split_direction="horizontal" {
+                          pane split_direction="vertical" {
+                              pane { children; }
+                              pane { children; }
+                          }
+                          pane { children; }
+                          pane split_direction="vertical" {
+                              pane { children; }
+                              pane { children; }
+                          }
+                      }
+                  }
+              }
+              
               swap_tiled_layout name="stacked" {
                   tab min_panes=3 {
                       pane split_direction="vertical" {

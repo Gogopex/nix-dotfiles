@@ -17,11 +17,24 @@ in
           start-at-login = true;
 
           after-startup-command = [
-            "exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0
-              while [ $(aerospace list-windows --workspace focused | wc -l) -lt 2 ]; do sleep 0.2; done
+            ''
+              exec-and-forget borders active_color=0xffe1e3e4 inactive_color=0xff494d64 width=5.0
+            ''
+            ''
+              while [ "$(aerospace list-windows --workspace focused | wc -l)" -lt 2 ]; do sleep 0.2; done
+
+              aerospace layout h_tiles
               aerospace focus right
-              aerospace join-with up
-              aerospace layout v_accordion"
+              aerospace join-with left
+              aerospace layout v_accordion
+              aerospace focus up
+              aerospace move left
+              aerospace focus left
+              aerospace layout h_tiles
+              aerospace resize smart 0.6
+              aerospace focus right
+              aerospace layout v_accordion
+            ''
           ];
 
           accordion-padding = 5;
@@ -38,7 +51,37 @@ in
           };
 
           mode.main.binding = {
-            "alt-w" = "mode window"; 
+            "alt-w" = "mode window";
+
+            "alt-h" = [];
+            "alt-j" = [];
+            "alt-k" = [];
+            "alt-l" = [];
+
+            "alt-shift-h" = [];
+            "alt-shift-j" = [];
+            "alt-shift-k" = [];
+            "alt-shift-l" = [];
+
+            "alt-1" = [];
+            "alt-2" = [];
+            "alt-3" = [];
+            "alt-4" = [];
+            "alt-5" = [];
+            "alt-6" = [];
+            "alt-7" = [];
+            "alt-8" = [];
+            "alt-9" = [];
+
+            "alt-shift-1" = [];
+            "alt-shift-2" = [];
+            "alt-shift-3" = [];
+            "alt-shift-4" = [];
+            "alt-shift-5" = [];
+            "alt-shift-6" = [];
+            "alt-shift-7" = [];
+            "alt-shift-8" = [];
+            "alt-shift-9" = [];
           };
 
           mode.window.binding = {

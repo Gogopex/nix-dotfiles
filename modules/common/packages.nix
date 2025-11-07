@@ -126,8 +126,6 @@ merge {
             ;
 
           agenix = inputs.agenix.packages.${pkgs.system}.default;
-          haskell-debug-adapter = pkgs.haskellPackages.haskell-debug-adapter;
-          ghci-dap = pkgs.haskellPackages.ghci-dap;
         }
         // optionalAttrs config.isDesktop {
           inherit (pkgs)

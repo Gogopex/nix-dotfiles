@@ -20,7 +20,7 @@ merge
         package = mkIf config.isDarwin null;
 
         settings = with config.theme; {
-          theme = "GruvboxDark";
+          theme = "Gruvbox Dark";
 
           font-family = font.mono.name;
           font-family-bold = "${font.mono.name} Bold";
@@ -34,7 +34,7 @@ merge
           window-decoration = "none";
           window-save-state = "always";
 
-          shell-integration = "fish";
+          shell-integration = config.userShell;
           confirm-close-surface = false;
           quit-after-last-window-closed = true;
           mouse-hide-while-typing = true;

@@ -79,7 +79,7 @@
       hosts = readDir ./hosts |> mapAttrs (name: const <| import ./hosts/${name} lib);
       
       # Separate hosts by type
-      isDarwin = _: host: host ? _type && host._type == "darwin";
+      isDarwin = _: host: host ? config && host ? system;
       isHomeManager = _: host: host ? activationPackage;
       
       darwinConfigurations = hosts |> lib.filterAttrs isDarwin;

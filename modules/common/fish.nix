@@ -26,7 +26,8 @@ mkIf isFish (merge {
           zls = "zellij list-sessions";
           zdel = "zellij delete-session";
           zforce = "zellij attach --force-run-commands";
-          glm = "env ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic ANTHROPIC_AUTH_TOKEN=$GLM_API_KEY claude";
+          cdx = "codex --search --model=gpt-5-codex -c model_reasoning_effort=\"high\" --sandbox workspace-write -c sandbox_workspace_write.network_access=true";
+          glm = "env ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic ANTHROPIC_AUTH_TOKEN=$GLM_API_KEY command claude chat";
         };
 
         shellInit = # fish
