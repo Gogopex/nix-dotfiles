@@ -100,10 +100,8 @@ mkIf isFish (merge {
                     if command -v zellij >/dev/null 2>&1
                       set -l base_session "${zellijBaseSession}"
                       if test -n "$base_session"
-                        # Attach to the named base session, creating if needed
                         zellij attach --create "$base_session"
                       else
-                        # Fallback: attach/create using zellij's default name
                         zellij attach -c
                       end
                     end

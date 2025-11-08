@@ -289,17 +289,20 @@ merge
                   }
               }
               
-              swap_tiled_layout name="three-column-sides" {
-                  tab min_panes=3 {
-                      pane split_direction="horizontal" {
-                          pane split_direction="vertical" {
-                              pane { children; }
-                              pane { children; }
+              swap_tiled_layout name="battlestation" {
+                  tab focus=true hide_floating_panes=true {
+                      pane split_direction="vertical" {
+                          pane size="30%" {
+                              pane cwd="dev" size="50%"
+                              pane cwd="dev" size="50%"
                           }
-                          pane { children; }
-                          pane split_direction="vertical" {
-                              pane { children; }
-                              pane { children; }
+                          pane command="zellij" cwd="dev" focus=true size="45%" {
+                              args "action" "dump-layout"
+                              start_suspended true
+                          }
+                          pane size="25%" {
+                              pane cwd="dev" size="50%"
+                              pane cwd="dev" size="50%"
                           }
                       }
                   }

@@ -1,20 +1,25 @@
-{
-  lib,
-  pkgs,
-  ...
-}:
+{ lib, pkgs, config, ... }:
 let
-  inherit (lib) mkIf;
+  inherit (lib) mkEnableOption mkIf;
+  cfg = config.darwin.windowManagers.aerospace.enable;
 in
 {
-  home-manager.sharedModules = [
-    {
-      programs.aerospace = mkIf pkgs.stdenv.isDarwin {
-        enable = true;
-        launchd.enable = true;
+  options.darwin.windowManagers.aerospace.enable =
+    mkEnableOption "Configure the Aerospace tiling window manager" // {
+      default = true;
+    };
 
-        userSettings = {
-          start-at-login = true;
+  config = mkIf (cfg && pkgs.stdenv.isDarwin) {
+    home-manager.sharedModules = [
+      {
+        home.packages = [ pkgs.aerospace ];
+
+        programs.aerospace = {
+          enable = true;
+          launchd.enable = true;
+
+          userSettings = {
+            start-at-login = true;
 
           after-startup-command = [
             ''
@@ -125,7 +130,7 @@ in
             "alt-w" = "mode main"; 
           };
         };
-      };
-    }
-  ];
+      }
+    ];
+  };
 }

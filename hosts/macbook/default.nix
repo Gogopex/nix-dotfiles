@@ -12,8 +12,12 @@ lib.darwinSystem' (
     networking.hostName = "macbook";
     system.primaryUser = "ludwig";
 
-    # set userShell to "fish" or "nushell" to switch shells
     userShell = "fish";
+
+    darwin.windowManagers = {
+      aerospace.enable = false;
+      rectangle.enable = true;
+    };
 
     users.users.ludwig = {
       name = "ludwig";

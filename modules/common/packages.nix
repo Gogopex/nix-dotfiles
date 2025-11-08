@@ -129,7 +129,6 @@ merge {
         }
         // optionalAttrs config.isDesktop {
           inherit (pkgs)
-            aerospace
             obsidian
             zotero
             zed-editor
