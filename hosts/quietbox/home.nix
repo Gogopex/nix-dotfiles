@@ -12,14 +12,14 @@
       "..." = "cd ../..";
       "...." = "cd ../../..";
     };
-    
+
     interactiveShellInit = ''
       set -gx EDITOR hx
-      
+
       # Vi mode setup
       fish_vi_key_bindings
       setup_enhanced_vi_mode
-      
+
       # Cursor shapes for different modes
       set -g fish_cursor_default block
       set -g fish_cursor_insert line
@@ -27,16 +27,16 @@
       set -g fish_cursor_replace underscore
       set -g fish_cursor_external line
       set -g fish_cursor_visual block
-      
+
       # Key bindings
       function fish_user_key_bindings
         bind \c\; 'toggle_vim_mode'
       end
-      
+
       # Zoxide
       zoxide init fish | source
     '';
-    
+
     functions = {
       fish_greeting = ''
         set -l quotes (
@@ -47,7 +47,7 @@
         )
         echo $quotes[(random 1 (count $quotes))]
       '';
-      
+
       fish_mode_prompt = ''
         switch $fish_bind_mode
           case default
@@ -72,7 +72,7 @@
             set_color normal
         end
       '';
-      
+
       setup_enhanced_vi_mode = ''
         set -g fish_cursor_default block
         set -g fish_cursor_insert line
@@ -80,18 +80,18 @@
         set -g fish_cursor_replace underscore
         set -g fish_cursor_external line
         set -g fish_cursor_visual block
-        
+
         bind -M default gh 'commandline -f beginning-of-line'
         bind -M default gl 'commandline -f end-of-line'
         bind -M default 0 'commandline -f beginning-of-line'
         bind -M default '\$' 'commandline -f end-of-line'
-        
+
         bind -M visual gh 'commandline -f beginning-of-line'
         bind -M visual gl 'commandline -f end-of-line'
         bind -M visual 0 'commandline -f beginning-of-line'
         bind -M visual '\$' 'commandline -f end-of-line'
       '';
-      
+
       toggle_vim_mode = ''
         if test "$fish_key_bindings" = "fish_vi_key_bindings"
           echo "Switching to default key bindings"
@@ -106,7 +106,7 @@
       '';
     };
   };
-  
+
   programs.git = {
     enable = true;
     settings.user = {
@@ -114,12 +114,12 @@
       email = "gogopex@gmail.com";
     };
   };
-  
+
   programs.zoxide = {
     enable = true;
     enableNushellIntegration = true;
   };
-  
+
   home.sessionVariables = {
     EDITOR = "hx";
   };
@@ -134,7 +134,7 @@
       fi
     '';
   };
-  
+
   home.packages = with pkgs; [
     ripgrep
     fd

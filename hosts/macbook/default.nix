@@ -1,6 +1,11 @@
 lib:
 lib.darwinSystem' (
-  { lib, pkgs, config, ... }:
+  {
+    lib,
+    pkgs,
+    config,
+    ...
+  }:
   let
     inherit (lib) collectNix remove;
   in

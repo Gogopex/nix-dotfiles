@@ -13,10 +13,7 @@ let
   homeManagerCompatModuleStr = builtins.toString homeManagerCompatModule;
   modulesCommon = modulesCommonRaw |> filter (m: builtins.toString m != homeManagerCompatModuleStr);
   modulesDarwin = collectNix ../modules/darwin;
-  modulesNixOS = 
-    if builtins.pathExists ../modules/nixos
-    then collectNix ../modules/nixos
-    else [];
+  modulesNixOS = if builtins.pathExists ../modules/nixos then collectNix ../modules/nixos else [ ];
 
   collectInputs =
     let
@@ -53,14 +50,13 @@ in
     super.darwinSystem {
       inherit specialArgs;
 
-      modules =
-        [
-          module
-          overlayModule
-        ]
-        ++ modulesCommon
-        ++ modulesDarwin
-        ++ inputModulesDarwin;
+      modules = [
+        module
+        overlayModule
+      ]
+      ++ modulesCommon
+      ++ modulesDarwin
+      ++ inputModulesDarwin;
     };
 
   nixosSystem' =
@@ -68,24 +64,27 @@ in
     super.nixosSystem {
       inherit specialArgs;
 
-      modules =
-        [
-          module
-          overlayModule
-          inputs.home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = specialArgs;
-          }
-        ]
-        ++ modulesCommon
-        ++ modulesNixOS
-        ++ inputModulesNixOS;
+      modules = [
+        module
+        overlayModule
+        inputs.home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.extraSpecialArgs = specialArgs;
+        }
+      ]
+      ++ modulesCommon
+      ++ modulesNixOS
+      ++ inputModulesNixOS;
     };
 
   homeManagerConfiguration' =
-    { system, username ? "ludwig", module }:
+    {
+      system,
+      username ? "ludwig",
+      module,
+    }:
     let
       pkgs = import inputs.nixpkgs {
         inherit system;
@@ -95,27 +94,29 @@ in
     in
     inputs.home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
-      
+
       # Pass our extended lib to modules as a specialArg
       # But let home-manager use its own lib internally
       extraSpecialArgs = inputs // {
         inherit inputs;
         # Add our extensions to the lib that modules see
-        lib = inputs.nixpkgs.lib // self // {
-          # Keep home-manager's lib extensions
-          hm = inputs.home-manager.lib.hm;
-        };
+        lib =
+          inputs.nixpkgs.lib
+          // self
+          // {
+            # Keep home-manager's lib extensions
+            hm = inputs.home-manager.lib.hm;
+          };
       };
-      
-      modules = 
-        [
-          module
-          {
-            home.username = username;
-            home.homeDirectory = "/home/${username}";
-          }
-          ../modules/common/home-manager-compat.nix
-        ]
-        ++ (filter (m: m != ../modules/common/home-manager.nix) modulesCommon);
+
+      modules = [
+        module
+        {
+          home.username = username;
+          home.homeDirectory = "/home/${username}";
+        }
+        ../modules/common/home-manager-compat.nix
+      ]
+      ++ (filter (m: m != ../modules/common/home-manager.nix) modulesCommon);
     };
 }

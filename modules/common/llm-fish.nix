@@ -60,7 +60,7 @@
             if test (count $argv) -gt 0
               set days $argv[1]
             end
-            
+
             sqlite3 (llm logs path) "
               SELECT 
                 '## ' || datetime || ' [' || model || ']' || char(10) ||

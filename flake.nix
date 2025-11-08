@@ -78,11 +78,11 @@
       lib = lib'.extend <| import ./lib inputs;
 
       hosts = readDir ./hosts |> mapAttrs (name: const <| import ./hosts/${name} lib);
-      
+
       # Separate hosts by type
       isDarwin = _: host: host ? config && host ? system;
       isHomeManager = _: host: host ? activationPackage;
-      
+
       darwinConfigurations = hosts |> lib.filterAttrs isDarwin;
       homeConfigurations = hosts |> lib.filterAttrs isHomeManager;
 

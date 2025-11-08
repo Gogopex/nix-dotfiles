@@ -41,47 +41,46 @@ merge
 
           macos-titlebar-style = mkIf config.isDarwin "hidden";
 
-          keybind =
-            [
-              "global:shift+alt+t=toggle_quick_terminal"
-            ]
-            ++ (mapAttrsToList (name: value: "ctrl+${name}=${value}") {
-              space = "toggle_fullscreen";
-              h = "unbind";
-              j = "unbind";
-              k = "unbind";
-              l = "unbind";
-            })
-            ++ (mapAttrsToList (name: value: "ctrl+shift+${name}=${value}") {
-              c = "copy_to_clipboard";
-              v = "paste_from_clipboard";
+          keybind = [
+            "global:shift+alt+t=toggle_quick_terminal"
+          ]
+          ++ (mapAttrsToList (name: value: "ctrl+${name}=${value}") {
+            space = "toggle_fullscreen";
+            h = "unbind";
+            j = "unbind";
+            k = "unbind";
+            l = "unbind";
+          })
+          ++ (mapAttrsToList (name: value: "ctrl+shift+${name}=${value}") {
+            c = "copy_to_clipboard";
+            v = "paste_from_clipboard";
 
-              enter = "reset_font_size";
-              plus = "increase_font_size:1";
-              minus = "decrease_font_size:1";
-            })
-            ++ (mapAttrsToList (name: value: "super+${name}=${value}") {
-              h = "unbind";
-              l = "unbind";
-              t = "unbind";
-              w = "unbind";
-              d = "unbind";
-            })
-            ++ (mapAttrsToList (name: value: "super+shift+${name}=${value}") {
-              t = "new_tab";
-              d = "unbind";
-              w = "unbind";
-            })
-            ++ (mapAttrsToList (name: value: "super+ctrl+${name}=${value}") {
-              h = "unbind";
-              j = "unbind";
-              k = "unbind";
-              l = "unbind";
-            })
-            ++ (mapAttrsToList (name: value: "super+ctrl+shift+${name}=${value}") {
-              h = "unbind";
-              l = "unbind";
-            });
+            enter = "reset_font_size";
+            plus = "increase_font_size:1";
+            minus = "decrease_font_size:1";
+          })
+          ++ (mapAttrsToList (name: value: "super+${name}=${value}") {
+            h = "unbind";
+            l = "unbind";
+            t = "unbind";
+            w = "unbind";
+            d = "unbind";
+          })
+          ++ (mapAttrsToList (name: value: "super+shift+${name}=${value}") {
+            t = "new_tab";
+            d = "unbind";
+            w = "unbind";
+          })
+          ++ (mapAttrsToList (name: value: "super+ctrl+${name}=${value}") {
+            h = "unbind";
+            j = "unbind";
+            k = "unbind";
+            l = "unbind";
+          })
+          ++ (mapAttrsToList (name: value: "super+ctrl+shift+${name}=${value}") {
+            h = "unbind";
+            l = "unbind";
+          });
         };
       };
     }

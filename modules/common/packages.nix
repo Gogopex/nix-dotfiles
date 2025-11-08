@@ -116,10 +116,10 @@ merge {
 
             wiki-tui
             tailscale
-            
+
             vault
             argocd
-            
+
             claude-code
             biome
             llm

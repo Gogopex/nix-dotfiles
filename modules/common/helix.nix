@@ -359,7 +359,10 @@ merge {
               formatter = {
                 command = "rustfmt";
               };
-              language-servers = [ "rust-analyzer" "lsp-ai" ];
+              language-servers = [
+                "rust-analyzer"
+                "lsp-ai"
+              ];
               debugger = {
                 name = "lldb-dap";
                 transport = "stdio";
@@ -387,7 +390,10 @@ merge {
               formatter = {
                 command = "gofumpt";
               };
-              language-servers = [ "gopls" "lsp-ai" ];
+              language-servers = [
+                "gopls"
+                "lsp-ai"
+              ];
               debugger = {
                 name = "delve";
                 transport = "tcp";
@@ -423,7 +429,10 @@ merge {
                   "-"
                 ];
               };
-              language-servers = [ "pyright" "lsp-ai" ];
+              language-servers = [
+                "pyright"
+                "lsp-ai"
+              ];
               debugger = {
                 name = "debugpy";
                 transport = "stdio";
@@ -461,7 +470,10 @@ merge {
                   "babel"
                 ];
               };
-              language-servers = [ "typescript-language-server" "lsp-ai" ];
+              language-servers = [
+                "typescript-language-server"
+                "lsp-ai"
+              ];
             }
             {
               name = "typescript";
@@ -473,7 +485,10 @@ merge {
                   "typescript"
                 ];
               };
-              language-servers = [ "typescript-language-server" "lsp-ai" ];
+              language-servers = [
+                "typescript-language-server"
+                "lsp-ai"
+              ];
             }
             {
               name = "jsx";
@@ -485,7 +500,10 @@ merge {
                   "babel"
                 ];
               };
-              language-servers = [ "typescript-language-server" "lsp-ai" ];
+              language-servers = [
+                "typescript-language-server"
+                "lsp-ai"
+              ];
             }
             {
               name = "tsx";
@@ -497,7 +515,10 @@ merge {
                   "typescript"
                 ];
               };
-              language-servers = [ "typescript-language-server" "lsp-ai" ];
+              language-servers = [
+                "typescript-language-server"
+                "lsp-ai"
+              ];
             }
             {
               name = "json";
@@ -588,7 +609,10 @@ merge {
                   "."
                 ];
               };
-              language-servers = [ "haskell-language-server" "lsp-ai" ];
+              language-servers = [
+                "haskell-language-server"
+                "lsp-ai"
+              ];
               debugger = {
                 name = "haskell-debug-adapter";
                 transport = "stdio";

@@ -1,4 +1,10 @@
-{ lib, pkgs, config, inputs, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  inputs,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkIf;
   hmLib = inputs.home-manager.lib;
@@ -7,7 +13,8 @@ let
 in
 {
   options.darwin.windowManagers.rectangle.enable =
-    mkEnableOption "Configure Rectangle window manager" // {
+    mkEnableOption "Configure Rectangle window manager"
+    // {
       default = false;
     };
 
@@ -16,13 +23,12 @@ in
       {
         home.packages = [ pkgs.rectangle ];
 
-        home.activation.rectanglePreferences =
-          hmLib.hm.dag.entryAfter ["writeBoundary"] ''
-            if command -v defaults >/dev/null 2>&1; then
-              defaults import com.knollsoft.Rectangle ${rectanglePlist} >/dev/null 2>&1 || true
-              /usr/bin/killall -u "$USER" cfprefsd >/dev/null 2>&1 || true
-            fi
-          '';
+        home.activation.rectanglePreferences = hmLib.hm.dag.entryAfter [ "writeBoundary" ] ''
+          if command -v defaults >/dev/null 2>&1; then
+            defaults import com.knollsoft.Rectangle ${rectanglePlist} >/dev/null 2>&1 || true
+            /usr/bin/killall -u "$USER" cfprefsd >/dev/null 2>&1 || true
+          fi
+        '';
       }
     ];
   };

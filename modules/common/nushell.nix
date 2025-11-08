@@ -31,7 +31,7 @@ mkIf isNushell (merge {
 
         configFile.text = builtins.readFile ./nushell-config.nu;
 
-        envFile.text = /*nushell*/ ''
+        envFile.text = /* nushell */ ''
           $env.PATH = (
             $env.PATH
             | split row (char esep)
@@ -48,16 +48,16 @@ mkIf isNushell (merge {
             | append $"($env.HOME)/.cache/lm-studio/bin"
             | uniq
           )
-          
+
           # Environment variables
           $env.EDITOR = "hx"
           $env.PHP_VERSION = "8.3"
-          
+
           if (($"($env.HOME)/.volta" | path exists)) {
             $env.PATH = ($env.PATH | prepend $"($env.HOME)/.volta/bin")
             $env.VOLTA_HOME = $"($env.HOME)/.volta"
           }
-          
+
           # API keys from agenix
           for key in [anthropic openai gemini deepseek openrouter groq] {
             let key_file = $"/run/agenix/($key)-api-key"
@@ -66,17 +66,17 @@ mkIf isNushell (merge {
               load-env {$var_name: (open $key_file | str trim)}
             }
           }
-          
+
           if ("/run/agenix/gemini-api-gcp-project-id" | path exists) {
             $env.GOOGLE_CLOUD_PROJECT = (open /run/agenix/gemini-api-gcp-project-id | str trim)
           }
-          
+
           # Ghostty integration
           if ($env.GHOSTTY_RESOURCES_DIR? | is-not-empty) {
             # Note: Nushell doesn't support sourcing fish scripts directly
             # You would need to port any ghostty shell integration manually
           }
-          
+
           # Prompt configuration
           def create_left_prompt [] {
             let dir = (
@@ -91,12 +91,12 @@ mkIf isNushell (merge {
             
             $"($nix_indicator)(ansi green_bold)($dir)(ansi reset) "
           }
-          
+
           def create_right_prompt [] {
             # Empty for now, can be customized later
             ""
           }
-          
+
           $env.PROMPT_COMMAND = {|| create_left_prompt }
           $env.PROMPT_COMMAND_RIGHT = {|| create_right_prompt }
           $env.PROMPT_INDICATOR = {|| "> " }

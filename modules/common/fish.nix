@@ -1,4 +1,9 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 let
   inherit (lib) enabled merge mkIf;
   zellijAutoStart = true;
@@ -61,7 +66,7 @@ mkIf isFish (merge {
           ''
             set -gx EDITOR hx
             set -gx PHP_VERSION 8.3
-            
+
             if test -d ~/.volta
               fish_add_path ~/.volta/bin
               set -gx VOLTA_HOME ~/.volta
@@ -88,7 +93,7 @@ mkIf isFish (merge {
             if test -f ~/.orbstack/shell/init2.fish
               source ~/.orbstack/shell/init2.fish 2>/dev/null
             end
-            
+
             if test -f ~/Downloads/google-cloud-sdk/path.fish.inc
               source ~/Downloads/google-cloud-sdk/path.fish.inc
             end
@@ -198,54 +203,54 @@ mkIf isFish (merge {
           '';
 
           glm = ''
-            function glm --description 'Launch Claude Code via the GLM Coding Plan'
-              if not type -q claude
-                echo "Error: claude CLI is not installed (npm install -g @anthropic-ai/claude-code)."
-                return 127
-              end
+                        function glm --description 'Launch Claude Code via the GLM Coding Plan'
+                          if not type -q claude
+                            echo "Error: claude CLI is not installed (npm install -g @anthropic-ai/claude-code)."
+                            return 127
+                          end
 
-              if not set -q GLM_API_KEY
-                echo "Error: GLM_API_KEY is not set (expected from /run/agenix/glm-api-key)."
-                return 1
-              end
+                          if not set -q GLM_API_KEY
+                            echo "Error: GLM_API_KEY is not set (expected from /run/agenix/glm-api-key)."
+                            return 1
+                          end
 
-              set -l settings_file (mktemp /tmp/glm-claude-settings.XXXXXX)
-              if test $status -ne 0
-                echo "Error: failed to create a temporary settings file."
-                return 1
-              end
+                          set -l settings_file (mktemp /tmp/glm-claude-settings.XXXXXX)
+                          if test $status -ne 0
+                            echo "Error: failed to create a temporary settings file."
+                            return 1
+                          end
 
-              env GLM_ALIAS_KEY=$GLM_API_KEY CLAUDE_SETTINGS_FILE=$settings_file python3 -c "
-import json
-import os
-import pathlib
+                          env GLM_ALIAS_KEY=$GLM_API_KEY CLAUDE_SETTINGS_FILE=$settings_file python3 -c "
+            import json
+            import os
+            import pathlib
 
-settings_path = pathlib.Path(os.environ['CLAUDE_SETTINGS_FILE'])
-payload = {
-    'env': {
-        'ANTHROPIC_AUTH_TOKEN': os.environ['GLM_ALIAS_KEY'],
-        'ANTHROPIC_BASE_URL': 'https://api.z.ai/api/anthropic',
-        'API_TIMEOUT_MS': '3000000',
-        'ANTHROPIC_DEFAULT_HAIKU_MODEL': 'glm-4.5-air',
-        'ANTHROPIC_DEFAULT_SONNET_MODEL': 'glm-4.6',
-        'ANTHROPIC_DEFAULT_OPUS_MODEL': 'glm-4.6',
-    }
-}
-settings_path.write_text(json.dumps(payload, indent=2))
-"
+            settings_path = pathlib.Path(os.environ['CLAUDE_SETTINGS_FILE'])
+            payload = {
+                'env': {
+                    'ANTHROPIC_AUTH_TOKEN': os.environ['GLM_ALIAS_KEY'],
+                    'ANTHROPIC_BASE_URL': 'https://api.z.ai/api/anthropic',
+                    'API_TIMEOUT_MS': '3000000',
+                    'ANTHROPIC_DEFAULT_HAIKU_MODEL': 'glm-4.5-air',
+                    'ANTHROPIC_DEFAULT_SONNET_MODEL': 'glm-4.6',
+                    'ANTHROPIC_DEFAULT_OPUS_MODEL': 'glm-4.6',
+                }
+            }
+            settings_path.write_text(json.dumps(payload, indent=2))
+            "
 
-              env \
-                ANTHROPIC_AUTH_TOKEN=$GLM_API_KEY \
-                ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic \
-                API_TIMEOUT_MS=3000000 \
-                ANTHROPIC_DEFAULT_HAIKU_MODEL=glm-4.5-air \
-                ANTHROPIC_DEFAULT_SONNET_MODEL=glm-4.6 \
-                ANTHROPIC_DEFAULT_OPUS_MODEL=glm-4.6 \
-                claude --settings $settings_file $argv
-              set -l status $status
-              command rm -f $settings_file
-              return $status
-            end
+                          env \
+                            ANTHROPIC_AUTH_TOKEN=$GLM_API_KEY \
+                            ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic \
+                            API_TIMEOUT_MS=3000000 \
+                            ANTHROPIC_DEFAULT_HAIKU_MODEL=glm-4.5-air \
+                            ANTHROPIC_DEFAULT_SONNET_MODEL=glm-4.6 \
+                            ANTHROPIC_DEFAULT_OPUS_MODEL=glm-4.6 \
+                            claude --settings $settings_file $argv
+                          set -l status $status
+                          command rm -f $settings_file
+                          return $status
+                        end
           '';
 
           toggle_vim_mode = ''
