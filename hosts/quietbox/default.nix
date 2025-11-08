@@ -1,30 +1,9 @@
 lib:
-let
-  inherit (lib) inputs;
-  
+lib.homeManagerConfiguration' {
   system = "x86_64-linux";
-  
-  pkgs = import inputs.nixpkgs {
-    inherit system;
-    config.allowUnfree = true;
+  username = "ludwig";
+  module = {
+    imports = [ ./home.nix ];
+    home.stateVersion = "24.11";
   };
-in
-inputs.home-manager.lib.homeManagerConfiguration {
-  inherit pkgs;
-  
-  extraSpecialArgs = {
-    inherit inputs;
-    inherit (inputs) zjstatus;
-  };
-  
-  modules = [
-    ./home.nix
-    {
-      home = {
-        username = "ludwig";
-        homeDirectory = "/home/ludwig";
-        stateVersion = "24.11";
-      };
-    }
-  ];
 }

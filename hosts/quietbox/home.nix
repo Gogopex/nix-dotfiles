@@ -2,8 +2,6 @@
 
 {
   programs.home-manager.enable = true;
-  programs.helix = import ../../cfg/helix-config.nix;
-  
   programs.fish = {
     enable = true;
     shellAliases = {

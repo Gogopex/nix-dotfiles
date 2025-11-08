@@ -67,6 +67,7 @@
       inherit (nixpkgs.lib)
         attrsToList
         const
+        genAttrs
         groupBy
         listToAttrs
         mapAttrs
@@ -84,8 +85,16 @@
       
       darwinConfigurations = hosts |> lib.filterAttrs isDarwin;
       homeConfigurations = hosts |> lib.filterAttrs isHomeManager;
+
+      systems = [
+        "aarch64-darwin"
+        "x86_64-darwin"
+        "aarch64-linux"
+        "x86_64-linux"
+      ];
     in
     {
+      formatter = genAttrs systems (system: nixpkgs.legacyPackages.${system}.nixfmt-rfc-style);
       inherit lib darwinConfigurations homeConfigurations;
     };
 }
