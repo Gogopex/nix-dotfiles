@@ -1295,7 +1295,6 @@ in
             options.desc = "Format";
           }
 
-          # Diagnostic navigation
         ]
         ++ (mapAttrsToList
           (
@@ -1337,7 +1336,6 @@ in
         )
         ++ [
 
-          # Debug (DAP)
           {
             mode = "n";
             key = "<leader>db";
@@ -1435,7 +1433,6 @@ in
             options.desc = "Widgets";
           }
 
-          # Toggle Options
           {
             mode = "n";
             key = "<leader>uf";
@@ -1497,7 +1494,6 @@ in
             options.desc = "Toggle treesitter highlight";
           }
 
-          # Session (Persistence)
           {
             mode = "n";
             key = "<leader>qs";
@@ -1517,7 +1513,6 @@ in
             options.desc = "Don't save session";
           }
 
-          # Quit
           {
             mode = "n";
             key = "<leader>qq";
@@ -1531,7 +1526,6 @@ in
             options.desc = "Quit all (force)";
           }
 
-          # UI/Diagnostics
           {
             mode = "n";
             key = "<leader>un";
@@ -1551,7 +1545,6 @@ in
             options.desc = "Quickfix list";
           }
 
-          # Tabs
           {
             mode = "n";
             key = "<leader><tab><tab>";
@@ -1589,7 +1582,6 @@ in
             options.desc = "Last tab";
           }
 
-          # Helix-style window navigation
           {
             mode = "n";
             key = "<leader>wh";
@@ -1615,8 +1607,6 @@ in
             options.desc = "Go to right window";
           }
 
-          # Plugin-specific keybindings
-          # Oil.nvim
           {
             mode = "n";
             key = "<leader>e";
@@ -1624,7 +1614,6 @@ in
             options.desc = "Open file explorer";
           }
 
-          # Git-conflict.nvim
           {
             mode = "n";
             key = "<leader>gco";
@@ -1662,7 +1651,6 @@ in
             options.desc = "Previous conflict";
           }
 
-          # Comment.nvim additional keybindings
           {
             mode = "n";
             key = "<leader>cc";
@@ -1682,7 +1670,6 @@ in
             };
           }
 
-          # Crates.nvim (Rust) - using <leader>C prefix to avoid conflicts
           {
             mode = "n";
             key = "<leader>Ct";
@@ -1714,7 +1701,6 @@ in
             options.desc = "Show crate dependencies";
           }
 
-          # Additional useful keybindings
           {
             mode = "n";
             key = "<leader>o";
@@ -1748,7 +1734,7 @@ in
           vim-startuptime
           snacks-nvim
 
-          # GitHub Copilot - building manually to bypass unfree check
+          # building manually to bypass unfree check
           (pkgs.vimUtils.buildVimPlugin {
             name = "copilot.vim";
             src = pkgs.fetchFromGitHub {
@@ -1779,7 +1765,6 @@ in
             };
           })
 
-          # Use nixpkgs version of outline.nvim if available, otherwise comment out
           outline-nvim
 
           (pkgs.vimUtils.buildVimPlugin {
