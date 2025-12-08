@@ -13,6 +13,11 @@ in
     {
       imports = [ nixvim.homeModules.nixvim ];
 
+      home.packages = with pkgs; [
+        fzf
+        glow
+      ];
+
       programs.nixvim = {
         enable = true;
         viAlias = true;
@@ -118,6 +123,24 @@ in
             settings = {
               defaults = {
                 disable_devicons = true;
+                mappings = {
+                  i = {
+                    "<esc>" = { __raw = "require('telescope.actions').close"; };
+                    "<C-c>" = { __raw = "require('telescope.actions').close"; };
+                    "<C-j>" = { __raw = "require('telescope.actions').move_selection_next"; };
+                    "<C-k>" = { __raw = "require('telescope.actions').move_selection_previous"; };
+                    "<C-n>" = { __raw = "require('telescope.actions').move_selection_next"; };
+                    "<C-p>" = { __raw = "require('telescope.actions').move_selection_previous"; };
+                  };
+                  n = {
+                    "<esc>" = { __raw = "require('telescope.actions').close"; };
+                    q = { __raw = "require('telescope.actions').close"; };
+                    j = { __raw = "require('telescope.actions').move_selection_next"; };
+                    k = { __raw = "require('telescope.actions').move_selection_previous"; };
+                    gg = { __raw = "require('telescope.actions').move_to_top"; };
+                    G = { __raw = "require('telescope.actions').move_to_bottom"; };
+                  };
+                };
               };
             };
             keymaps = {
@@ -1733,6 +1756,8 @@ in
           yanky-nvim
           vim-startuptime
           snacks-nvim
+          fzfWrapper
+          fzf-vim
 
           # building manually to bypass unfree check
           (pkgs.vimUtils.buildVimPlugin {
@@ -1750,8 +1775,8 @@ in
             src = pkgs.fetchFromGitHub {
               owner = "jake-stewart";
               repo = "multicursor.nvim";
-              rev = "1.0";
-              sha256 = "sha256-QhYUwFGYXoeXr2dRraHvpYx4z/7R9TyL9OC2sGmIAMY=";
+              rev = "a6cf4e7daaf10a6b14bb7838caf779f0de5070cd";
+              sha256 = "0gx11qy6ff74d9qav3klggjvld5qn9b51j4jsdqmh8r2pbr6y5ay";
             };
           })
 
@@ -1777,11 +1802,43 @@ in
             };
           })
 
+          (pkgs.vimUtils.buildVimPlugin {
+            name = "render-markdown.nvim";
+            src = pkgs.fetchFromGitHub {
+              owner = "MeanderingProgrammer";
+              repo = "render-markdown.nvim";
+              rev = "v8.10.0";
+              sha256 = "0lr5v2q1k3gmh187swaxx9c1w6z3v7qh3vdnlzlvqglr8dm41ny0";
+            };
+          })
+
         ];
 
         extraConfigLua = ''
           require('alpha').setup(require('alpha.themes.dashboard').config)
           require('git-conflict').setup()
+
+          -- Pop open fzf on launch when starting without a target file
+          vim.api.nvim_create_autocmd("VimEnter", {
+            callback = function()
+              if vim.fn.argc() == 0 and vim.api.nvim_buf_get_name(0) == "" then
+                vim.schedule(function()
+                  pcall(vim.cmd, "Files")
+                end)
+              end
+            end,
+          })
+
+          -- Helix-like movement inside fzf pickers
+          local helix_fzf_binds = "--bind=ctrl-n:down,ctrl-p:up,ctrl-j:down,ctrl-k:up,esc:cancel"
+          if vim.env.FZF_DEFAULT_OPTS then
+            if not string.find(vim.env.FZF_DEFAULT_OPTS, "ctrl%-n:down") then
+              vim.env.FZF_DEFAULT_OPTS = vim.env.FZF_DEFAULT_OPTS .. " " .. helix_fzf_binds
+            end
+          else
+            vim.env.FZF_DEFAULT_OPTS = helix_fzf_binds
+          end
+
           local mc = require('multicursor-nvim')
           mc.setup()
 
@@ -1848,6 +1905,8 @@ in
               split_side = "right",
             }
           })
+
+          require('render-markdown').setup({})
 
           -- GitHub Copilot configuration
           vim.g.copilot_filetypes = {

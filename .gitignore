@@ -22,5 +22,7 @@
 !scripts/**
 !secrets/
 !secrets/**
+!overlays/
+!overlays/**
 
 !rebuild.sh

@@ -31,7 +31,7 @@ let
     "default"
   ];
 
-  inputOverlays = collectInputs [
+  inputOverlays = [ (import ../overlays) ] ++ collectInputs [
     "overlays"
     "default"
   ];

@@ -272,7 +272,10 @@ merge {
               "0" = "goto_line_start";
               "$" = "goto_line_end";
               "^" = "goto_first_nonwhitespace";
-              G = "goto_file_end";
+              G = [
+                "extend_to_file_end"
+                "extend_to_line_bounds"
+              ];
               D = [
                 "extend_to_line_bounds"
                 "delete_selection"
