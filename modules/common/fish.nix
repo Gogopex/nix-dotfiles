@@ -94,10 +94,6 @@ mkIf isFish (merge {
               source ~/.orbstack/shell/init2.fish 2>/dev/null
             end
 
-            if test -f ~/Downloads/google-cloud-sdk/path.fish.inc
-              source ~/Downloads/google-cloud-sdk/path.fish.inc
-            end
-
             ${
               if zellijAutoStart then
                 ''

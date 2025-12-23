@@ -39,6 +39,8 @@ merge
           mouse-hide-while-typing = true;
           auto-update = "off";
 
+          scrollback-limit = 0;
+
           macos-titlebar-style = mkIf config.isDarwin "hidden";
 
           keybind = [

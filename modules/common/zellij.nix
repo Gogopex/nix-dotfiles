@@ -42,9 +42,11 @@ merge
           copy_on_select true
           show_startup_tips false
 
+          scroll_buffer_size 1000000
+
           session_serialization true
           pane_viewport_serialization true
-          scrollback_lines_to_serialize 10000
+          scrollback_lines_to_serialize 100000
           serialization_interval 60
 
           on_force_close "detach"

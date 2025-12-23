@@ -92,6 +92,12 @@ merge {
                 "goto_last_line"
                 "extend_to_line_bounds"
               ];
+              g = {
+                g = [
+                  "collapse_selection"
+                  "goto_file_start"
+                ];
+              };
               "%" = "match_brackets";
               V = [
                 "select_mode"
@@ -306,14 +312,8 @@ merge {
                 "collapse_selection"
               ];
 
-              k = [
-                "extend_line_up"
-                "extend_to_line_bounds"
-              ];
-              j = [
-                "extend_line_down"
-                "extend_to_line_bounds"
-              ];
+              k = "extend_line_above";
+              j = "extend_line_below";
 
               d = [
                 "yank_main_selection_to_clipboard"
@@ -433,7 +433,7 @@ merge {
                 ];
               };
               language-servers = [
-                "pyright"
+                "ty"
                 "lsp-ai"
               ];
               debugger = {
@@ -662,16 +662,9 @@ merge {
                 };
               };
             };
-            pyright = {
-              command = "pyright-langserver";
-              args = [ "--stdio" ];
-              config = {
-                python.analysis = {
-                  typeCheckingMode = "basic";
-                  autoSearchPaths = true;
-                  useLibraryCodeForTypes = true;
-                };
-              };
+            ty = {
+              command = "ty";
+              args = [ "server" ];
             };
             typescript-language-server = {
               command = "typescript-language-server";

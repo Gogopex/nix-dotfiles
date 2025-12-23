@@ -1785,7 +1785,7 @@ in
             src = pkgs.fetchFromGitHub {
               owner = "lewis6991";
               repo = "fileline.nvim";
-              rev = "master";
+              rev = "c116aa8dd7aa7e1db6938f872285e598dc9ee00b";
               sha256 = "sha256-Nn7FdhrMYIFrA72lW6fNubsrKss0QfH06oveOgSIHVE=";
             };
           })
@@ -1797,8 +1797,8 @@ in
             src = pkgs.fetchFromGitHub {
               owner = "coder";
               repo = "claudecode.nvim";
-              rev = "main";
-              sha256 = "sha256-XYmf1RQ2bVK6spINZW4rg6OQQ5CWWcR0Tw4QX8ZDjgs=";
+              rev = "6091df0e8edcdc92526cec23bbb42f63c0bb5ff2";
+              sha256 = "sha256-PmSYIE7j9C2ckJc9wDIm4KCozXP0z1U9TOdItnDyoDQ=";
             };
           })
 

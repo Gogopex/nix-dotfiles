@@ -55,7 +55,7 @@ merge {
             python311
             poetry
             uv
-            pyright
+            ty
             ruff
             black
 
