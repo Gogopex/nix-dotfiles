@@ -26,3 +26,5 @@
 !overlays/**
 
 !rebuild.sh
+
+.DS_Store
