@@ -1,0 +1,68 @@
+// USGC Zellij themes
+themes {
+    USGC-HIGHK-ZJ {
+        fg "#000000"
+        bg "#FFFFFF"
+        black "#000000"
+        red "#660000"
+        green "#00A645"
+        yellow "#FFBF00"
+        blue "#000066"
+        magenta "#660066"
+        cyan "#006666"
+        white "#999999"
+        orange "#FF6600"
+    }
+    USGC-RETICLE-ZJ {
+        fg "#00A645"
+        bg "#000000"
+        black "#000000"
+        red "#660000"
+        green "#00A645"
+        yellow "#FFBF00"
+        blue "#000066"
+        magenta "#660066"
+        cyan "#006666"
+        white "#999999"
+        orange "#FF6600"
+    }
+    USGC-POLYIMIDE-ZJ {
+        fg "#FFBF00"
+        bg "#000000"
+        black "#000000"
+        red "#660000"
+        green "#00A645"
+        yellow "#FFBF00"
+        blue "#000066"
+        magenta "#660066"
+        cyan "#006666"
+        white "#999999"
+        orange "#FF6600"
+    }
+    USGC-EPITAXY-ZJ {
+        fg "#FF00FF"
+        bg "#000000"
+        black "#000000"
+        red "#660000"
+        green "#00A645"
+        yellow "#FFBF00"
+        blue "#000066"
+        magenta "#660066"
+        cyan "#006666"
+        white "#999999"
+        orange "#FF6600"
+    }
+    USGC-METALGATE-ZJ {
+        fg "#00FFFF"
+        bg "#000000"
+        black "#000000"
+        red "#660000"
+        green "#00A645"
+        yellow "#FFBF00"
+        blue "#000066"
+        magenta "#660066"
+        cyan "#006666"
+        white "#999999"
+        orange "#FF6600"
+    }
+}
