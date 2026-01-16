@@ -23,6 +23,19 @@ merge {
               "edit"
               "@+"
             ];
+            tug = [
+              "bookmark"
+              "set"
+              "main"
+              "-r"
+              "@-"
+            ];
+            ship = [
+              "git"
+              "push"
+              "--bookmark"
+              "main"
+            ];
           };
 
           git.auto-local-bookmark = true;

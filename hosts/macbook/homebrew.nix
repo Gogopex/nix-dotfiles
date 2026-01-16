@@ -11,7 +11,6 @@
 
     casks = [
       "orbstack"
-      "hammerspoon"
     ];
 
     brews = [

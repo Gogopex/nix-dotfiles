@@ -195,13 +195,16 @@ merge
           }
         '';
 
+      xdg.configFile."zellij/themes/USGC-ZJ.kdl".source =
+        ../../cfg/zellij/USGC-ZJ.kdl;
+
       xdg.configFile."zellij/layouts/default.kdl".text = # kdl
         ''
           layout {
               default_tab_template {
                   children
                   pane size=1 borderless=true {
-                      plugin location="file:${zjstatus.packages.${pkgs.system}.default}/bin/zjstatus.wasm" {
+                      plugin location="file:${zjstatus.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/zjstatus.wasm" {
 
                           format_left  "#[fg=#${stripHash colors.fg2},bold,bg=#${stripHash colors.bg0_h}] {mode} #[bg=#${stripHash colors.bg0}]    #[bg=#${stripHash colors.bg1},fg=#${stripHash colors.fg1},bold] {session} "
                           format_center "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}]{tabs}"

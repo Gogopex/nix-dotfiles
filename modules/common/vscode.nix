@@ -5,9 +5,9 @@ in
 merge {
   home-manager.sharedModules = [
     {
-      programs.vscode = enabled {
+      programs.vscode = {
+        enable = false;
         profiles.default.userSettings = config.editorSettings // {
-          # VS Code specific settings
           "workbench.colorTheme" = "Gruvbox Dark Hard";
           "window.zoomLevel" = 0.8;
           "editor.fontSize" = 15;

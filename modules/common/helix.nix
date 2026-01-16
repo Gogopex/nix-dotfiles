@@ -312,8 +312,8 @@ merge {
                 "collapse_selection"
               ];
 
-              k = "extend_line_above";
-              j = "extend_line_below";
+              k = [ "extend_line_up" "extend_to_line_bounds" ];
+              j = [ "extend_line_down" "extend_to_line_bounds" ];
 
               d = [
                 "yank_main_selection_to_clipboard"
@@ -421,6 +421,25 @@ merge {
                   }
                 ];
               };
+            }
+            {
+              name = "swift";
+              auto-format = true;
+              roots = [
+                "Package.swift"
+                ".git"
+              ];
+              formatter = {
+                command = "swift-format";
+                args = [
+                  "format"
+                  "--stdin"
+                ];
+              };
+              language-servers = [
+                "sourcekit-lsp"
+                "lsp-ai"
+              ];
             }
             {
               name = "python";
@@ -661,6 +680,9 @@ merge {
                   staticcheck = true;
                 };
               };
+            };
+            sourcekit-lsp = {
+              command = "sourcekit-lsp";
             };
             ty = {
               command = "ty";

@@ -45,6 +45,7 @@ merge
 
           keybind = [
             "global:shift+alt+t=toggle_quick_terminal"
+            "shift+enter=text:\\x1b\\r"
           ]
           ++ (mapAttrsToList (name: value: "ctrl+${name}=${value}") {
             space = "toggle_fullscreen";

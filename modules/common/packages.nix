@@ -44,6 +44,9 @@ merge {
             delve
             rustup
             lldb
+            swift
+            sourcekit-lsp
+            swift-format
             nodejs
             bun
             deno
@@ -122,10 +125,10 @@ merge {
 
             claude-code
             biome
-            llm
+            ast-grep
             ;
 
-          agenix = inputs.agenix.packages.${pkgs.system}.default;
+          agenix = inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default;
         }
         // optionalAttrs config.isDesktop {
           inherit (pkgs)

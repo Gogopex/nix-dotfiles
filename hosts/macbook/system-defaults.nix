@@ -21,6 +21,22 @@
       show-thumbnail = true;
       target = "file";
     };
+
+    CustomUserPreferences = {
+      "com.apple.symbolichotkeys" = {
+        AppleSymbolicHotKeys = {
+          "65" = {
+            enabled = false;
+          };
+        };
+      };
+      "com.kagi.orion" = {
+        NSUserKeyEquivalents = {
+          "Show Sidebar" = "@$s";
+          "Hide Sidebar" = "@$s";
+        };
+      };
+    };
   };
 
   system.keyboard = {
