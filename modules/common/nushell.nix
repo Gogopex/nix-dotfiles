@@ -10,7 +10,7 @@ mkIf isNushell (merge {
       programs.nushell = enabled {
         shellAliases = {
           ll = "ls -alh";
-          dr = "sudo darwin-rebuild switch --flake .#macbook";
+          dr = "darwin-rebuild switch --flake .#macbook --option experimental-features \"nix-command flakes pipe-operators\" --option accept-flake-config true";
           ingest = "~/go/bin/ingest";
           cat = "bat";
           ps = "procs";
@@ -69,6 +69,19 @@ mkIf isNushell (merge {
 
           if ("/run/agenix/gemini-api-gcp-project-id" | path exists) {
             $env.GOOGLE_CLOUD_PROJECT = (open /run/agenix/gemini-api-gcp-project-id | str trim)
+          }
+
+          if ("/run/agenix/github-token" | path exists) {
+            let gh = (open /run/agenix/github-token | str trim)
+            $env.GITHUB_TOKEN = $gh
+            let access = $"access-tokens = github.com=($gh)"
+            if ($env.NIX_CONFIG? | is-not-empty) {
+              if not ($env.NIX_CONFIG | str contains "access-tokens = github.com=") {
+                $env.NIX_CONFIG = ($env.NIX_CONFIG + "\n" + $access)
+              }
+            } else {
+              $env.NIX_CONFIG = $access
+            }
           }
 
           # Ghostty integration

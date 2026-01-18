@@ -33,5 +33,9 @@
       file = ../../secrets/glm-api-key.age;
       mode = "444";
     };
+    github-token = {
+      file = ../../secrets/github-token.age;
+      mode = "444";
+    };
   };
 }

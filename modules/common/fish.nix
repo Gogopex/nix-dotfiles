@@ -17,7 +17,7 @@ mkIf isFish (merge {
       programs.fish = enabled {
         shellAliases = {
           ll = "ls -alh";
-          dr = "sudo darwin-rebuild switch --flake .#macbook";
+          dr = "darwin-rebuild switch --flake .#macbook --option experimental-features \"nix-command flakes pipe-operators\" --option accept-flake-config true";
           ingest = "~/go/bin/ingest";
           cat = "bat";
           ps = "procs";
@@ -59,6 +59,17 @@ mkIf isFish (merge {
 
             if test -f /run/agenix/gemini-api-gcp-project-id
               set -gx GOOGLE_CLOUD_PROJECT (command cat /run/agenix/gemini-api-gcp-project-id)
+            end
+
+            if test -f /run/agenix/github-token
+              set -l gh_token (command cat /run/agenix/github-token | string trim)
+              set -gx GITHUB_TOKEN $gh_token
+              if not set -q NIX_CONFIG
+                set -gx NIX_CONFIG "access-tokens = github.com=$gh_token"
+              else if not string match -q "*access-tokens = github.com=*" "$NIX_CONFIG"
+                set -gx NIX_CONFIG "$NIX_CONFIG
+access-tokens = github.com=$gh_token"
+              end
             end
           '';
 

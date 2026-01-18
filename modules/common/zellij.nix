@@ -21,6 +21,7 @@ let
     url = "https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm";
     sha256 = "sha256-MRlBRVGdvcEoaFtFb5cDdDePoZ/J2nQvvkoyG6zkSds=";
   };
+  cmdslots = "/Users/ludwig/dev/cmdslots/target/wasm32-wasip1/release/cmdslots.wasm";
 in
 merge
 <| mkIf config.isDesktop {
@@ -113,6 +114,20 @@ merge
                     }
                     // Directly edit scrollback from normal mode
                     bind "Ctrl Shift e" { SwitchToMode "Scroll"; EditScrollback; }
+
+                    bind "Ctrl 1" { MessagePlugin "file:${cmdslots}" { name "exec"; payload "1"; }}
+                    bind "Ctrl 2" { MessagePlugin "file:${cmdslots}" { name "exec"; payload "2"; }}
+                    bind "Ctrl 3" { MessagePlugin "file:${cmdslots}" { name "exec"; payload "3"; }}
+                    bind "Ctrl `" {
+                        LaunchOrFocusPlugin "file:${cmdslots}" {
+                            floating true
+                            move_to_focused_tab true
+                            width "30%"
+                            height "40%"
+                            x "68%"
+                            y "5%"
+                        }
+                    }
                 }
               
               normal {

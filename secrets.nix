@@ -35,4 +35,8 @@ in
     ludwig
     system
   ];
+  "secrets/github-token.age".publicKeys = [
+    ludwig
+    system
+  ];
 }
