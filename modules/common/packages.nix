@@ -8,7 +8,6 @@
 let
   inherit (lib)
     attrValues
-    merge
     mkOption
     optionalAttrs
     types
@@ -142,31 +141,35 @@ let
     inherit (pkgs) zed-editor;
   };
 in
-merge {
-  options.packages.profile = mkOption {
-    type = types.enum [
-      "core"
-      "full"
-    ];
-    default = "core";
+{
+  options = {
+    packages.profile = mkOption {
+      type = types.enum [
+        "core"
+        "full"
+      ];
+      default = "core";
+    };
   };
 
-  home-manager.sharedModules = [
-    {
-      home.packages = attrValues (profilePackages // desktopPackages // zedPackage);
+  config = {
+    home-manager.sharedModules = [
+      {
+        home.packages = attrValues (profilePackages // desktopPackages // zedPackage);
 
-      programs.zoxide.enable = true;
-      programs.direnv = {
-        enable = true;
-        nix-direnv.enable = true;
-      };
-      programs.btop = {
-        enable = true;
-        settings = {
-          vim_keys = true;
-          rounded_corners = true;
+        programs.zoxide.enable = true;
+        programs.direnv = {
+          enable = true;
+          nix-direnv.enable = true;
         };
-      };
-    }
-  ];
+        programs.btop = {
+          enable = true;
+          settings = {
+            vim_keys = true;
+            rounded_corners = true;
+          };
+        };
+      }
+    ];
+  };
 }
