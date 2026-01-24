@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  inherit (lib) merge;
+  inherit (lib) merge mkIf;
 
   cursorSettings = config.editorSettings // {
     "workbench.colorTheme" = "Gruvbox Dark Soft";
@@ -38,11 +38,11 @@ let
     "cursor.ai.enableWebSearch" = false;
   };
 in
-merge {
+mkIf config.editors.cursor.enable (merge {
   home-manager.sharedModules = [
     {
       home.file."Library/Application Support/Cursor/User/settings.json".text =
         builtins.toJSON cursorSettings;
     }
   ];
-}
+})

@@ -1,12 +1,11 @@
 { config, lib, ... }:
 let
-  inherit (lib) enabled merge;
+  inherit (lib) enabled merge mkIf;
 in
-merge {
+mkIf config.editors.vscode.enable (merge {
   home-manager.sharedModules = [
     {
-      programs.vscode = {
-        enable = false;
+      programs.vscode = enabled {
         profiles.default.userSettings = config.editorSettings // {
           "workbench.colorTheme" = "Gruvbox Dark Hard";
           "window.zoomLevel" = 0.8;
@@ -26,4 +25,4 @@ merge {
       };
     }
   ];
-}
+})

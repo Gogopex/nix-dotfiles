@@ -20,7 +20,6 @@ lib.darwinSystem' (
     userShell = "fish";
 
     darwin.windowManagers = {
-      aerospace.enable = false;
       rectangle.enable = true;
     };
 

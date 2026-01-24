@@ -5,7 +5,6 @@
   programs.fish = {
     enable = true;
     shellAliases = {
-      dr = "home-manager switch --flake .#quietbox --extra-experimental-features 'nix-command flakes pipe-operators'";
       cat = "bat";
       ll = "ls -alh";
       ".." = "cd ..";

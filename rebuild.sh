@@ -36,12 +36,14 @@ usage() {
     echo "  -h, --help    Show this help message"
     echo "  --ask         Preview changes before applying (requires nh)"
     echo "  --no-nh       Force use of native tools even if nh is available"
+    echo "  --profile     Set package profile (core or full)"
     echo "  --            Pass remaining arguments to rebuild tool"
     echo ""
     echo "Examples:"
     echo "  $0                      # Build current host"
     echo "  $0 macbook              # Build specific host"
     echo "  $0 --ask                # Preview changes before applying"
+    echo "  $0 --profile full       # Switch package profile and rebuild"
     echo "  $0 -- --show-trace      # Pass extra args to rebuild tool"
 }
 
@@ -50,6 +52,8 @@ EXTRA_ARGS=()
 PARSE_EXTRA=false
 USE_NH=true
 ASK_FLAG=false
+PROFILE=""
+EXPECT_PROFILE=false
 
 SYSTEM_TYPE="unknown"
 if [[ "$(uname -s)" == "Darwin" ]]; then
@@ -64,6 +68,9 @@ fi
 for arg in "$@"; do
     if [[ "$PARSE_EXTRA" == "true" ]]; then
         EXTRA_ARGS+=("$arg")
+    elif [[ "$EXPECT_PROFILE" == "true" ]]; then
+        PROFILE="$arg"
+        EXPECT_PROFILE=false
     elif [[ "$arg" == "--" ]]; then
         PARSE_EXTRA=true
     elif [[ "$arg" == "-h" ]] || [[ "$arg" == "--help" ]]; then
@@ -73,6 +80,10 @@ for arg in "$@"; do
         USE_NH=false
     elif [[ "$arg" == "--ask" ]]; then
         ASK_FLAG=true
+    elif [[ "$arg" == "--profile" ]]; then
+        EXPECT_PROFILE=true
+    elif [[ "$arg" == --profile=* ]]; then
+        PROFILE="${arg#--profile=}"
     elif [[ -z "$HOST" ]]; then
         HOST="$arg"
     else
@@ -81,6 +92,18 @@ for arg in "$@"; do
         exit 1
     fi
 done
+
+if [[ "$EXPECT_PROFILE" == "true" ]]; then
+    print_error "Missing value for --profile"
+    usage
+    exit 1
+fi
+
+if [[ -n "$PROFILE" ]] && [[ "$PROFILE" != "core" ]] && [[ "$PROFILE" != "full" ]]; then
+    print_error "Invalid profile: $PROFILE (expected core or full)"
+    usage
+    exit 1
+fi
 
 find_host_dir() {
     local hostname="$1"
@@ -153,6 +176,17 @@ fi
 
 cd "$SCRIPT_DIR"
 
+if [[ -n "$PROFILE" ]]; then
+    PROFILE_FILE="$SCRIPT_DIR/hosts/$HOST/profile.nix"
+    print_info "Setting package profile for $HOST to $PROFILE"
+    cat > "$PROFILE_FILE" <<EOF
+{ ... }:
+{
+  packages.profile = "$PROFILE";
+}
+EOF
+fi
+
 if command -v nh &> /dev/null && [[ "$USE_NH" == "true" ]]; then
     print_info "Using nh for rebuild (better UX)..."
 
@@ -169,7 +203,7 @@ if command -v nh &> /dev/null && [[ "$USE_NH" == "true" ]]; then
     NIX_ARGS=(
         "--extra-experimental-features" "pipe-operators"
         "--option" "accept-flake-config" "true"
-        "--option" "eval-cache" "false"
+        "--option" "eval-cache" "true"
     )
     
     if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
@@ -198,7 +232,7 @@ else
 
         NIX_ARGS=(
             "--option" "accept-flake-config" "true"
-            "--option" "eval-cache" "false"
+            "--option" "eval-cache" "true"
             "--option" "experimental-features" "nix-command flakes pipe-operators"
         )
 
@@ -234,7 +268,7 @@ else
         HM_ARGS+=(
             "--extra-experimental-features" "pipe-operators"
             "--option" "accept-flake-config" "true"
-            "--option" "eval-cache" "false"
+            "--option" "eval-cache" "true"
         )
 
         if home-manager "${HM_ARGS[@]}"; then

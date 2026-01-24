@@ -1,8 +1,8 @@
-{ lib, ... }:
+{ config, lib, ... }:
 let
-  inherit (lib) enabled merge;
+  inherit (lib) enabled merge mkIf;
 in
-merge {
+mkIf config.editors.helix.enable (merge {
   home-manager.sharedModules = [
     {
       programs.helix = enabled {
@@ -826,4 +826,4 @@ merge {
       };
     }
   ];
-}
+})

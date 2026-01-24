@@ -17,7 +17,8 @@ mkIf isFish (merge {
       programs.fish = enabled {
         shellAliases = {
           ll = "ls -alh";
-          dr = "darwin-rebuild switch --flake .#macbook --option experimental-features \"nix-command flakes pipe-operators\" --option accept-flake-config true";
+          lt = "eza --long --all --group-directories-first --sort=modified --time-style=long-iso --git --binary --header --icons=never --no-user --no-permissions";
+          lt1 = "eza -T -L 1 --long --all --group-directories-first --sort=modified --time-style=long-iso --git --binary --header --icons=never --no-user --no-permissions";
           ingest = "~/go/bin/ingest";
           cat = "bat";
           ps = "procs";
@@ -105,6 +106,24 @@ access-tokens = github.com=$gh_token"
               source ~/.orbstack/shell/init2.fish 2>/dev/null
             end
 
+            function __zj_aviator_update --on-event fish_prompt
+              if not set -q ZELLIJ_PANE_ID
+                return
+              end
+              if not command -v zellij >/dev/null 2>&1
+                return
+              end
+              set -l pane $ZELLIJ_PANE_ID
+              set -l pid $fish_pid
+              set -l cwd_enc (string escape --style=url -- $PWD)
+              set -l pgid (command ps -o pgid= -p $fish_pid | string trim)
+              if test -n "$pgid"
+                zellij pipe --name zj-aviator -- set pane=$pane pid=$pid pgid=$pgid cwd=$cwd_enc >/dev/null 2>&1
+              else
+                zellij pipe --name zj-aviator -- set pane=$pane pid=$pid cwd=$cwd_enc >/dev/null 2>&1
+              end
+            end
+
             ${
               if zellijAutoStart then
                 ''
@@ -124,6 +143,9 @@ access-tokens = github.com=$gh_token"
             }
 
             function fish_user_key_bindings
+              if functions -q fzf_configure_bindings
+                fzf_configure_bindings
+              end
               bind \e\cv 'toggle_vim_mode'
               bind \e\cl 'open_links'
               bind \ca\cb 'br; commandline -f repaint'
@@ -131,12 +153,20 @@ access-tokens = github.com=$gh_token"
               bind \c\; 'toggle_vim_mode'
             end
 
+            fish_user_key_bindings
+
           '';
 
         functions = {
           fish_greeting = ''echo "What is impossible for you is not impossible for me."'';
 
           cc = ''$argv | pbcopy'';
+          ltf = ''
+            function ltf --description "List files by modified time via eza + fzf with preview"
+              eza --all --group-directories-first --sort=modified --oneline --color=never --icons=never | \
+                fzf --preview 'if [ -d "{}" ]; then eza --long --all --group-directories-first --sort=modified --time-style=long-iso --git --binary --header --color=always --icons=never "{}" | head -n 200; else bat --style=numbers --color=always --paging=never --line-range :200 "{}" 2>/dev/null || eza --long --all --group-directories-first --sort=modified --time-style=long-iso --git --binary --header --color=always --icons=never "{}"; fi'
+            end
+          '';
 
           fish_mode_prompt = ''
             function fish_mode_prompt

@@ -1,0 +1,4 @@
+{ ... }:
+{
+  packages.profile = "full";
+}

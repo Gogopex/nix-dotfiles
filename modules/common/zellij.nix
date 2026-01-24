@@ -21,7 +21,6 @@ let
     url = "https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm";
     sha256 = "sha256-MRlBRVGdvcEoaFtFb5cDdDePoZ/J2nQvvkoyG6zkSds=";
   };
-  cmdslots = "/Users/ludwig/dev/cmdslots/target/wasm32-wasip1/release/cmdslots.wasm";
 in
 merge
 <| mkIf config.isDesktop {
@@ -114,20 +113,6 @@ merge
                     }
                     // Directly edit scrollback from normal mode
                     bind "Ctrl Shift e" { SwitchToMode "Scroll"; EditScrollback; }
-
-                    bind "Ctrl 1" { MessagePlugin "file:${cmdslots}" { name "exec"; payload "1"; }}
-                    bind "Ctrl 2" { MessagePlugin "file:${cmdslots}" { name "exec"; payload "2"; }}
-                    bind "Ctrl 3" { MessagePlugin "file:${cmdslots}" { name "exec"; payload "3"; }}
-                    bind "Ctrl `" {
-                        LaunchOrFocusPlugin "file:${cmdslots}" {
-                            floating true
-                            move_to_focused_tab true
-                            width "30%"
-                            height "40%"
-                            x "68%"
-                            y "5%"
-                        }
-                    }
                 }
               
               normal {
@@ -217,20 +202,26 @@ merge
         ''
           layout {
               default_tab_template {
-                  children
+                  pane borderless=true {
+                      children
+                  }
                   pane size=1 borderless=true {
                       plugin location="file:${zjstatus.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/zjstatus.wasm" {
 
-                          format_left  "#[fg=#${stripHash colors.fg2},bold,bg=#${stripHash colors.bg0_h}] {mode} #[bg=#${stripHash colors.bg0}]    #[bg=#${stripHash colors.bg1},fg=#${stripHash colors.fg1},bold] {session} "
+                          format_left  "#[fg=#${stripHash colors.fg2},bold,bg=#${stripHash colors.bg0_h}] {mode} #[fg=#${stripHash colors.bg4},bg=#${stripHash colors.bg0}]|#[bg=#${stripHash colors.bg1},fg=#${stripHash colors.fg1},bold] {session} "
                           format_center "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}]{tabs}"
-                          // format_right "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}] {notifications} #[fg=#${stripHash colors.fg2},bg=#${stripHash colors.bg0}] {swap_layout}"
-                          format_right "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}] {swap_layout}"
+                          format_right "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}] {pipe_status}{notifications}{swap_layout}"
                           format_space "#[bg=#${stripHash colors.bg0_h}]"
                           format_hide_on_overlength true
                           format_precedence "crl"
+
+                          border_enabled "false"
                   
-                          notification_format_unread           "#[fg=#${stripHash colors.yellow},bold]●"
-                          notification_format_no_notifications "#[fg=#${stripHash colors.bg3}]○"
+                          notification_format_unread           "#[fg=#${stripHash colors.yellow},bold]! "
+                          notification_format_no_notifications ""
+
+                          pipe_status_format "#[fg=#${stripHash colors.bg4}]| {output} "
+                          pipe_status_rendermode "dynamic"
                           
                           tab_normal               "#[fg=#${stripHash colors.bg4}] {name} "
                           tab_normal_fullscreen    "#[fg=#${stripHash colors.bg4}] {name}[] "

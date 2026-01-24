@@ -141,7 +141,7 @@ let
   ];
 
 in
-merge {
+mkIf config.editors.zed.enable (merge {
   home-manager.sharedModules = [
     {
       home.file.".config/zed/settings.json" = mkIf pkgs.stdenv.isDarwin {
@@ -153,4 +153,4 @@ merge {
       };
     }
   ];
-}
+})

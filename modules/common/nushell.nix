@@ -10,7 +10,8 @@ mkIf isNushell (merge {
       programs.nushell = enabled {
         shellAliases = {
           ll = "ls -alh";
-          dr = "darwin-rebuild switch --flake .#macbook --option experimental-features \"nix-command flakes pipe-operators\" --option accept-flake-config true";
+          lt = "eza --long --all --group-directories-first --sort=modified --time-style=long-iso --git --binary --header --icons=never --no-user --no-permissions";
+          lt1 = "eza -T -L 1 --long --all --group-directories-first --sort=modified --time-style=long-iso --git --binary --header --icons=never --no-user --no-permissions";
           ingest = "~/go/bin/ingest";
           cat = "bat";
           ps = "procs";

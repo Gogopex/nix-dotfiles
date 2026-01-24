@@ -1,14 +1,14 @@
 {
+  config,
   pkgs,
   nixvim,
   lib,
   ...
 }:
 let
-  inherit (lib) mapAttrsToList;
+  inherit (lib) mapAttrsToList mkIf;
 in
-
-{
+mkIf config.editors.neovim.enable {
   home-manager.sharedModules = [
     {
       imports = [ nixvim.homeModules.nixvim ];
