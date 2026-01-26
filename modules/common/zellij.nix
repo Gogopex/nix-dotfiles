@@ -13,10 +13,6 @@ let
 
   stripHash = color: builtins.substring 1 6 color;
 
-  room = pkgs.fetchurl {
-    url = "https://github.com/rvcas/room/releases/download/v1.2.0/room.wasm";
-    sha256 = "sha256-t6GPP7OOztf6XtBgzhLF+edUU294twnu0y5uufXwrkw=";
-  };
   forgot = pkgs.fetchurl {
     url = "https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm";
     sha256 = "sha256-MRlBRVGdvcEoaFtFb5cDdDePoZ/J2nQvvkoyG6zkSds=";
@@ -104,13 +100,6 @@ merge
                         "open session manager"  "ctrl + o + w"
                         }
                 }
-                  bind "Ctrl y" {
-                      LaunchOrFocusPlugin "file:${room}" {
-                          floating true
-                          ignore_case true
-                          quick_jump true
-                        }
-                    }
                     // Directly edit scrollback from normal mode
                     bind "Ctrl Shift e" { SwitchToMode "Scroll"; EditScrollback; }
                 }

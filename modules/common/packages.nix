@@ -137,7 +137,7 @@ let
       ;
   };
 
-  zedPackage = optionalAttrs (config.isDesktop && config.editors.zed.enable) {
+  zedPackage = optionalAttrs config.isDesktop {
     inherit (pkgs) zed-editor;
   };
 in

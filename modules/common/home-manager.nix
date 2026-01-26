@@ -23,6 +23,9 @@ in
         imports = [ ./theme.nix ];
         home.username = config.system.primaryUser or "ludwig";
         programs.home-manager.enable = true;
+        manual.manpages.enable = false;
+        manual.html.enable = false;
+        manual.json.enable = false;
       }
     ];
   };
