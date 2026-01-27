@@ -1,10 +1,10 @@
 { lib, pkgs, ... }:
 {
   options = {
-    home-manager = lib.mkOption {
-      type = lib.types.attrs;
-      default = { };
-      description = "Compatibility placeholder for home-manager options";
+    home-manager.sharedModules = lib.mkOption {
+      type = lib.types.listOf lib.types.raw;
+      default = [ ];
+      description = "Compatibility placeholder for home-manager sharedModules";
     };
 
     nixpkgs.hostPlatform.system = lib.mkOption {
@@ -16,6 +16,6 @@
   };
 
   config = {
-    home-manager = { };
+    home-manager.sharedModules = [ ];
   };
 }

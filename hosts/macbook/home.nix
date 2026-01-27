@@ -10,17 +10,21 @@ let
     path: builtins.baseNameOf path != "home-manager.nix"
   ) modulePaths;
 
-  extractModules = module:
-    if module ? home-manager.sharedModules then
-      module.home-manager.sharedModules
-    else
-      [];
+  hmEval = libWithExtensions.evalModules {
+    modules =
+      filteredModulePaths
+      ++ [
+        {
+          config._module.check = false;
+        }
+      ];
+    specialArgs = {
+      inherit inputs pkgs;
+      nixvim = inputs.nixvim;
+    };
+  };
 
-  importedModules = map (
-    path: import path { inherit config pkgs inputs; lib = libWithExtensions; }
-  ) filteredModulePaths;
-
-  sharedModules = lib.flatten (map extractModules importedModules);
+  sharedModules = hmEval.config.home-manager.sharedModules or [];
 in
 {
   imports =
@@ -30,9 +34,12 @@ in
       ../../modules/common/theme.nix
       ../../modules/common/editors.nix
       ../../modules/common/editor-settings.nix
+      ../../modules/common/nix-config.nix
       ../../modules/common/shell-config.nix
     ]
     ++ sharedModules;
+
+  nixConfig.manage = false;
 
   home.stateVersion = "24.05";
   programs.home-manager.enable = true;

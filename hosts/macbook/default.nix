@@ -17,6 +17,8 @@ lib.darwinSystem' (
     networking.hostName = "macbook";
     system.primaryUser = "ludwig";
 
+    nixConfig.manage = false;
+
     userShell = "fish";
 
     darwin.windowManagers = {

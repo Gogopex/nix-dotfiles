@@ -60,23 +60,28 @@ let
 
   fullPackages = corePackages // {
     inherit (pkgs)
-      go
-      gopls
-      gofumpt
-      delve
+      # go
+      # gopls
+      # gofumpt
+      # delve
+
       rustup
       lldb
+
       swift
       sourcekit-lsp
       swift-format
+
       nodejs
       bun
       deno
       typescript-language-server
       vscode-js-debug
+
       prettier
       vscode-langservers-extracted
       yaml-language-server
+
       python311
       poetry
       uv
@@ -84,18 +89,17 @@ let
       ruff
       black
 
-      ghc
-      cabal-install
-      stack
-      haskell-language-server
-      ormolu
-      fourmolu
-      stylish-haskell
+      # ghc
+      # cabal-install
+      # haskell-language-server
+      # ormolu
+      # fourmolu
+      # stylish-haskell
 
-      maven
-      openjdk
-      jdt-language-server
-      google-java-format
+      # maven
+      # openjdk
+      # jdt-language-server
+      # google-java-format
 
       volta
 
@@ -107,8 +111,8 @@ let
       pandoc
       graphviz
 
-      postgresql
-      redis
+      # postgresql
+      # redis
       sqlite
       duckdb
 
