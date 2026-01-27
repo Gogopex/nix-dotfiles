@@ -35,6 +35,7 @@ usage() {
     echo "Options:"
     echo "  -h, --help    Show this help message"
     echo "  --ask         Preview changes before applying (requires nh)"
+    echo "  --home        Rebuild only Home Manager configuration"
     echo "  --no-nh       Force use of native tools even if nh is available"
     echo "  --profile     Set package profile (core or full)"
     echo "  --            Pass remaining arguments to rebuild tool"
@@ -52,6 +53,7 @@ EXTRA_ARGS=()
 PARSE_EXTRA=false
 USE_NH=true
 ASK_FLAG=false
+HOME_ONLY=false
 PROFILE=""
 EXPECT_PROFILE=false
 
@@ -80,6 +82,8 @@ for arg in "$@"; do
         USE_NH=false
     elif [[ "$arg" == "--ask" ]]; then
         ASK_FLAG=true
+    elif [[ "$arg" == "--home" ]]; then
+        HOME_ONLY=true
     elif [[ "$arg" == "--profile" ]]; then
         EXPECT_PROFILE=true
     elif [[ "$arg" == --profile=* ]]; then
@@ -176,6 +180,22 @@ fi
 
 cd "$SCRIPT_DIR"
 
+if [[ "$HOME_ONLY" == "true" ]]; then
+    HOME_CONFIG_NAMES=$(nix eval --json "$SCRIPT_DIR#homeConfigurations" --apply builtins.attrNames 2>/dev/null || true)
+    if [[ -z "$HOME_CONFIG_NAMES" ]]; then
+        print_error "Unable to read homeConfigurations from flake."
+        exit 1
+    fi
+
+    if ! echo "$HOME_CONFIG_NAMES" | grep -q "\"$HOST\""; then
+        AVAILABLE_HOME_CONFIGS=$(echo "$HOME_CONFIG_NAMES" | tr -d '[]"' | tr ',' ' ')
+        print_error "Home-only rebuild requested, but homeConfigurations.$HOST is not defined."
+        print_info "Available homeConfigurations: ${AVAILABLE_HOME_CONFIGS:-none}"
+        print_info "Run without --home or add a standalone Home Manager config for this host."
+        exit 1
+    fi
+fi
+
 if [[ -n "$PROFILE" ]]; then
     PROFILE_FILE="$SCRIPT_DIR/hosts/$HOST/profile.nix"
     print_info "Setting package profile for $HOST to $PROFILE"
@@ -190,7 +210,9 @@ fi
 if command -v nh &> /dev/null && [[ "$USE_NH" == "true" ]]; then
     print_info "Using nh for rebuild (better UX)..."
 
-    if [[ "$SYSTEM_TYPE" == "darwin" ]]; then
+    if [[ "$HOME_ONLY" == "true" ]]; then
+        NH_ARGS=("home" "switch" ".#homeConfigurations.$HOST.activationPackage")
+    elif [[ "$SYSTEM_TYPE" == "darwin" ]]; then
         NH_ARGS=("darwin" "switch" ".#darwinConfigurations.$HOST")
     else
         NH_ARGS=("home" "switch" ".#homeConfigurations.$HOST.activationPackage")
@@ -222,7 +244,37 @@ else
         print_warning "--ask flag requires nh, falling back to native tools without preview"
     fi
 
-    if [[ "$SYSTEM_TYPE" == "darwin" ]]; then
+    if [[ "$HOME_ONLY" == "true" ]]; then
+        print_info "Using home-manager..."
+
+        HM_ARGS=(
+            "switch"
+            "--flake" ".#$HOST"
+            "-b" "backup"
+        )
+
+        if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
+            HM_ARGS+=("${EXTRA_ARGS[@]}")
+        fi
+
+        HM_ARGS+=(
+            "--extra-experimental-features" "pipe-operators"
+            "--option" "accept-flake-config" "true"
+            "--option" "eval-cache" "true"
+        )
+
+        if home-manager "${HM_ARGS[@]}"; then
+            print_success "Home Manager configuration rebuilt successfully!"
+
+            if ! command -v nh &> /dev/null; then
+                echo ""
+                print_info "Tip: Consider installing nh for better rebuild UX with diffs and --ask flag"
+            fi
+        else
+            print_error "Home Manager rebuild failed!"
+            exit 1
+        fi
+    elif [[ "$SYSTEM_TYPE" == "darwin" ]]; then
         print_info "Using darwin-rebuild..."
 
         DARWIN_ARGS=(

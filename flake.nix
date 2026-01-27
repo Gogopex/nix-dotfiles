@@ -84,7 +84,18 @@
       isHomeManager = _: host: host ? activationPackage;
 
       darwinConfigurations = hosts |> lib.filterAttrs isDarwin;
-      homeConfigurations = hosts |> lib.filterAttrs isHomeManager;
+      baseHomeConfigurations = hosts |> lib.filterAttrs isHomeManager;
+      homeConfigurations =
+        baseHomeConfigurations
+        // {
+          macbook = lib.homeManagerConfiguration' {
+            system = "aarch64-darwin";
+            username = "ludwig";
+            homeDirectory = "/Users/ludwig";
+            commonModules = [ ];
+            module = import ./hosts/macbook/home.nix;
+          };
+        };
 
       systems = [
         "aarch64-darwin"

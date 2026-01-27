@@ -83,7 +83,10 @@ in
     {
       system,
       username ? "ludwig",
+      homeDirectory ? "/home/${username}",
       module,
+      commonModules
+        ? (filter (m: m != ../modules/common/home-manager.nix) modulesCommon),
     }:
     let
       pkgs = import inputs.nixpkgs {
@@ -113,10 +116,10 @@ in
         module
         {
           home.username = username;
-          home.homeDirectory = "/home/${username}";
+          home.homeDirectory = homeDirectory;
         }
         ../modules/common/home-manager-compat.nix
       ]
-      ++ (filter (m: m != ../modules/common/home-manager.nix) modulesCommon);
+      ++ commonModules;
     };
 }
