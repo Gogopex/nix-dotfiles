@@ -17,7 +17,7 @@
       "protobuf"
       "buf"
       "shivammathur/php/php"
-      "shivammathur/php/php@8.2"
+      # "shivammathur/php/php@8.2"
       "shivammathur/php/php@8.3"
       "composer"
     ];

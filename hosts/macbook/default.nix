@@ -10,7 +10,7 @@ lib.darwinSystem' (
     inherit (lib) collectNix remove;
   in
   {
-    imports = collectNix ./. |> remove ./default.nix;
+    imports = collectNix ./. |> remove ./default.nix |> remove ./home.nix;
 
     type = "desktop";
 
