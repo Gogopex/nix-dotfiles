@@ -112,24 +112,6 @@ access-tokens = github.com=$gh_token"
               source ~/.orbstack/shell/init2.fish 2>/dev/null
             end
 
-            function __zj_aviator_update --on-event fish_prompt
-              if not set -q ZELLIJ_PANE_ID
-                return
-              end
-              if not command -v zellij >/dev/null 2>&1
-                return
-              end
-              set -l pane $ZELLIJ_PANE_ID
-              set -l pid $fish_pid
-              set -l cwd_enc (string escape --style=url -- $PWD)
-              set -l pgid (command ps -o pgid= -p $fish_pid | string trim)
-              if test -n "$pgid"
-                zellij pipe --name zj-aviator -- set pane=$pane pid=$pid pgid=$pgid cwd=$cwd_enc >/dev/null 2>&1
-              else
-                zellij pipe --name zj-aviator -- set pane=$pane pid=$pid cwd=$cwd_enc >/dev/null 2>&1
-              end
-            end
-
             ${
               if zellijAutoStart then
                 ''
@@ -167,13 +149,6 @@ access-tokens = github.com=$gh_token"
           fish_greeting = ''echo "What is impossible for you is not impossible for me."'';
 
           cc = ''$argv | pbcopy'';
-          ltf = ''
-            function ltf --description "List files by modified time via eza + fzf with preview"
-              eza --all --group-directories-first --sort=modified --oneline --color=never --icons=never | \
-                fzf --preview 'if [ -d "{}" ]; then eza --long --all --group-directories-first --sort=modified --time-style=long-iso --git --binary --header --color=always --icons=never "{}" | head -n 200; else bat --style=numbers --color=always --paging=never --line-range :200 "{}" 2>/dev/null || eza --long --all --group-directories-first --sort=modified --time-style=long-iso --git --binary --header --color=always --icons=never "{}"; fi'
-            end
-          '';
-
           fish_mode_prompt = ''
             function fish_mode_prompt
               switch $fish_bind_mode
@@ -243,57 +218,6 @@ access-tokens = github.com=$gh_token"
               bind -M visual gg 'commandline -f beginning-of-buffer'
               bind -M visual G 'commandline -f end-of-buffer'
             end
-          '';
-
-          glm = ''
-                        function glm --description 'Launch Claude Code via the GLM Coding Plan'
-                          if not type -q claude
-                            echo "Error: claude CLI is not installed (npm install -g @anthropic-ai/claude-code)."
-                            return 127
-                          end
-
-                          if not set -q GLM_API_KEY
-                            echo "Error: GLM_API_KEY is not set (expected from /run/agenix/glm-api-key)."
-                            return 1
-                          end
-
-                          set -l settings_file (mktemp /tmp/glm-claude-settings.XXXXXX)
-                          if test $status -ne 0
-                            echo "Error: failed to create a temporary settings file."
-                            return 1
-                          end
-
-                          env GLM_ALIAS_KEY=$GLM_API_KEY CLAUDE_SETTINGS_FILE=$settings_file python3 -c "
-            import json
-            import os
-            import pathlib
-
-            settings_path = pathlib.Path(os.environ['CLAUDE_SETTINGS_FILE'])
-            payload = {
-                'env': {
-                    'ANTHROPIC_AUTH_TOKEN': os.environ['GLM_ALIAS_KEY'],
-                    'ANTHROPIC_BASE_URL': 'https://api.z.ai/api/anthropic',
-                    'API_TIMEOUT_MS': '3000000',
-                    'ANTHROPIC_DEFAULT_HAIKU_MODEL': 'glm-4.5-air',
-                    'ANTHROPIC_DEFAULT_SONNET_MODEL': 'glm-4.6',
-                    'ANTHROPIC_DEFAULT_OPUS_MODEL': 'glm-4.6',
-                }
-            }
-            settings_path.write_text(json.dumps(payload, indent=2))
-            "
-
-                          env \
-                            ANTHROPIC_AUTH_TOKEN=$GLM_API_KEY \
-                            ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic \
-                            API_TIMEOUT_MS=3000000 \
-                            ANTHROPIC_DEFAULT_HAIKU_MODEL=glm-4.5-air \
-                            ANTHROPIC_DEFAULT_SONNET_MODEL=glm-4.6 \
-                            ANTHROPIC_DEFAULT_OPUS_MODEL=glm-4.6 \
-                            claude --settings $settings_file $argv
-                          set -l status $status
-                          command rm -f $settings_file
-                          return $status
-                        end
           '';
 
           toggle_vim_mode = ''
