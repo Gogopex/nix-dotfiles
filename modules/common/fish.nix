@@ -17,8 +17,14 @@ mkIf isFish (merge {
       programs.fish = enabled {
         shellAliases = {
           ll = "ls -alh";
-          lt = "eza --long --all --group-directories-first --sort=modified --time-style=long-iso --git --binary --header --icons=never --no-user --no-permissions";
-          lt1 = "eza -T -L 1 --long --all --group-directories-first --sort=modified --time-style=long-iso --git --binary --header --icons=never --no-user --no-permissions";
+          lt  = "eza -la --group-directories-first --time-style=long-iso
+          --binary --header --icons=never --no-user --no-permissions";
+          ltg = "eza -la --group-directories-first --sort=modified --time-
+          style=long-iso --git --binary --header --icons=never --no-user --no-
+          permissions";
+
+          lt1  = "eza -T -L 1 -a --group-directories-first --icons=never";
+          lt1g = "eza -T -L 1 -a --group-directories-first --git --icons=never";
           ingest = "~/go/bin/ingest";
           cat = "bat";
           ps = "procs";
@@ -33,7 +39,7 @@ mkIf isFish (merge {
           zls = "zellij list-sessions";
           zdel = "zellij delete-session";
           zforce = "zellij attach --force-run-commands";
-          cdx = "codex --search --model=gpt-5-codex -c model_reasoning_effort=\"high\" --sandbox workspace-write -c sandbox_workspace_write.network_access=true";
+          cdx = "codex --search --model=gpt-5.2-codex -c model_reasoning_effort=\"high\" --sandbox workspace-write -c sandbox_workspace_write.network_access=true";
         };
 
         shellInit = # fish

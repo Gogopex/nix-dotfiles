@@ -40,7 +40,7 @@ merge {
             ];
           };
 
-          git.auto-local-bookmark = true;
+          remotes.origin.auto-track-bookmarks = "glob:*";
         };
       };
     }
