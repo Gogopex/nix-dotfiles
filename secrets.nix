@@ -35,6 +35,14 @@ in
     ludwig
     system
   ];
+  "secrets/kimi-api-key.age".publicKeys = [
+    ludwig
+    system
+  ];
+  "secrets/zai-api-key.age".publicKeys = [
+    ludwig
+    system
+  ];
   "secrets/github-token.age".publicKeys = [
     ludwig
     system

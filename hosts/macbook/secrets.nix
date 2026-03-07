@@ -33,6 +33,14 @@
       file = ../../secrets/glm-api-key.age;
       mode = "444";
     };
+    kimi-api-key = {
+      file = ../../secrets/kimi-api-key.age;
+      mode = "444";
+    };
+    zai-api-key = {
+      file = ../../secrets/zai-api-key.age;
+      mode = "444";
+    };
     github-token = {
       file = ../../secrets/github-token.age;
       mode = "444";
