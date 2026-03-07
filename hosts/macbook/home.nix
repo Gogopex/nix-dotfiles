@@ -1,6 +1,7 @@
 { config, lib, inputs, pkgs, ... }:
 let
   libWithExtensions = lib // (import ../../lib inputs lib lib);
+  hmLib = inputs.home-manager.lib;
 
   modulePaths =
     (lib.collectNix ../../modules/common)
@@ -43,4 +44,27 @@ in
 
   home.stateVersion = "24.05";
   programs.home-manager.enable = true;
+
+  home.sessionVariables = {
+    SPECTER_ARTIFACT_ROOT = "/Users/ludwig/mnt/specter-archive";
+    SPECTER_LOG_ROOT = "/Users/ludwig/mnt/specter-archive";
+  };
+
+  home.activation.specterArchiveMountpoint = hmLib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/mnt/specter-archive"
+  '';
+
+  programs.fish.functions.specter_mount = ''
+    function specter_mount
+      set -l mountpoint "$HOME/mnt/specter-archive"
+      mkdir -p $mountpoint
+
+      if mount | string match -q "* on $mountpoint *"
+        echo "$mountpoint already mounted"
+        return 0
+      end
+
+      /sbin/mount_smbfs -N //u541484-sub1@u541484-sub1.your-storagebox.de/u541484-sub1 $mountpoint
+    end
+  '';
 }
