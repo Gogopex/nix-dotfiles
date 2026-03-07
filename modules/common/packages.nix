@@ -13,6 +13,12 @@ let
     types
     ;
 
+  hmLib = inputs.home-manager.lib.hm;
+  defaultNodeVersion = "22.22.0";
+  homeDirectory =
+    if config.isDarwin then "/Users/${config.user.name}" else "/home/${config.user.name}";
+  voltaHome = "${homeDirectory}/.volta";
+
   corePackages = {
     inherit (pkgs)
       bandwhich
@@ -72,7 +78,6 @@ let
       sourcekit-lsp
       swift-format
 
-      nodejs
       bun
       deno
       typescript-language-server
@@ -87,7 +92,7 @@ let
       uv
       ty
       ruff
-      black
+      # black
 
       # ghc
       # cabal-install
@@ -131,8 +136,7 @@ let
       ;
   };
 
-  profilePackages =
-    if config.packages.profile == "full" then fullPackages else corePackages;
+  profilePackages = if config.packages.profile == "full" then fullPackages else corePackages;
 
   desktopPackages = optionalAttrs config.isDesktop {
     inherit (pkgs)
@@ -160,6 +164,36 @@ in
     home-manager.sharedModules = [
       {
         home.packages = attrValues (profilePackages // desktopPackages // zedPackage);
+        home.sessionPath = [ "${voltaHome}/bin" ];
+        home.sessionVariables.VOLTA_HOME = voltaHome;
+
+        home.activation.voltaDefaultNode = hmLib.dag.entryAfter [ "writeBoundary" ] ''
+          export VOLTA_HOME="${voltaHome}"
+          export PATH="$VOLTA_HOME/bin:$PATH"
+
+          if command -v volta >/dev/null 2>&1; then
+            platform_file="$VOLTA_HOME/tools/user/platform.json"
+            if ! [ -f "$platform_file" ] || ! grep -q "\"runtime\": \"${defaultNodeVersion}\"" "$platform_file"; then
+              $DRY_RUN_CMD volta install node@${defaultNodeVersion}
+            fi
+
+            for tool in node npm npx; do
+              target="$VOLTA_HOME/bin/$tool"
+              if [ -n "''${DRY_RUN:-}" ]; then
+                echo "write $target"
+                continue
+              fi
+
+              rm -f "$target"
+              printf '%s\n' \
+                '#!/bin/sh' \
+                'set -eu' \
+                'tool=$(basename "$0")' \
+                'exec "$(volta which "$tool")" "$@"' > "$target"
+              chmod +x "$target"
+            done
+          fi
+        '';
 
         programs.zoxide.enable = true;
         programs.direnv = {
