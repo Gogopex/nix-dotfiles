@@ -68,12 +68,12 @@ mkIf config.editors.helix.enable (merge {
                 };
                 "y" = {
                   "p" = [
-                    ":sh printf \"%s\" \"{file-path}\" | pbcopy"
+                    ":sh printf \"%s\" \"%{buffer_name}\" | pbcopy"
                     ":echo Copied file path to clipboard"
                   ];
                   "g" = [
-                    ":sh url=$(git config --get remote.origin.url 2>/dev/null); slug=$(printf %s \"$url\" | sed -E 's#^git@[^:]*:##; s#^ssh://[^/]+/##; s#^https?://[^/]+/##; s#\\.git$##'); branch=$(git rev-parse --abbrev-ref HEAD); echo \"https://github.com/$slug/blob/$branch/{file-path-relative}#L{cursor-line}\" | pbcopy"
-                    ":echo Copied GitHub link to clipboard"
+                    ":sh repo=$(git rev-parse --show-toplevel 2>/dev/null) || exit 1; file=$(realpath \"%{buffer_name}\"); rel=\${file#\"$repo\"/}; url=$(git config --get remote.origin.url 2>/dev/null); slug=$(printf %s \"$url\" | sed -E 's#^git@[^:]*:##; s#^ssh://[^/]+/##; s#^https?://[^/]+/##; s#\\.git$##'); branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); echo \"https://github.com/$slug/blob/$branch/$rel\" | pbcopy"
+                    ":echo Copied GitHub file link to clipboard"
                   ];
                 };
               };

@@ -9,9 +9,9 @@ in
     margin = 0;
     padding = 8;
 
-    font.size.normal = 16;
-    font.size.big = 20;
-    font.size.small = 14;
+    font.size.normal = 18;
+    font.size.big = 22;
+    font.size.small = 16;
 
     font.sans.name = "SF Pro Display";
     font.sans.package = null;

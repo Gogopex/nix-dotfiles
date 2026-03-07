@@ -187,11 +187,146 @@ merge
       xdg.configFile."zellij/themes/USGC-ZJ.kdl".source =
         ../../cfg/zellij/USGC-ZJ.kdl;
 
+      xdg.configFile."zellij/config-ssh.kdl".text = # kdl
+        ''
+          theme "gruvbox-dark"
+          default_layout "ipad"
+
+          simplified_ui true
+          default_shell "fish"
+          copy_command "pbcopy"
+          copy_on_select true
+          show_startup_tips false
+
+          scroll_buffer_size 1000000
+
+          session_serialization true
+          pane_viewport_serialization true
+          scrollback_lines_to_serialize 100000
+          serialization_interval 60
+
+          on_force_close "detach"
+
+          ui {
+              pane_frames {
+                  hide_session_name true
+              }
+          }
+
+          keybinds {
+                shared_except "locked" {
+                  unbind "Ctrl q"
+                  bind "Ctrl x" {
+                     LaunchOrFocusPlugin "file:${forgot}" {
+                        floating true
+                        "lock"                  "ctrl + g"
+                        "unlock"                "ctrl + g"
+                        "new pane"              "alt + d"
+                        "split down"            "alt + shift + d"
+                        "close pane"            "alt + w"
+                        "rename pane"           "ctrl + p + c"
+                        "toggle fullscreen"     "alt + f"
+                        "toggle floating pane"  "ctrl + p + w"
+                        "toggle embed pane"     "alt + e"
+                        "move focus"            "ctrl + h/j/k/l"
+                        "move pane"             "alt + shift + h/j/k/l"
+                        "new tab"               "alt + t"
+                        "close tab"             "alt + shift + w"
+                        "switch tab"            "alt + h/l"
+                        "rename tab"            "ctrl + t + r"
+                        "sync tab"              "ctrl + t + s"
+                        "toggle tab"            "ctrl + t + tab"
+                        "search"                "ctrl + s + s"
+                        "go into edit mode"     "ctrl + s + e"
+                        "detach session"        "ctrl + o + d"
+                        "open session manager"  "ctrl + o + w"
+                        }
+                }
+                    bind "Ctrl Shift e" { SwitchToMode "Scroll"; EditScrollback; }
+                }
+
+              normal {
+                  bind "Alt h" { GoToPreviousTab; }
+                  bind "Alt l" { GoToNextTab; }
+                  bind "Alt t" { NewTab; }
+                  bind "Alt Shift w" { CloseTab; }
+
+                  bind "Ctrl h" { MoveFocus "Left"; }
+                  bind "Ctrl j" { MoveFocus "Down"; }
+                  bind "Ctrl k" { MoveFocus "Up"; }
+                  bind "Ctrl l" { MoveFocus "Right"; }
+
+                  bind "Alt Ctrl h" { Resize "Increase Left"; }
+                  bind "Alt Ctrl j" { Resize "Increase Down"; }
+                  bind "Alt Ctrl k" { Resize "Increase Up"; }
+                  bind "Alt Ctrl l" { Resize "Increase Right"; }
+
+                  bind "Alt d" { NewPane "Right"; }
+                  bind "Alt Shift d" { NewPane "Down"; }
+                  bind "Alt w" { CloseFocus; }
+
+                  bind "Alt Shift h" { MovePane "Left"; }
+                  bind "Alt Shift j" { MovePane "Down"; }
+                  bind "Alt Shift k" { MovePane "Up"; }
+                  bind "Alt Shift l" { MovePane "Right"; }
+
+                  bind "Alt b" { NextSwapLayout; }
+                  bind "Alt Shift b" { PreviousSwapLayout; }
+                  bind "Alt e" { TogglePaneEmbedOrFloating; }
+
+                  bind "Alt f" { ToggleFocusFullscreen; }
+                  bind "Alt z" { TogglePaneFrames; }
+              }
+
+              session {
+                  bind "s" { SwitchToMode "Normal"; }
+                  bind "d" { Detach; }
+                  bind "w" {
+                      LaunchOrFocusPlugin "session-manager" {
+                          floating true
+                          move_to_focused_tab true
+                      }
+                      SwitchToMode "Normal"
+                  }
+                  bind "c" {
+                      LaunchOrFocusPlugin "configuration" {
+                          floating true
+                          move_to_focused_tab true
+                      }
+                      SwitchToMode "Normal"
+                  }
+                  bind "p" { SwitchToMode "Pane"; }
+                  bind "r" { SwitchToMode "RenamePane"; }
+                  bind "t" { SwitchToMode "Tab"; }
+                  bind "q" { Quit; }
+                  bind "Esc" { SwitchToMode "Normal"; }
+                  bind "Ctrl c" { SwitchToMode "Normal"; }
+              }
+
+              scroll {
+                  bind "s" { SwitchToMode "Normal"; }
+                  bind "Ctrl u" { HalfPageScrollUp; }
+                  bind "Ctrl d" { HalfPageScrollDown; }
+                  bind "Ctrl b" { PageScrollUp; }
+                  bind "Ctrl f" { PageScrollDown; }
+                  bind "u" { HalfPageScrollUp; }
+                  bind "d" { HalfPageScrollDown; }
+                  bind "e" { EditScrollback; }
+                  bind "q" { SwitchToMode "Normal"; }
+                  bind "Esc" { SwitchToMode "Normal"; }
+                  bind "Ctrl c" { SwitchToMode "Normal"; }
+                  bind "/" { SwitchToMode "EnterSearch"; }
+                  bind "n" { Search "down"; }
+                  bind "N" { Search "up"; }
+              }
+          }
+        '';
+
       xdg.configFile."zellij/layouts/default.kdl".text = # kdl
         ''
           layout {
               default_tab_template {
-                  pane borderless=true {
+                  pane {
                       children
                   }
                   pane size=1 borderless=true {
@@ -313,6 +448,82 @@ merge
                       pane split_direction="vertical" {
                           pane
                           pane stacked=true { children; }
+                      }
+                  }
+              }
+          }
+        '';
+
+      xdg.configFile."zellij/layouts/ipad.kdl".text = # kdl
+        ''
+          layout {
+              default_tab_template {
+                  pane {
+                      children
+                  }
+                  pane size=1 borderless=true {
+                      plugin location="file:${zjstatus.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/zjstatus.wasm" {
+                          format_left  "#[fg=#${stripHash colors.fg2},bold,bg=#${stripHash colors.bg0_h}] {mode} #[fg=#${stripHash colors.bg4},bg=#${stripHash colors.bg0}]|#[bg=#${stripHash colors.bg1},fg=#${stripHash colors.fg1},bold] {session} "
+                          format_center "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}]{tabs}"
+                          format_right "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}] {swap_layout}"
+                          format_space "#[bg=#${stripHash colors.bg0_h}]"
+                          format_hide_on_overlength true
+                          format_precedence "crl"
+
+                          border_enabled "false"
+
+                          tab_normal               "#[fg=#${stripHash colors.bg4}] {name} "
+                          tab_normal_fullscreen    "#[fg=#${stripHash colors.bg4}] {name}[] "
+                          tab_normal_sync          "#[fg=#${stripHash colors.bg4}] {name}<> "
+                          tab_active               "#[fg=#${stripHash colors.fg1},bold] {name} "
+                          tab_active_fullscreen    "#[fg=#${stripHash colors.fg1},bold] {name}[] "
+                          tab_active_sync          "#[fg=#${stripHash colors.fg1},bold] {name}<> "
+
+                          mode_normal        "#[fg=#${stripHash colors.fg2},bold] NORMAL"
+                          mode_locked        "#[fg=#${stripHash colors.fg2},bold] LOCKED"
+                          mode_resize        "#[fg=#${stripHash colors.fg2},bold] RESIZE"
+                          mode_pane          "#[fg=#${stripHash colors.fg2},bold] PANE"
+                          mode_tab           "#[fg=#${stripHash colors.fg2},bold] TAB"
+                          mode_scroll        "#[fg=#${stripHash colors.fg2},bold] SCROLL"
+                          mode_enter_search  "#[fg=#${stripHash colors.fg2},bold] SEARCH"
+                          mode_search        "#[fg=#${stripHash colors.fg2},bold] SEARCH"
+                          mode_rename_tab    "#[fg=#${stripHash colors.fg2},bold] RENAME"
+                          mode_rename_pane   "#[fg=#${stripHash colors.fg2},bold] RENAME"
+                          mode_session       "#[fg=#${stripHash colors.fg2},bold] SESSION"
+                          mode_move          "#[fg=#${stripHash colors.fg2},bold] MOVE"
+                          mode_prompt        "#[fg=#${stripHash colors.fg2},bold] PROMPT"
+                          mode_tmux          "#[fg=#${stripHash colors.fg2},bold] TMUX"
+                      }
+                  }
+              }
+
+              swap_tiled_layout name="agent-trio" {
+                  tab {
+                      pane split_direction="vertical" {
+                          pane size="34%"
+                          pane size="33%"
+                          pane size="33%"
+                      }
+                  }
+              }
+
+              swap_tiled_layout name="main-sidekicks" {
+                  tab {
+                      pane split_direction="vertical" {
+                          pane size="60%"
+                          pane size="40%" split_direction="horizontal" {
+                              pane size="50%"
+                              pane size="50%"
+                          }
+                      }
+                  }
+              }
+
+              swap_tiled_layout name="balanced-split" {
+                  tab {
+                      pane split_direction="vertical" {
+                          pane size="50%"
+                          pane size="50%"
                       }
                   }
               }

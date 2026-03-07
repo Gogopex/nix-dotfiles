@@ -60,7 +60,7 @@ mkIf isNushell (merge {
           }
 
           # API keys from agenix
-          for key in [anthropic openai gemini deepseek openrouter groq] {
+          for key in [anthropic openai gemini deepseek openrouter groq glm kimi zai] {
             let key_file = $"/run/agenix/($key)-api-key"
             if ($key_file | path exists) {
               let var_name = ($key | str upcase) + "_API_KEY"

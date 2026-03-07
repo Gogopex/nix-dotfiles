@@ -40,6 +40,7 @@ mkIf isFish (merge {
           zdel = "zellij delete-session";
           zforce = "zellij attach --force-run-commands";
           cdx = "codex --search --model=gpt-5.2-codex -c model_reasoning_effort=\"high\" --sandbox workspace-write -c sandbox_workspace_write.network_access=true";
+          bre = "$HOME/.cargo/bin/br";
         };
 
         shellInit = # fish
@@ -58,7 +59,7 @@ mkIf isFish (merge {
               fish_add_path ~/Downloads/google-cloud-sdk/bin
             end
 
-            for key in anthropic openai gemini deepseek openrouter groq glm
+            for key in anthropic openai gemini deepseek openrouter groq glm kimi zai
               if test -f /run/agenix/$key-api-key
                 set -gx (string upper $key)_API_KEY (command cat /run/agenix/$key-api-key)
               end
@@ -85,9 +86,19 @@ access-tokens = github.com=$gh_token"
             set -gx EDITOR hx
             set -gx PHP_VERSION 8.3
 
+            if test -d /Volumes/Addenda
+                set -gx CARGO_HOME /Volumes/Addenda/caches/cargo
+                set -gx GOMODCACHE /Volumes/Addenda/caches/go-mod
+                set -gx UV_CACHE_DIR /Volumes/Addenda/caches/uv
+                set -gx NPM_CONFIG_CACHE /Volumes/Addenda/caches/npm
+                set -gx PIP_CACHE_DIR /Volumes/Addenda/caches/pip
+                set -gx HOMEBREW_CACHE /Volumes/Addenda/caches/homebrew
+                set -gx HF_HOME /Volumes/Addenda/caches/huggingface
+            end
+
             if test -d ~/.volta
-              fish_add_path ~/.volta/bin
               set -gx VOLTA_HOME ~/.volta
+              fish_add_path -g -m -p $VOLTA_HOME/bin
             end
 
             fish_vi_key_bindings
@@ -180,7 +191,7 @@ access-tokens = github.com=$gh_token"
             function nix_shell_prompt
               if test -n "$IN_NIX_SHELL"
                 set_color -o brcyan
-                echo -n "❄"
+                echo -n "☼"
                 set_color normal
               end
             end
@@ -332,6 +343,19 @@ access-tokens = github.com=$gh_token"
                 rm -f $cmd_file
                 return $exit_code
               end
+            end
+          '';
+
+          zellij = ''
+            function zellij --wraps=zellij
+              if set -q SSH_CLIENT
+                set -l client_ip (string split ' ' $SSH_CLIENT)[1]
+                if test "$client_ip" = "100.75.162.114"
+                  command zellij --config ~/.config/zellij/config-ssh.kdl $argv
+                  return
+                end
+              end
+              command zellij $argv
             end
           '';
 

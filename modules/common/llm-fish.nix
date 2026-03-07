@@ -5,6 +5,29 @@
   home-manager.sharedModules = [
     {
       programs.fish.functions = {
+        claude-raw = {
+          description = "Launch Claude Code with no configs, full permissions";
+          body = ''
+            set -l tmp (mktemp -d)
+            set -lx HOME $tmp
+            command claude --dangerously-skip-permissions $argv
+            rm -rf $tmp
+          '';
+        };
+
+        codex-raw = {
+          description = "Launch Codex CLI with no configs, full permissions";
+          body = ''
+            set -l tmp (mktemp -d)
+            set -l real_home $HOME
+            mkdir -p $tmp/.codex
+            cp $real_home/.codex/auth.json $tmp/.codex/
+            set -lx HOME $tmp
+            command codex --yolo --config project_doc_max_bytes=0 $argv
+            rm -rf $tmp
+          '';
+        };
+
         llm-last = {
           description = "Get the last LLM response as plain text";
           body = "llm logs -r";
