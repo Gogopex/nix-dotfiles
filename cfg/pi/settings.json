@@ -1,0 +1,40 @@
+{
+  "lastChangelogVersion": "0.52.9",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.3-codex",
+  "defaultThinkingLevel": "high",
+  "theme": "gruvbox-dark",
+  "enabledModels": [
+    "gpt-5*",
+    "claude-sonnet-*",
+    "claude-haiku-*",
+    "gemini-2.5-*",
+    "zai/glm-4.7*",
+    "kimi-coding/k2p5",
+    "openrouter/z-ai/glm-4.7*",
+    "openrouter/moonshotai/kimi-k2.5*"
+  ],
+  "steeringMode": "all",
+  "followUpMode": "all",
+  "compaction": {
+    "enabled": true,
+    "reserveTokens": 16384,
+    "keepRecentTokens": 30000
+  },
+  "retry": {
+    "enabled": true,
+    "maxRetries": 3,
+    "baseDelayMs": 2000,
+    "maxDelayMs": 60000
+  },
+  "enableSkillCommands": true,
+  "extensions": [
+    "/Users/ludwig/dev/dotfiles/cfg/pi/extensions"
+  ],
+  "prompts": [
+    "/Users/ludwig/dev/dotfiles/cfg/pi/prompts"
+  ],
+  "themes": [
+    "/Users/ludwig/dev/dotfiles/cfg/pi/themes"
+  ]
+}
