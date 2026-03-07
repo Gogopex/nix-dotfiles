@@ -25,6 +25,8 @@ lib.darwinSystem' (
       rectangle.enable = true;
     };
 
+    darwin.hammerspoon.enable = true;
+
     users.users.ludwig = {
       name = "ludwig";
       home = "/Users/ludwig";

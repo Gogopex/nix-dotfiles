@@ -12,120 +12,110 @@ for _, binding in ipairs(apps) do
   end)
 end
 
-function reloadConfig(files)
-    doReload = false
-    for _,file in pairs(files) do
-        if file:sub(-4) == ".lua" then
-            doReload = true
-        end
-    end
-    if doReload then
-        hs.reload()
-    end
+local logConfig = {
+  enabled = true,
+  onlyWithModifiers = true,
+  flushEvery = 50,
+  flushIntervalSec = 5,
+  logPath = os.getenv("HOME") .. "/.local/share/hammerspoon/keylog.jsonl",
+}
+
+local function ensureDir(path)
+  if hs.fs.attributes(path) ~= nil then
+    return
+  end
+  hs.fs.mkdir(path)
 end
+
+local function ensureLogDir()
+  local base = os.getenv("HOME") .. "/.local"
+  local share = base .. "/share"
+  local hsDir = share .. "/hammerspoon"
+  ensureDir(base)
+  ensureDir(share)
+  ensureDir(hsDir)
+end
+
+ensureLogDir()
+
+local logBuffer = {}
+local flushLog = function() end
+
+local function jsonEscape(value)
+  local escaped = value:gsub("\\", "\\\\")
+  escaped = escaped:gsub("\"", "\\\"")
+  return escaped
+end
+
+flushLog = function()
+  if #logBuffer == 0 then
+    return
+  end
+  local file = io.open(logConfig.logPath, "a")
+  if not file then
+    return
+  end
+  file:write(table.concat(logBuffer))
+  file:close()
+  logBuffer = {}
+end
+
+local function comboName(event)
+  local flags = event:getFlags()
+  local mods = {}
+  if flags.ctrl then table.insert(mods, "ctrl") end
+  if flags.alt then table.insert(mods, "alt") end
+  if flags.shift then table.insert(mods, "shift") end
+  if flags.cmd then table.insert(mods, "cmd") end
+  if flags.fn then table.insert(mods, "fn") end
+
+  if logConfig.onlyWithModifiers and #mods == 0 then
+    return nil
+  end
+
+  local key = hs.keycodes.map[event:getKeyCode()] or tostring(event:getKeyCode())
+  if #mods > 0 then
+    return table.concat(mods, "+") .. "+" .. key
+  end
+  return key
+end
+
+local keylogTap = nil
+if logConfig.enabled then
+  keylogTap = hs.eventtap.new({ hs.eventtap.event.types.keyDown }, function(event)
+    local combo = comboName(event)
+    if not combo then
+      return false
+    end
+    local ts = math.floor(hs.timer.secondsSinceEpoch())
+    local escaped = jsonEscape(combo)
+    logBuffer[#logBuffer + 1] = string.format("{\"ts\":%d,\"combo\":\"%s\"}\n", ts, escaped)
+    if #logBuffer >= logConfig.flushEvery then
+      flushLog()
+    end
+    return false
+  end)
+  keylogTap:start()
+  hs.timer.doEvery(logConfig.flushIntervalSec, flushLog)
+end
+
+function reloadConfig(files)
+  local doReload = false
+  for _, file in pairs(files) do
+    if file:sub(-4) == ".lua" then
+      doReload = true
+      break
+    end
+  end
+  if doReload then
+    flushLog()
+    hs.reload()
+  end
+end
+
 myWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadConfig):start()
-hs.alert.show("hammerspoon config loaded") 
+hs.alert.show("hammerspoon config loaded")
 
-
--- hs.loadSpoon("SpoonInstall")
-
--- spoon.SpoonInstall.repos.PaperWM = {
---     url = "https://github.com/mogenson/PaperWM.spoon",
---     desc = "PaperWM.spoon repository",
---     branch = "release",
--- }
-
--- spoon.SpoonInstall:andUse("PaperWM", {
---     repo = "PaperWM",
---     config = { screen_margin = 16, window_gap = 2 },
---     start = true,
---     hotkeys = {
---     }
--- })
-
--- PaperWM = hs.loadSpoon("PaperWM")
--- PaperWM:bindHotkeys({
---     -- switch to a new focused window in tiled grid
---     focus_left  = {{"alt", "cmd"}, "left"},
---     focus_right = {{"alt", "cmd"}, "right"},
---     focus_up    = {{"alt", "cmd"}, "up"},
---     focus_down  = {{"alt", "cmd"}, "down"},
-
---     -- switch windows by cycling forward/backward
---     -- (forward = down or right, backward = up or left)
---     focus_prev = {{"alt", "cmd"}, "k"},
---     focus_next = {{"alt", "cmd"}, "j"},
-
---     -- move windows around in tiled grid
---     swap_left  = {{"alt", "cmd", "shift"}, "left"},
---     swap_right = {{"alt", "cmd", "shift"}, "right"},
---     swap_up    = {{"alt", "cmd", "shift"}, "up"},
---     swap_down  = {{"alt", "cmd", "shift"}, "down"},
-
---     -- alternative: swap entire columns, rather than
---     -- individual windows (to be used instead of
---     -- swap_left / swap_right bindings)
---     -- swap_column_left = {{"alt", "cmd", "shift"}, "left"},
---     -- swap_column_right = {{"alt", "cmd", "shift"}, "right"},
-
---     -- position and resize focused window
---     center_window        = {{"alt", "cmd"}, "c"},
---     full_width           = {{"alt", "cmd"}, "f"},
---     cycle_width          = {{"alt", "cmd"}, "r"},
---     reverse_cycle_width  = {{"ctrl", "alt", "cmd"}, "r"},
---     cycle_height         = {{"alt", "cmd", "shift"}, "r"},
---     reverse_cycle_height = {{"ctrl", "alt", "cmd", "shift"}, "r"},
-
---     -- increase/decrease width
---     increase_width = {{"alt", "cmd"}, "l"},
---     decrease_width = {{"alt", "cmd"}, "h"},
-
---     -- move focused window into / out of a column
---     slurp_in = {{"alt", "cmd"}, "i"},
---     barf_out = {{"alt", "cmd"}, "o"},
-
---     -- move the focused window into / out of the tiling layer
---     toggle_floating = {{"alt", "cmd", "shift"}, "escape"},
-
---     -- focus the first / second / etc window in the current space
---     focus_window_1 = {{"cmd", "shift"}, "1"},
---     focus_window_2 = {{"cmd", "shift"}, "2"},
---     focus_window_3 = {{"cmd", "shift"}, "3"},
---     focus_window_4 = {{"cmd", "shift"}, "4"},
---     focus_window_5 = {{"cmd", "shift"}, "5"},
---     focus_window_6 = {{"cmd", "shift"}, "6"},
---     focus_window_7 = {{"cmd", "shift"}, "7"},
---     focus_window_8 = {{"cmd", "shift"}, "8"},
---     focus_window_9 = {{"cmd", "shift"}, "9"},
-
---     -- switch to a new Mission Control space
---     switch_space_l = {{"alt", "cmd"}, ","},
---     switch_space_r = {{"alt", "cmd"}, "."},
---     switch_space_1 = {{"alt", "cmd"}, "1"},
---     switch_space_2 = {{"alt", "cmd"}, "2"},
---     switch_space_3 = {{"alt", "cmd"}, "3"},
---     switch_space_4 = {{"alt", "cmd"}, "4"},
---     switch_space_5 = {{"alt", "cmd"}, "5"},
---     switch_space_6 = {{"alt", "cmd"}, "6"},
---     switch_space_7 = {{"alt", "cmd"}, "7"},
---     switch_space_8 = {{"alt", "cmd"}, "8"},
---     switch_space_9 = {{"alt", "cmd"}, "9"},
-
---     -- move focused window to a new space and tile
---     move_window_1 = {{"alt", "cmd", "shift"}, "1"},
---     move_window_2 = {{"alt", "cmd", "shift"}, "2"},
---     move_window_3 = {{"alt", "cmd", "shift"}, "3"},
---     move_window_4 = {{"alt", "cmd", "shift"}, "4"},
---     move_window_5 = {{"alt", "cmd", "shift"}, "5"},
---     move_window_6 = {{"alt", "cmd", "shift"}, "6"},
---     move_window_7 = {{"alt", "cmd", "shift"}, "7"},
---     move_window_8 = {{"alt", "cmd", "shift"}, "8"},
---     move_window_9 = {{"alt", "cmd", "shift"}, "9"}
--- })
--- PaperWM.swipe_fingers = 3
-
--- PaperWM:start()
-
-
--- -- ActiveSpace = hs.loadSpoon("ActiveSpace")
--- -- ActiveSpace:start()
+hs.shutdownCallback = function()
+  flushLog()
+end
