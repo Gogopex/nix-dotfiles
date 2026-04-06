@@ -32,7 +32,7 @@
     "muted": "fg4",
     "dim": "gray",
     "text": "",
-    "thinkingText": "fg4",
+    "thinkingText": "gray",
 
     "selectedBg": "bg2",
     "userMessageBg": "bg1",

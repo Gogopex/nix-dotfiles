@@ -21,16 +21,28 @@ in
 merge
 <| mkIf config.isDesktop {
   home-manager.sharedModules = [
-    {
-      programs.zellij = enabled {
-        enableFishIntegration = false;
-        settings = {
-          theme = "gruvbox-dark";
+    (
+      { config, ... }:
+      let
+        zellijPluginDir = "${config.xdg.configHome}/zellij/plugins";
+        zjstatusPluginPath = "${zellijPluginDir}/zjstatus.wasm";
+        forgotPluginPath = "${zellijPluginDir}/zellij_forgot.wasm";
+      in
+      {
+        programs.zellij = enabled {
+          enableFishIntegration = false;
+          settings = {
+            theme = "gruvbox-dark";
+          };
         };
-      };
 
-      xdg.configFile."zellij/config.kdl".text = # kdl
-        ''
+        xdg.configFile."zellij/plugins/zjstatus.wasm".source =
+          "${zjstatus.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/zjstatus.wasm";
+
+        xdg.configFile."zellij/plugins/zellij_forgot.wasm".source = forgot;
+
+        xdg.configFile."zellij/config.kdl".text = # kdl
+          ''
           simplified_ui true
           default_shell "fish"
           theme "gruvbox-dark"
@@ -56,7 +68,7 @@ merge
           keybinds {
                 shared_except "locked" {
                   bind "Ctrl x" {
-                     LaunchOrFocusPlugin "file:${forgot}" {
+                     LaunchOrFocusPlugin "file:${forgotPluginPath}" {
                         floating true
                         "lock"                  "ctrl + g"
                         "unlock"                "ctrl + g"
@@ -182,13 +194,13 @@ merge
                   bind "N" { Search "up"; }
               }
           }
-        '';
+          '';
 
-      xdg.configFile."zellij/themes/USGC-ZJ.kdl".source =
-        ../../cfg/zellij/USGC-ZJ.kdl;
+        xdg.configFile."zellij/themes/USGC-ZJ.kdl".source =
+          ../../cfg/zellij/USGC-ZJ.kdl;
 
-      xdg.configFile."zellij/config-ssh.kdl".text = # kdl
-        ''
+        xdg.configFile."zellij/config-ssh.kdl".text = # kdl
+          ''
           theme "gruvbox-dark"
           default_layout "ipad"
 
@@ -217,7 +229,7 @@ merge
                 shared_except "locked" {
                   unbind "Ctrl q"
                   bind "Ctrl x" {
-                     LaunchOrFocusPlugin "file:${forgot}" {
+                     LaunchOrFocusPlugin "file:${forgotPluginPath}" {
                         floating true
                         "lock"                  "ctrl + g"
                         "unlock"                "ctrl + g"
@@ -320,17 +332,17 @@ merge
                   bind "N" { Search "up"; }
               }
           }
-        '';
+          '';
 
-      xdg.configFile."zellij/layouts/default.kdl".text = # kdl
-        ''
+        xdg.configFile."zellij/layouts/default.kdl".text = # kdl
+          ''
           layout {
               default_tab_template {
                   pane {
                       children
                   }
                   pane size=1 borderless=true {
-                      plugin location="file:${zjstatus.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/zjstatus.wasm" {
+                      plugin location="file:${zjstatusPluginPath}" {
 
                           format_left  "#[fg=#${stripHash colors.fg2},bold,bg=#${stripHash colors.bg0_h}] {mode} #[fg=#${stripHash colors.bg4},bg=#${stripHash colors.bg0}]|#[bg=#${stripHash colors.bg1},fg=#${stripHash colors.fg1},bold] {session} "
                           format_center "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}]{tabs}"
@@ -452,17 +464,17 @@ merge
                   }
               }
           }
-        '';
+          '';
 
-      xdg.configFile."zellij/layouts/ipad.kdl".text = # kdl
-        ''
+        xdg.configFile."zellij/layouts/ipad.kdl".text = # kdl
+          ''
           layout {
               default_tab_template {
                   pane {
                       children
                   }
                   pane size=1 borderless=true {
-                      plugin location="file:${zjstatus.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/zjstatus.wasm" {
+                      plugin location="file:${zjstatusPluginPath}" {
                           format_left  "#[fg=#${stripHash colors.fg2},bold,bg=#${stripHash colors.bg0_h}] {mode} #[fg=#${stripHash colors.bg4},bg=#${stripHash colors.bg0}]|#[bg=#${stripHash colors.bg1},fg=#${stripHash colors.fg1},bold] {session} "
                           format_center "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}]{tabs}"
                           format_right "#[fg=#${stripHash colors.fg3},bg=#${stripHash colors.bg0}] {swap_layout}"
@@ -528,7 +540,8 @@ merge
                   }
               }
           }
-        '';
-    }
+          '';
+      }
+    )
   ];
 }

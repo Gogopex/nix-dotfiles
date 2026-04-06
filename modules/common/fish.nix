@@ -6,8 +6,6 @@
 }:
 let
   inherit (lib) enabled merge mkIf;
-  zellijAutoStart = true;
-  zellijBaseSession = "main";
   cfg = config.userShell;
   isFish = cfg == "fish";
 in
@@ -53,6 +51,14 @@ mkIf isFish (merge {
               fish_add_path -g /nix/var/nix/profiles/default/bin
               fish_add_path ~/.npm-global/bin
               fish_add_path ~/.cargo/bin
+              if /sbin/mount | command grep -q ' on /Volumes/Addenda '
+                if test -d /Volumes/Addenda/caches/cargo/bin
+                  fish_add_path /Volumes/Addenda/caches/cargo/bin
+                end
+              else if test -d $HOME/.cache/cargo/bin
+                fish_add_path $HOME/.cache/cargo/bin
+              end
+              fish_add_path ~/go/bin
               fish_add_path ~/.local/bin ~/.modular/bin \
                              /Applications/WezTerm.app/Contents/MacOS \
                              $HOME/.cache/lm-studio/bin
@@ -86,14 +92,24 @@ access-tokens = github.com=$gh_token"
             set -gx EDITOR hx
             set -gx PHP_VERSION 8.3
 
-            if test -d /Volumes/Addenda
-                set -gx CARGO_HOME /Volumes/Addenda/caches/cargo
-                set -gx GOMODCACHE /Volumes/Addenda/caches/go-mod
-                set -gx UV_CACHE_DIR /Volumes/Addenda/caches/uv
-                set -gx NPM_CONFIG_CACHE /Volumes/Addenda/caches/npm
-                set -gx PIP_CACHE_DIR /Volumes/Addenda/caches/pip
-                set -gx HOMEBREW_CACHE /Volumes/Addenda/caches/homebrew
-                set -gx HF_HOME /Volumes/Addenda/caches/huggingface
+            if /sbin/mount | command grep -q ' on /Volumes/Addenda '
+                set -l cache_root /Volumes/Addenda/caches
+                set -gx CARGO_HOME $cache_root/cargo
+                set -gx GOMODCACHE $cache_root/go-mod
+                set -gx UV_CACHE_DIR $cache_root/uv
+                set -gx NPM_CONFIG_CACHE $cache_root/npm
+                set -gx PIP_CACHE_DIR $cache_root/pip
+                set -gx HOMEBREW_CACHE $cache_root/homebrew
+                set -gx HF_HOME $cache_root/huggingface
+            else
+                set -l cache_root $HOME/.cache
+                set -gx CARGO_HOME $cache_root/cargo
+                set -gx GOMODCACHE $cache_root/go-mod
+                set -gx UV_CACHE_DIR $cache_root/uv
+                set -gx NPM_CONFIG_CACHE $cache_root/npm
+                set -gx PIP_CACHE_DIR $cache_root/pip
+                set -gx HOMEBREW_CACHE $cache_root/homebrew
+                set -gx HF_HOME $cache_root/huggingface
             end
 
             if test -d ~/.volta
@@ -123,24 +139,6 @@ access-tokens = github.com=$gh_token"
               source ~/.orbstack/shell/init2.fish 2>/dev/null
             end
 
-            ${
-              if zellijAutoStart then
-                ''
-                  if test "$TERM" = "xterm-ghostty"; and test -z "$ZELLIJ"; and test -z "$NO_ZELLIJ"; and test -z "$GHOSTTY_QUICK_TERMINAL"
-                    if command -v zellij >/dev/null 2>&1
-                      set -l base_session "${zellijBaseSession}"
-                      if test -n "$base_session"
-                        zellij attach --create "$base_session"
-                      else
-                        zellij attach -c
-                      end
-                    end
-                  end
-                ''
-              else
-                ""
-            }
-
             function fish_user_key_bindings
               if functions -q fzf_configure_bindings
                 fzf_configure_bindings
@@ -160,203 +158,202 @@ access-tokens = github.com=$gh_token"
           fish_greeting = ''echo "What is impossible for you is not impossible for me."'';
 
           cc = ''$argv | pbcopy'';
+          pi = ''
+            set -l pi_bin $HOME/.npm-global/bin/pi
+            if not test -x $pi_bin
+              echo "pi not found at $pi_bin" >&2
+              return 127
+            end
+
+            # Nix shells can inject an older project node ahead of Volta.
+            if test -d $HOME/.volta/bin
+              set -lx VOLTA_HOME $HOME/.volta
+              set -lx PATH $VOLTA_HOME/bin $PATH
+            end
+
+            command $pi_bin $argv
+          '';
           fish_mode_prompt = ''
-            function fish_mode_prompt
-              switch $fish_bind_mode
-                case default
-                  set_color -o brgreen
-                  echo -n "◆ "
-                  set_color normal
-                case insert
-                  set_color -o bryellow
-                  echo -n "◇ "
-                  set_color normal
-                case replace_one
-                  set_color -o brred
-                  echo -n "◈ "
-                  set_color normal
-                case replace
-                  set_color -o brred
-                  echo -n "▓ "
-                  set_color normal
-                case visual
-                  set_color -o brmagenta
-                  echo -n "◉ "
-                  set_color normal
-              end
+            switch $fish_bind_mode
+              case default
+                set_color -o brgreen
+                echo -n "◆ "
+                set_color normal
+              case insert
+                set_color -o bryellow
+                echo -n "◇ "
+                set_color normal
+              case replace_one
+                set_color -o brred
+                echo -n "◈ "
+                set_color normal
+              case replace
+                set_color -o brred
+                echo -n "▓ "
+                set_color normal
+              case visual
+                set_color -o brmagenta
+                echo -n "◉ "
+                set_color normal
             end
           '';
 
           nix_shell_prompt = ''
-            function nix_shell_prompt
-              if test -n "$IN_NIX_SHELL"
-                set_color -o brcyan
-                echo -n "☼"
-                set_color normal
-              end
+            if test -n "$IN_NIX_SHELL"
+              set_color -o brcyan
+              echo -n "☼"
+              set_color normal
             end
           '';
 
           fish_right_prompt = ''
-            function fish_right_prompt
-              nix_shell_prompt
-            end
+            nix_shell_prompt
           '';
 
           setup_enhanced_vi_mode = ''
-            function setup_enhanced_vi_mode
-              set -g fish_cursor_default block
-              set -g fish_cursor_insert line
-              set -g fish_cursor_replace_one underscore
-              set -g fish_cursor_replace underscore
-              set -g fish_cursor_external line
-              set -g fish_cursor_visual block
-              
-              bind -M default V 'commandline -f beginning-of-line visual-mode end-of-line'
-              
-              bind -M default gh 'commandline -f beginning-of-line'
-              bind -M default gl 'commandline -f end-of-line'
-              bind -M default 0 'commandline -f beginning-of-line'
-              bind -M default '$' 'commandline -f end-of-line'
-              
-              bind -M default gg 'commandline -f beginning-of-buffer'
-              bind -M default G 'commandline -f end-of-buffer'
-              
-              bind -M visual gh 'commandline -f beginning-of-line'
-              bind -M visual gl 'commandline -f end-of-line'
-              bind -M visual 0 'commandline -f beginning-of-line'
-              bind -M visual '$' 'commandline -f end-of-line'
-              bind -M visual gg 'commandline -f beginning-of-buffer'
-              bind -M visual G 'commandline -f end-of-buffer'
-            end
+            set -g fish_cursor_default block
+            set -g fish_cursor_insert line
+            set -g fish_cursor_replace_one underscore
+            set -g fish_cursor_replace underscore
+            set -g fish_cursor_external line
+            set -g fish_cursor_visual block
+
+            bind -M default V 'commandline -f beginning-of-line visual-mode end-of-line'
+
+            bind -M default gh 'commandline -f beginning-of-line'
+            bind -M default gl 'commandline -f end-of-line'
+            bind -M default 0 'commandline -f beginning-of-line'
+            bind -M default '$' 'commandline -f end-of-line'
+
+            bind -M default gg 'commandline -f beginning-of-buffer'
+            bind -M default G 'commandline -f end-of-buffer'
+
+            bind -M visual gh 'commandline -f beginning-of-line'
+            bind -M visual gl 'commandline -f end-of-line'
+            bind -M visual 0 'commandline -f beginning-of-line'
+            bind -M visual '$' 'commandline -f end-of-line'
+            bind -M visual gg 'commandline -f beginning-of-buffer'
+            bind -M visual G 'commandline -f end-of-buffer'
           '';
 
           toggle_vim_mode = ''
-            function toggle_vim_mode
-              if test "$fish_key_bindings" = "fish_vi_key_bindings"
-                echo "Switching to default key bindings"
-                fish_default_key_bindings
-                set -g fish_key_bindings fish_default_key_bindings
-              else
-                echo "Switching to enhanced vim key bindings"
-                fish_vi_key_bindings
-                setup_enhanced_vi_mode
-                set -g fish_key_bindings fish_vi_key_bindings
-              end
+            if test "$fish_key_bindings" = "fish_vi_key_bindings"
+              echo "Switching to default key bindings"
+              fish_default_key_bindings
+              set -g fish_key_bindings fish_default_key_bindings
+            else
+              echo "Switching to enhanced vim key bindings"
+              fish_vi_key_bindings
+              setup_enhanced_vi_mode
+              set -g fish_key_bindings fish_vi_key_bindings
             end
           '';
 
           open_links = ''
-            function open_links
-              # Usage: links [LINES]
-              set -l limit 400
-              if test (count $argv) -gt 0
-                if string match -rq '^[0-9]+$' -- $argv[1]
-                  set limit $argv[1]
-                end
+            # Usage: links [LINES]
+            set -l limit 400
+            if test (count $argv) -gt 0
+              if string match -rq '^[0-9]+$' -- $argv[1]
+                set limit $argv[1]
               end
-              set -l temp_file (mktemp)
-              set -l source_desc ""
-              
-              if set -q ZELLIJ
-                if not zellij action dump-screen $temp_file
-                  echo "Error: Failed to dump Zellij screen"
-                  rm -f $temp_file
-                  return 1
-                end
-                command tail -n $limit $temp_file > $temp_file.tmp; and mv $temp_file.tmp $temp_file
-                set source_desc "Zellij pane"
-              else if set -q TMUX
-                if not tmux capture-pane -p -S -$limit > $temp_file
-                  echo "Error: Failed to capture tmux pane"
-                  rm -f $temp_file
-                  return 1
-                end
-                set source_desc "tmux pane"
-              else
-                history | head -n $limit > $temp_file
-                set source_desc "command history (fallback)"
-              end
-              
-              set -l all_urls
-              
-              set -l standard_urls (command cat $temp_file | \
-                rg -o -i '\b(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]' | \
-                string collect)
-              
-              set -l markdown_urls (command cat $temp_file | \
-                rg -o '\[([^\]]+)\]\(([^)]+)\)' -r '$2' | \
-                string match -r '^https?://.*')
-              
-              set -l bare_domains (command cat $temp_file | \
-                rg -o '\b([a-zA-Z0-9][-a-zA-Z0-9]*\.)+[a-zA-Z]{2,}\b(/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])?' | \
-                string match -r -v '^(com|org|net|edu|gov|mil|int|example|test|localhost|invalid)$' | \
-                string replace -r '^' 'https://')
-              
-              for url in $standard_urls $markdown_urls $bare_domains
-                set all_urls $all_urls $url
-              end
-              
-              set -l clean_urls
-              for url in $all_urls
-                # Remove trailing punctuation but keep it if it's part of the URL structure
-                set -l cleaned (echo $url | string replace -r "([),;:!?\\.\"']+)$" "" | string trim)
-                
-                # Validate URL has a valid structure
-                if string match -q -r '^(https?|ftp|file)://[^/]+' $cleaned
-                  set clean_urls $clean_urls $cleaned
-                end
-              end
-              
-              set -l urls (printf '%s\n' $clean_urls | sort -u)
-              
-              # Clean up temp file
-              rm -f $temp_file
-              
-              if test (count $urls) -eq 0
-                echo "No URLs found in $source_desc"
+            end
+            set -l temp_file (mktemp)
+            set -l source_desc ""
+
+            if set -q ZELLIJ
+              if not zellij action dump-screen $temp_file
+                echo "Error: Failed to dump Zellij screen"
+                rm -f $temp_file
                 return 1
               end
-              
-              echo "Found "(count $urls)" URL(s) from $source_desc"
-              set -l selected (printf '%s\n' $urls | \
-                fzf --prompt="Select URL to open: " \
-                    --preview-window=hidden \
-                    --height=40%)
-              
-              if test -n "$selected"
-                echo "Opening: $selected"
-                open "$selected"
+              command tail -n $limit $temp_file > $temp_file.tmp; and mv $temp_file.tmp $temp_file
+              set source_desc "Zellij pane"
+            else if set -q TMUX
+              if not tmux capture-pane -p -S -$limit > $temp_file
+                echo "Error: Failed to capture tmux pane"
+                rm -f $temp_file
+                return 1
               end
+              set source_desc "tmux pane"
+            else
+              history | head -n $limit > $temp_file
+              set source_desc "command history (fallback)"
+            end
+
+            set -l all_urls
+
+            set -l standard_urls (command cat $temp_file | \
+              rg -o -i '\b(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]' | \
+              string collect)
+
+            set -l markdown_urls (command cat $temp_file | \
+              rg -o '\[([^\]]+)\]\(([^)]+)\)' -r '$2' | \
+              string match -r '^https?://.*')
+
+            set -l bare_domains (command cat $temp_file | \
+              rg -o '\b([a-zA-Z0-9][-a-zA-Z0-9]*\.)+[a-zA-Z]{2,}\b(/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])?' | \
+              string match -r -v '^(com|org|net|edu|gov|mil|int|example|test|localhost|invalid)$' | \
+              string replace -r '^' 'https://')
+
+            for url in $standard_urls $markdown_urls $bare_domains
+              set all_urls $all_urls $url
+            end
+
+            set -l clean_urls
+            for url in $all_urls
+              # Remove trailing punctuation but keep it if it's part of the URL structure
+              set -l cleaned (echo $url | string replace -r "([),;:!?\\.\"']+)$" "" | string trim)
+
+              # Validate URL has a valid structure
+              if string match -q -r '^(https?|ftp|file)://[^/]+' $cleaned
+                set clean_urls $clean_urls $cleaned
+              end
+            end
+
+            set -l urls (printf '%s\n' $clean_urls | sort -u)
+
+            # Clean up temp file
+            rm -f $temp_file
+
+            if test (count $urls) -eq 0
+              echo "No URLs found in $source_desc"
+              return 1
+            end
+
+            echo "Found "(count $urls)" URL(s) from $source_desc"
+            set -l selected (printf '%s\n' $urls | \
+              fzf --prompt="Select URL to open: " \
+                  --preview-window=hidden \
+                  --height=40%)
+
+            if test -n "$selected"
+              echo "Opening: $selected"
+              open "$selected"
             end
           '';
 
           br = ''
-            function br --wraps=broot
-              set -l cmd_file (mktemp)
-              if broot --outcmd $cmd_file $argv
-                set -l cmd (command cat $cmd_file)
-                rm -f $cmd_file
-                eval $cmd
-              else
-                set -l exit_code $status
-                rm -f $cmd_file
-                return $exit_code
-              end
+            set -l cmd_file (mktemp)
+            if broot --outcmd $cmd_file $argv
+              set -l cmd (command cat $cmd_file)
+              rm -f $cmd_file
+              eval $cmd
+            else
+              set -l exit_code $status
+              rm -f $cmd_file
+              return $exit_code
             end
           '';
 
           zellij = ''
-            function zellij --wraps=zellij
-              if set -q SSH_CLIENT
-                set -l client_ip (string split ' ' $SSH_CLIENT)[1]
-                if test "$client_ip" = "100.75.162.114"
-                  command zellij --config ~/.config/zellij/config-ssh.kdl $argv
-                  return
-                end
+            if set -q SSH_CLIENT
+              set -l client_ip (string split ' ' $SSH_CLIENT)[1]
+              if test "$client_ip" = "100.75.162.114"
+                command zellij --config ~/.config/zellij/config-ssh.kdl $argv
+                return
               end
-              command zellij $argv
             end
+            command zellij $argv
           '';
 
         };

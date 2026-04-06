@@ -14,7 +14,7 @@ let
     ;
 
   hmLib = inputs.home-manager.lib.hm;
-  defaultNodeVersion = "22.22.0";
+  defaultNodeVersion = "24.14.1";
   homeDirectory =
     if config.isDarwin then "/Users/${config.user.name}" else "/home/${config.user.name}";
   voltaHome = "${homeDirectory}/.volta";
@@ -165,7 +165,11 @@ in
       {
         home.packages = attrValues (profilePackages // desktopPackages // zedPackage);
         home.sessionPath = [ "${voltaHome}/bin" ];
-        home.sessionVariables.VOLTA_HOME = voltaHome;
+        home.sessionVariables = {
+          VOLTA_HOME = voltaHome;
+        } // optionalAttrs config.isDarwin {
+          CGO_LDFLAGS = "-L${pkgs.darwin.libresolv}/lib";
+        };
 
         home.activation.voltaDefaultNode = hmLib.dag.entryAfter [ "writeBoundary" ] ''
           export VOLTA_HOME="${voltaHome}"
@@ -192,6 +196,42 @@ in
                 'exec "$(volta which "$tool")" "$@"' > "$target"
               chmod +x "$target"
             done
+
+            pi_cli="${homeDirectory}/.npm-global/lib/node_modules/@mariozechner/pi-coding-agent/dist/cli.js"
+            pi_bin="$VOLTA_HOME/bin/pi"
+            if [ -f "$pi_cli" ]; then
+              if [ -n "''${DRY_RUN:-}" ]; then
+                echo "write $pi_bin"
+              else
+                mkdir -p "$(dirname "$pi_bin")"
+                rm -f "$pi_bin"
+                cat > "$pi_bin" <<'EOF'
+#!/bin/sh
+set -eu
+
+VOLTA_HOME="${voltaHome}"
+PI_CLI="${homeDirectory}/.npm-global/lib/node_modules/@mariozechner/pi-coding-agent/dist/cli.js"
+NPM_PREFIX="${homeDirectory}/.npm-global"
+
+if [ ! -x "$VOLTA_HOME/bin/node" ]; then
+  echo "pi: missing Volta node shim at $VOLTA_HOME/bin/node" >&2
+  exit 127
+fi
+
+if [ ! -f "$PI_CLI" ]; then
+  echo "pi: missing CLI at $PI_CLI" >&2
+  exit 127
+fi
+
+export VOLTA_HOME
+export NPM_CONFIG_PREFIX="$NPM_PREFIX"
+export PATH="$VOLTA_HOME/bin:$NPM_PREFIX/bin:$PATH"
+
+exec "$VOLTA_HOME/bin/node" "$PI_CLI" "$@"
+EOF
+                chmod +x "$pi_bin"
+              fi
+            fi
           fi
         '';
 
