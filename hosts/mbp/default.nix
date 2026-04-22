@@ -4,6 +4,6 @@ let
 in
 import ../darwin-workstation-default.nix {
   inherit lib;
-  hostName = "macbook";
+  hostName = "mbp";
   hostModules = collectNix ./. |> remove ./default.nix |> remove ./home.nix;
 }
