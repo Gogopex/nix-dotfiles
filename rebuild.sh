@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 set -euo pipefail
 
 RED='\033[0;31m'
@@ -168,7 +170,12 @@ collect_detected_hosts() {
 }
 
 if [[ -z "$HOST" ]]; then
-    mapfile -t DETECTED_HOSTS < <(collect_detected_hosts)
+    DETECTED_HOSTS=()
+    while IFS= read -r detected_host; do
+        if [[ -n "$detected_host" ]]; then
+            DETECTED_HOSTS+=("$detected_host")
+        fi
+    done < <(collect_detected_hosts)
 
     for DETECTED_HOST in "${DETECTED_HOSTS[@]}"; do
         if HOST_DIR=$(find_host_dir "$DETECTED_HOST"); then
