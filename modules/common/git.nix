@@ -20,7 +20,6 @@ merge {
             pull.rebase = false;
             init.defaultBranch = "main";
             push.autoSetupRemote = true;
-            merge.conflictstyle = "diff3";
             merge.conflictStyle = "zdiff3";
             rebase.autosquash = true;
             diff.colorMoved = "default";

@@ -1,6 +1,8 @@
 { config, lib, ... }:
 let
   inherit (lib) enabled merge mkIf;
+  copyToClipboardShell =
+    "copy_to_clipboard() { if command -v pbcopy >/dev/null 2>&1; then pbcopy; elif command -v wl-copy >/dev/null 2>&1; then wl-copy; elif command -v xclip >/dev/null 2>&1; then xclip -selection clipboard; elif command -v xsel >/dev/null 2>&1; then xsel --clipboard --input; else exit 127; fi; }";
 in
 mkIf config.editors.helix.enable (merge {
   home-manager.sharedModules = [
@@ -68,11 +70,11 @@ mkIf config.editors.helix.enable (merge {
                 };
                 "y" = {
                   "p" = [
-                    ":sh printf \"%s\" \"%{buffer_name}\" | pbcopy"
+                    ":sh ${copyToClipboardShell}; printf \"%s\" \"%{buffer_name}\" | copy_to_clipboard"
                     ":echo Copied file path to clipboard"
                   ];
                   "g" = [
-                    ":sh repo=$(git rev-parse --show-toplevel 2>/dev/null) || exit 1; file=$(realpath \"%{buffer_name}\"); rel=\${file#\"$repo\"/}; url=$(git config --get remote.origin.url 2>/dev/null); slug=$(printf %s \"$url\" | sed -E 's#^git@[^:]*:##; s#^ssh://[^/]+/##; s#^https?://[^/]+/##; s#\\.git$##'); branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); echo \"https://github.com/$slug/blob/$branch/$rel\" | pbcopy"
+                    ":sh ${copyToClipboardShell}; repo=$(git rev-parse --show-toplevel 2>/dev/null) || exit 1; file=$(realpath \"%{buffer_name}\"); rel=\${file#\"$repo\"/}; url=$(git config --get remote.origin.url 2>/dev/null); slug=$(printf %s \"$url\" | sed -E 's#^git@[^:]*:##; s#^ssh://[^/]+/##; s#^https?://[^/]+/##; s#\\.git$##'); branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); echo \"https://github.com/$slug/blob/$branch/$rel\" | copy_to_clipboard"
                     ":echo Copied GitHub file link to clipboard"
                   ];
                 };

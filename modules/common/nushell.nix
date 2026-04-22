@@ -26,8 +26,6 @@ mkIf isNushell (merge {
           zls = "zellij list-sessions";
           zdel = "zellij delete-session";
           zforce = "zellij attach --force-run-commands";
-          notify = "run_with_notify";
-          claude-check = "check_claude_sessions";
         };
 
         configFile.text = builtins.readFile ./nushell-config.nu;
@@ -38,7 +36,7 @@ mkIf isNushell (merge {
             | split row (char esep)
             | prepend /opt/homebrew/bin
             | prepend ~/.nix-profile/bin
-            | prepend /etc/profiles/per-user/bin
+            | prepend /etc/profiles/per-user/${config.user.name}/bin
             | prepend /run/current-system/sw/bin
             | prepend /nix/var/nix/profiles/default/bin
             | append ~/.npm-global/bin
@@ -51,7 +49,7 @@ mkIf isNushell (merge {
           )
 
           # Environment variables
-          $env.EDITOR = "hx"
+          $env.EDITOR = "${config.user.editor}"
           $env.PHP_VERSION = "8.3"
 
           if (($"($env.HOME)/.volta" | path exists)) {

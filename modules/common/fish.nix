@@ -15,11 +15,8 @@ mkIf isFish (merge {
       programs.fish = enabled {
         shellAliases = {
           ll = "ls -alh";
-          lt  = "eza -la --group-directories-first --time-style=long-iso
-          --binary --header --icons=never --no-user --no-permissions";
-          ltg = "eza -la --group-directories-first --sort=modified --time-
-          style=long-iso --git --binary --header --icons=never --no-user --no-
-          permissions";
+          lt = "eza -la --group-directories-first --time-style=long-iso --binary --header --icons=never --no-user --no-permissions";
+          ltg = "eza -la --group-directories-first --sort=modified --time-style=long-iso --git --binary --header --icons=never --no-user --no-permissions";
 
           lt1  = "eza -T -L 1 -a --group-directories-first --icons=never";
           lt1g = "eza -T -L 1 -a --group-directories-first --git --icons=never";
@@ -43,20 +40,29 @@ mkIf isFish (merge {
 
         shellInit = # fish
           ''
+            function __dotfiles_has_addenda_mount
+              command mount | string match -q '* on /Volumes/Addenda *'
+            end
+
+            function __dotfiles_cache_root
+              if __dotfiles_has_addenda_mount
+                echo /Volumes/Addenda/caches
+              else
+                echo $HOME/.cache
+              end
+            end
+
             if status is-interactive
               fish_add_path -g /opt/homebrew/bin
               fish_add_path -g ~/.nix-profile/bin
-              fish_add_path -g /etc/profiles/per-user/ludwig/bin
+              fish_add_path -g /etc/profiles/per-user/${config.user.name}/bin
               fish_add_path -g /run/current-system/sw/bin
               fish_add_path -g /nix/var/nix/profiles/default/bin
               fish_add_path ~/.npm-global/bin
               fish_add_path ~/.cargo/bin
-              if /sbin/mount | command grep -q ' on /Volumes/Addenda '
-                if test -d /Volumes/Addenda/caches/cargo/bin
-                  fish_add_path /Volumes/Addenda/caches/cargo/bin
-                end
-              else if test -d $HOME/.cache/cargo/bin
-                fish_add_path $HOME/.cache/cargo/bin
+              set -l cache_root (__dotfiles_cache_root)
+              if test -d $cache_root/cargo/bin
+                fish_add_path $cache_root/cargo/bin
               end
               fish_add_path ~/go/bin
               fish_add_path ~/.local/bin ~/.modular/bin \
@@ -89,28 +95,17 @@ access-tokens = github.com=$gh_token"
 
         interactiveShellInit = # fish
           ''
-            set -gx EDITOR hx
+            set -gx EDITOR ${config.user.editor}
             set -gx PHP_VERSION 8.3
 
-            if /sbin/mount | command grep -q ' on /Volumes/Addenda '
-                set -l cache_root /Volumes/Addenda/caches
-                set -gx CARGO_HOME $cache_root/cargo
-                set -gx GOMODCACHE $cache_root/go-mod
-                set -gx UV_CACHE_DIR $cache_root/uv
-                set -gx NPM_CONFIG_CACHE $cache_root/npm
-                set -gx PIP_CACHE_DIR $cache_root/pip
-                set -gx HOMEBREW_CACHE $cache_root/homebrew
-                set -gx HF_HOME $cache_root/huggingface
-            else
-                set -l cache_root $HOME/.cache
-                set -gx CARGO_HOME $cache_root/cargo
-                set -gx GOMODCACHE $cache_root/go-mod
-                set -gx UV_CACHE_DIR $cache_root/uv
-                set -gx NPM_CONFIG_CACHE $cache_root/npm
-                set -gx PIP_CACHE_DIR $cache_root/pip
-                set -gx HOMEBREW_CACHE $cache_root/homebrew
-                set -gx HF_HOME $cache_root/huggingface
-            end
+            set -l cache_root (__dotfiles_cache_root)
+            set -gx CARGO_HOME $cache_root/cargo
+            set -gx GOMODCACHE $cache_root/go-mod
+            set -gx UV_CACHE_DIR $cache_root/uv
+            set -gx NPM_CONFIG_CACHE $cache_root/npm
+            set -gx PIP_CACHE_DIR $cache_root/pip
+            set -gx HOMEBREW_CACHE $cache_root/homebrew
+            set -gx HF_HOME $cache_root/huggingface
 
             if test -d ~/.volta
               set -gx VOLTA_HOME ~/.volta
@@ -119,13 +114,6 @@ access-tokens = github.com=$gh_token"
 
             fish_vi_key_bindings
             setup_enhanced_vi_mode
-
-            set -g fish_cursor_default block
-            set -g fish_cursor_insert line
-            set -g fish_cursor_replace_one underscore
-            set -g fish_cursor_replace underscore
-            set -g fish_cursor_external line
-            set -g fish_cursor_visual block
 
             set -g hydro_multiline false
             set -g hydro_prompt_show_user false
@@ -145,7 +133,7 @@ access-tokens = github.com=$gh_token"
               end
               bind \e\cv 'toggle_vim_mode'
               bind \e\cl 'open_links'
-              bind \ca\cb 'br; commandline -f repaint'
+              bind \e\cb 'br; commandline -f repaint'
               
               bind \c\; 'toggle_vim_mode'
             end
@@ -157,7 +145,28 @@ access-tokens = github.com=$gh_token"
         functions = {
           fish_greeting = ''echo "What is impossible for you is not impossible for me."'';
 
-          cc = ''$argv | pbcopy'';
+          copy_to_clipboard = ''
+            if type -q pbcopy
+              cat | pbcopy
+            else if type -q wl-copy
+              cat | wl-copy
+            else if type -q xclip
+              cat | xclip -selection clipboard
+            else if type -q xsel
+              cat | xsel --clipboard --input
+            else
+              echo "No clipboard command available (tried pbcopy, wl-copy, xclip, xsel)" >&2
+              return 127
+            end
+          '';
+          cc = ''
+            if test (count $argv) -eq 0
+              echo "Usage: cc <command> [args...]" >&2
+              return 2
+            end
+
+            $argv | copy_to_clipboard
+          '';
           pi = ''
             set -l pi_bin $HOME/.npm-global/bin/pi
             if not test -x $pi_bin
@@ -328,7 +337,14 @@ access-tokens = github.com=$gh_token"
 
             if test -n "$selected"
               echo "Opening: $selected"
-              open "$selected"
+              if type -q open
+                open "$selected"
+              else if type -q xdg-open
+                xdg-open "$selected" >/dev/null 2>&1 &
+              else
+                echo "No URL opener found (tried open, xdg-open)" >&2
+                return 127
+              end
             end
           '';
 

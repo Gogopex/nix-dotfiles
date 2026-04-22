@@ -1,6 +1,6 @@
 { lib, ... }:
 let
-  inherit (lib) mkValue mapAttrsToList;
+  inherit (lib) mkValue;
 in
 {
   options.editorSettings = mkValue {
@@ -106,7 +106,6 @@ in
     };
     "makefile.configureOnOpen" = true;
     # "editor.columnSelection" = true;
-    "terminal.external.osxExec" = "Ghostty.app";
     "terminal.integrated.fontLigatures.enabled" = true;
     "extensions.experimental.affinity" = {
       "asvetliakov.vscode-neovim" = 1;
@@ -121,8 +120,6 @@ in
     };
     "workbench.startupEditor" = "none";
     "amp.url" = "https://ampcode.com/";
-
-    # Missing configurations from flake.nix
     "emmet.triggerExpansionOnTab" = true;
     "emmet.syntaxProfiles" = {
       "html" = {

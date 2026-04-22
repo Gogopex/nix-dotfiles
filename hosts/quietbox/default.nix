@@ -2,6 +2,8 @@ lib:
 lib.homeManagerConfiguration' {
   system = "x86_64-linux";
   username = "ludwig";
+  homeDirectory = "/home/ludwig";
+  commonModules = [ ];
   module = {
     imports =
       [ ./home.nix ]

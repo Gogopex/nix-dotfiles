@@ -43,6 +43,7 @@ usage() {
     echo "Examples:"
     echo "  $0                      # Build current host"
     echo "  $0 macbook              # Build specific host"
+    echo "  $0 mbp                  # Build the new Mac host"
     echo "  $0 --ask                # Preview changes before applying"
     echo "  $0 --profile full       # Switch package profile and rebuild"
     echo "  $0 -- --show-trace      # Pass extra args to rebuild tool"
@@ -130,27 +131,75 @@ find_host_dir() {
     return 1
 }
 
-if [[ -z "$HOST" ]]; then
+collect_detected_hosts() {
+    local detected_hosts=()
+    local candidate=""
+
     if command -v hostname &> /dev/null; then
-        DETECTED_HOST=$(hostname -s)
+        candidate=$(hostname -s 2>/dev/null || true)
+        if [[ -n "$candidate" ]]; then
+            detected_hosts+=("$candidate")
+        fi
     elif [[ -f /etc/hostname ]]; then
-        DETECTED_HOST=$(cat /etc/hostname)
+        candidate=$(cat /etc/hostname)
+        if [[ -n "$candidate" ]]; then
+            detected_hosts+=("$candidate")
+        fi
     elif command -v hostnamectl &> /dev/null; then
-        DETECTED_HOST=$(hostnamectl --static)
-    else
-        DETECTED_HOST="unknown"
+        candidate=$(hostnamectl --static 2>/dev/null || true)
+        if [[ -n "$candidate" ]]; then
+            detected_hosts+=("$candidate")
+        fi
     fi
-    
-    if [[ "$DETECTED_HOST" == *"MacBook"* ]] && [[ -d "hosts/macbook" ]]; then
-        HOST="macbook"
-        print_info "Detected macOS system, using host configuration: $HOST"
-    elif [[ "$DETECTED_HOST" == "archlinux" ]] && [[ -d "hosts/quietbox" ]]; then
-        HOST="quietbox"
-        print_info "Detected Arch Linux system, using host configuration: $HOST"
-    elif HOST_DIR=$(find_host_dir "$DETECTED_HOST"); then
-        HOST="$HOST_DIR"
-        print_info "Auto-detected host configuration: $HOST"
-    else
+
+    if [[ "$SYSTEM_TYPE" == "darwin" ]] && command -v scutil &> /dev/null; then
+        candidate=$(scutil --get LocalHostName 2>/dev/null || true)
+        if [[ -n "$candidate" ]]; then
+            detected_hosts+=("$candidate")
+        fi
+
+        candidate=$(scutil --get ComputerName 2>/dev/null || true)
+        if [[ -n "$candidate" ]]; then
+            detected_hosts+=("$candidate")
+        fi
+    fi
+
+    printf '%s\n' "${detected_hosts[@]}"
+}
+
+if [[ -z "$HOST" ]]; then
+    mapfile -t DETECTED_HOSTS < <(collect_detected_hosts)
+
+    for DETECTED_HOST in "${DETECTED_HOSTS[@]}"; do
+        if HOST_DIR=$(find_host_dir "$DETECTED_HOST"); then
+            HOST="$HOST_DIR"
+            print_info "Auto-detected host configuration: $HOST"
+            break
+        fi
+    done
+
+    if [[ -z "$HOST" ]] && [[ -d "hosts/quietbox" ]]; then
+        for DETECTED_HOST in "${DETECTED_HOSTS[@]}"; do
+            if [[ "$DETECTED_HOST" == "archlinux" ]]; then
+                HOST="quietbox"
+                print_info "Detected Arch Linux system, using host configuration: $HOST"
+                break
+            fi
+        done
+    fi
+
+    if [[ -z "$HOST" ]] && [[ "$SYSTEM_TYPE" == "darwin" ]] && [[ -d "hosts/macbook" ]]; then
+        for DETECTED_HOST in "${DETECTED_HOSTS[@]}"; do
+            if [[ "$DETECTED_HOST" == *"MacBook"* ]]; then
+                HOST="macbook"
+                print_info "Falling back to legacy macOS host configuration: $HOST"
+                break
+            fi
+        done
+    fi
+
+    if [[ -z "$HOST" ]]; then
+        DETECTED_HOST="${DETECTED_HOSTS[0]:-unknown}"
         print_error "Could not auto-detect host configuration for: $DETECTED_HOST"
         print_info "Available hosts:"
         for dir in hosts/*/; do
@@ -275,8 +324,6 @@ else
             exit 1
         fi
     elif [[ "$SYSTEM_TYPE" == "darwin" ]]; then
-        print_info "Using darwin-rebuild..."
-
         DARWIN_ARGS=(
             "switch"
             "--flake" ".#$HOST"
@@ -292,7 +339,21 @@ else
             NIX_ARGS+=("${EXTRA_ARGS[@]}")
         fi
 
-        if sudo darwin-rebuild "${DARWIN_ARGS[@]}" "${NIX_ARGS[@]}"; then
+        if command -v darwin-rebuild &> /dev/null; then
+            print_info "Using darwin-rebuild..."
+            DARWIN_CMD=(sudo darwin-rebuild)
+        else
+            print_info "darwin-rebuild not found, bootstrapping via nix run..."
+            DARWIN_CMD=(
+                sudo
+                nix
+                "run"
+                "nix-darwin/master#darwin-rebuild"
+                "--"
+            )
+        fi
+
+        if "${DARWIN_CMD[@]}" "${DARWIN_ARGS[@]}" "${NIX_ARGS[@]}"; then
             print_success "Darwin configuration rebuilt successfully!"
 
             if ! command -v nh &> /dev/null; then

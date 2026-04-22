@@ -49,7 +49,7 @@
               echo "No staged changes to commit"
               return 1
             end
-            echo "$diff" | llm -t commit | tee /dev/tty | pbcopy
+            echo "$diff" | llm -t commit | tee /dev/tty | copy_to_clipboard
             echo ""
             echo "Commit message copied to clipboard!"
           '';
@@ -70,7 +70,7 @@
           description = "Generate cmd one-liner";
           body = ''
             set -l task (string join " " $argv)
-            llm -t oneliner "$task" | tee /dev/tty | pbcopy
+            llm -t oneliner "$task" | tee /dev/tty | copy_to_clipboard
             echo ""
             echo "One-liner copied to clipboard!"
           '';

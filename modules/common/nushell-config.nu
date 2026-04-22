@@ -568,6 +568,18 @@ def toggle_vim_mode [] {
   }
 }
 
+def open_url [url: string] {
+  if not ((which open) | is-empty) {
+    ^open $url
+  } else if not ((which xdg-open) | is-empty) {
+    ^xdg-open $url
+  } else {
+    error make {
+      msg: "No URL opener found (tried open, xdg-open)"
+    }
+  }
+}
+
 def open_links [] {
   if not ($env.ZELLIJ? | is-empty) {
     let temp_file = (mktemp)
@@ -577,8 +589,8 @@ def open_links [] {
 
       let urls = (
         open $temp_file
-        | str find-all -r '\b(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]'
-        | get text
+        | parse --regex '(?<url>\b(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|])'
+        | get url
         | uniq
       )
 
@@ -592,7 +604,7 @@ def open_links [] {
 
         if not ($selected | is-empty) {
           print $"Opening: ($selected)"
-          ^open $selected
+          open_url $selected
         }
       }
     } catch {

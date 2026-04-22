@@ -12,6 +12,21 @@ let
   colors = config.theme.colors;
 
   stripHash = color: builtins.substring 1 6 color;
+  zellijClipboardCopy = pkgs.writeShellScriptBin "zellij-copy-to-clipboard" ''
+    if command -v pbcopy >/dev/null 2>&1; then
+      exec pbcopy
+    elif command -v wl-copy >/dev/null 2>&1; then
+      exec wl-copy
+    elif command -v xclip >/dev/null 2>&1; then
+      exec xclip -selection clipboard
+    elif command -v xsel >/dev/null 2>&1; then
+      exec xsel --clipboard --input
+    else
+      echo "No clipboard command available (tried pbcopy, wl-copy, xclip, xsel)" >&2
+      exit 127
+    fi
+  '';
+  zellijClipboardCopyCommand = "${zellijClipboardCopy}/bin/zellij-copy-to-clipboard";
 
   forgot = pkgs.fetchurl {
     url = "https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm";
@@ -46,7 +61,7 @@ merge
           simplified_ui true
           default_shell "fish"
           theme "gruvbox-dark"
-          copy_command "pbcopy"
+          copy_command "${zellijClipboardCopyCommand}"
           copy_on_select true
           show_startup_tips false
 
@@ -206,7 +221,7 @@ merge
 
           simplified_ui true
           default_shell "fish"
-          copy_command "pbcopy"
+          copy_command "${zellijClipboardCopyCommand}"
           copy_on_select true
           show_startup_tips false
 

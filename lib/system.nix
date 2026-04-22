@@ -115,4 +115,38 @@ in
       ]
       ++ commonModules;
     };
+
+  homeManagerSharedModules' =
+    {
+      pkgs,
+      modulePaths,
+      excludedModules ? [ ../modules/common/home-manager.nix ],
+      extraModules ? [ ],
+      extraSpecialArgs ? { },
+    }:
+    let
+      excludedModulePaths = map builtins.toString excludedModules;
+      filteredModulePaths = filter (
+        path: !(builtins.elem (builtins.toString path) excludedModulePaths)
+      ) (self.concatMap collectNix modulePaths);
+
+      hmEval = self.evalModules {
+        modules =
+          extraModules
+          ++ filteredModulePaths
+          ++ [
+            {
+              config._module.check = false;
+            }
+          ];
+
+        specialArgs =
+          {
+            inherit inputs pkgs;
+            nixvim = inputs.nixvim;
+          }
+          // extraSpecialArgs;
+      };
+    in
+    hmEval.config.home-manager.sharedModules or [ ];
 }
