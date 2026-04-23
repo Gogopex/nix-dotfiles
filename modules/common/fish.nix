@@ -18,7 +18,7 @@ mkIf isFish (merge {
           lt = "eza -la --group-directories-first --time-style=long-iso --binary --header --icons=never --no-user --no-permissions";
           ltg = "eza -la --group-directories-first --sort=modified --time-style=long-iso --git --binary --header --icons=never --no-user --no-permissions";
 
-          lt1  = "eza -T -L 1 -a --group-directories-first --icons=never";
+          lt1 = "eza -T -L 1 -a --group-directories-first --icons=never";
           lt1g = "eza -T -L 1 -a --group-directories-first --git --icons=never";
           ingest = "~/go/bin/ingest";
           cat = "bat";
@@ -52,20 +52,24 @@ mkIf isFish (merge {
               end
             end
 
+            set -gx VOLTA_HOME $HOME/.volta
+            set -gx VOLTA_FEATURE_PNPM 1
+            fish_add_path -g -m -p $VOLTA_HOME/bin
+
             if status is-interactive
+              fish_add_path -g -m -p ~/.local/bin
               fish_add_path -g /opt/homebrew/bin
               fish_add_path -g ~/.nix-profile/bin
               fish_add_path -g /etc/profiles/per-user/${config.user.name}/bin
               fish_add_path -g /run/current-system/sw/bin
               fish_add_path -g /nix/var/nix/profiles/default/bin
-              fish_add_path ~/.npm-global/bin
               fish_add_path ~/.cargo/bin
               set -l cache_root (__dotfiles_cache_root)
               if test -d $cache_root/cargo/bin
                 fish_add_path $cache_root/cargo/bin
               end
               fish_add_path ~/go/bin
-              fish_add_path ~/.local/bin ~/.modular/bin \
+              fish_add_path ~/.modular/bin \
                              /Applications/WezTerm.app/Contents/MacOS \
                              $HOME/.cache/lm-studio/bin
               fish_add_path ~/Downloads/google-cloud-sdk/bin
@@ -87,8 +91,7 @@ mkIf isFish (merge {
               if not set -q NIX_CONFIG
                 set -gx NIX_CONFIG "access-tokens = github.com=$gh_token"
               else if not string match -q "*access-tokens = github.com=*" "$NIX_CONFIG"
-                set -gx NIX_CONFIG "$NIX_CONFIG
-access-tokens = github.com=$gh_token"
+                set -gx NIX_CONFIG (printf "%s\n%s" "$NIX_CONFIG" "access-tokens = github.com=$gh_token")
               end
             end
           '';
@@ -106,11 +109,6 @@ access-tokens = github.com=$gh_token"
             set -gx PIP_CACHE_DIR $cache_root/pip
             set -gx HOMEBREW_CACHE $cache_root/homebrew
             set -gx HF_HOME $cache_root/huggingface
-
-            if test -d ~/.volta
-              set -gx VOLTA_HOME ~/.volta
-              fish_add_path -g -m -p $VOLTA_HOME/bin
-            end
 
             fish_vi_key_bindings
             setup_enhanced_vi_mode
@@ -168,19 +166,12 @@ access-tokens = github.com=$gh_token"
             $argv | copy_to_clipboard
           '';
           pi = ''
-            set -l pi_bin $HOME/.npm-global/bin/pi
-            if not test -x $pi_bin
-              echo "pi not found at $pi_bin" >&2
+            if not command -q pi
+              echo "pi not found. It should be installed by Volta; run ./rebuild.sh if missing." >&2
               return 127
             end
 
-            # Nix shells can inject an older project node ahead of Volta.
-            if test -d $HOME/.volta/bin
-              set -lx VOLTA_HOME $HOME/.volta
-              set -lx PATH $VOLTA_HOME/bin $PATH
-            end
-
-            command $pi_bin $argv
+            command pi $argv
           '';
           fish_mode_prompt = ''
             switch $fish_bind_mode

@@ -6,11 +6,69 @@
   ...
 }:
 let
+  inherit (lib) concatMapStringsSep escapeShellArg optionalAttrs;
   hmLib = inputs.home-manager.lib.hm;
   defaultNodeVersion = "24.14.1";
+  defaultNpmVersion = "11.6.2";
+  defaultYarnVersion = "1.22.22";
+  defaultPnpmVersion = "9.15.4";
   homeDirectory =
     if config.isDarwin then "/Users/${config.user.name}" else "/home/${config.user.name}";
   voltaHome = "${homeDirectory}/.volta";
+
+  voltaToolchain = [
+    {
+      expected = "runtime node@${defaultNodeVersion} (default)";
+      spec = "node@${defaultNodeVersion}";
+    }
+    {
+      expected = "package-manager npm@${defaultNpmVersion}";
+      spec = "npm@${defaultNpmVersion}";
+    }
+    {
+      expected = "package-manager yarn@${defaultYarnVersion}";
+      spec = "yarn@${defaultYarnVersion}";
+    }
+    {
+      expected = "package-manager pnpm@${defaultPnpmVersion}";
+      spec = "pnpm@${defaultPnpmVersion}";
+    }
+  ];
+
+  voltaPackages = [
+    {
+      expected = "package typescript@5.9.3";
+      spec = "typescript@5.9.3";
+    }
+    {
+      expected = "package typescript-language-server@5.1.3";
+      spec = "typescript-language-server@5.1.3";
+    }
+    {
+      expected = "package prettier@3.6.2";
+      spec = "prettier@3.6.2";
+    }
+    {
+      expected = "package vscode-langservers-extracted@4.10.0";
+      spec = "vscode-langservers-extracted@4.10.0";
+    }
+    {
+      expected = "package yaml-language-server@1.19.2";
+      spec = "yaml-language-server@1.19.2";
+    }
+    {
+      expected = "package @biomejs/biome@2.3.9";
+      spec = "@biomejs/biome@2.3.9";
+    }
+    {
+      expected = "package @mariozechner/pi-coding-agent@0.69.0";
+      spec = "@mariozechner/pi-coding-agent@0.69.0";
+    }
+  ];
+
+  installVoltaTools = concatMapStringsSep "\n" (
+    tool: "            ensure_volta_tool ${escapeShellArg tool.expected} ${escapeShellArg tool.spec}"
+  ) (voltaToolchain ++ voltaPackages);
 in
 {
   config = {
@@ -19,72 +77,46 @@ in
         home.sessionPath = [ "${voltaHome}/bin" ];
         home.sessionVariables = {
           VOLTA_HOME = voltaHome;
-        } // lib.optionalAttrs config.isDarwin {
+          VOLTA_FEATURE_PNPM = "1";
+        }
+        // optionalAttrs config.isDarwin {
           CGO_LDFLAGS = "-L${pkgs.darwin.libresolv}/lib";
         };
 
-        home.activation.voltaDefaultNode = hmLib.dag.entryAfter [ "writeBoundary" ] ''
-          export VOLTA_HOME="${voltaHome}"
-          export PATH="$VOLTA_HOME/bin:$PATH"
+        home.activation.voltaToolchain = hmLib.dag.entryAfter [ "writeBoundary" ] ''
+                    volta_bin="${pkgs.volta}/bin/volta"
+                    export VOLTA_HOME="${voltaHome}"
+                    export VOLTA_FEATURE_PNPM=1
+                    export PATH="${pkgs.volta}/bin:$VOLTA_HOME/bin:$PATH"
 
-          if command -v volta >/dev/null 2>&1; then
-            platform_file="$VOLTA_HOME/tools/user/platform.json"
-            if ! [ -f "$platform_file" ] || ! grep -q "\"runtime\": \"${defaultNodeVersion}\"" "$platform_file"; then
-              $DRY_RUN_CMD volta install node@${defaultNodeVersion}
-            fi
+                    mkdir -p "$VOLTA_HOME/bin"
 
-            for tool in node npm npx; do
-              target="$VOLTA_HOME/bin/$tool"
-              if [ -n "''${DRY_RUN:-}" ]; then
-                echo "write $target"
-                continue
-              fi
+                    for tool in node npm npx; do
+                      target="$VOLTA_HOME/bin/$tool"
+                      if [ -f "$target" ] && ! [ -L "$target" ] && grep -q 'volta which' "$target"; then
+                        rm -f "$target"
+                      fi
+                    done
 
-              rm -f "$target"
-              printf '%s\n' \
-                '#!/bin/sh' \
-                'set -eu' \
-                'tool=$(basename "$0")' \
-                'exec "$(volta which "$tool")" "$@"' > "$target"
-              chmod +x "$target"
-            done
+                    volta_state="$("$volta_bin" list all 2>/dev/null || true)"
 
-            pi_cli="${homeDirectory}/.npm-global/lib/node_modules/@mariozechner/pi-coding-agent/dist/cli.js"
-            pi_bin="$VOLTA_HOME/bin/pi"
-            if [ -f "$pi_cli" ]; then
-              if [ -n "''${DRY_RUN:-}" ]; then
-                echo "write $pi_bin"
-              else
-                mkdir -p "$(dirname "$pi_bin")"
-                rm -f "$pi_bin"
-                cat > "$pi_bin" <<'EOF'
-#!/bin/sh
-set -eu
+                    ensure_volta_tool() {
+                      expected="$1"
+                      spec="$2"
 
-VOLTA_HOME="${voltaHome}"
-PI_CLI="${homeDirectory}/.npm-global/lib/node_modules/@mariozechner/pi-coding-agent/dist/cli.js"
-NPM_PREFIX="${homeDirectory}/.npm-global"
+                      if printf '%s\n' "$volta_state" | grep -Fq "$expected"; then
+                        return 0
+                      fi
 
-if [ ! -x "$VOLTA_HOME/bin/node" ]; then
-  echo "pi: missing Volta node shim at $VOLTA_HOME/bin/node" >&2
-  exit 127
-fi
+                      if [ -n "''${DRY_RUN:-}" ]; then
+                        echo "$volta_bin install $spec"
+                      else
+                        "$volta_bin" install "$spec"
+                        volta_state="$("$volta_bin" list all 2>/dev/null || true)"
+                      fi
+                    }
 
-if [ ! -f "$PI_CLI" ]; then
-  echo "pi: missing CLI at $PI_CLI" >&2
-  exit 127
-fi
-
-export VOLTA_HOME
-export NPM_CONFIG_PREFIX="$NPM_PREFIX"
-export PATH="$VOLTA_HOME/bin:$NPM_PREFIX/bin:$PATH"
-
-exec "$VOLTA_HOME/bin/node" "$PI_CLI" "$@"
-EOF
-                chmod +x "$pi_bin"
-              fi
-            fi
-          fi
+          ${installVoltaTools}
         '';
       }
     ];

@@ -74,12 +74,7 @@ let
 
       bun
       deno
-      typescript-language-server
       vscode-js-debug
-
-      prettier
-      vscode-langservers-extracted
-      yaml-language-server
 
       python311
       poetry
@@ -124,7 +119,6 @@ let
       vault
       argocd
 
-      biome
       ast-grep
       ;
   };
@@ -157,11 +151,7 @@ in
   config = {
     home-manager.sharedModules = [
       {
-        home.packages = attrValues (
-          profilePackages
-          // desktopPackages
-          // desktopEditorPackages
-        );
+        home.packages = attrValues (profilePackages // desktopPackages // desktopEditorPackages);
       }
     ];
   };
