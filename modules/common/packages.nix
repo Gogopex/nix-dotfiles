@@ -55,6 +55,8 @@ let
       ;
 
     agenix = inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    dispatch = inputs.dispatch.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    recall = inputs.recall.packages.${pkgs.stdenv.hostPlatform.system}.default;
   };
 
   fullPackages = corePackages // {
