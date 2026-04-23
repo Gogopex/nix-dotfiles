@@ -5,11 +5,19 @@
   ...
 }:
 let
-  inherit (lib) enabled merge mkIf;
-  cfg = config.userShell;
-  isFish = cfg == "fish";
+  inherit (lib) enabled merge mkIf mkOption types;
+  isFish = config.userShell == "fish";
 in
-mkIf isFish (merge {
+{
+  options.userShell = mkOption {
+    type = types.enum [
+      "fish"
+      "nushell"
+    ];
+    default = "fish";
+  };
+
+  config = mkIf isFish (merge {
   home-manager.sharedModules = [
     {
       programs.fish = enabled {
@@ -34,7 +42,6 @@ mkIf isFish (merge {
           zls = "zellij list-sessions";
           zdel = "zellij delete-session";
           zforce = "zellij attach --force-run-commands";
-          cdx = "codex --search --model=gpt-5.2-codex -c model_reasoning_effort=\"high\" --sandbox workspace-write -c sandbox_workspace_write.network_access=true";
           bre = "$HOME/.cargo/bin/br";
         };
 
@@ -386,4 +393,5 @@ mkIf isFish (merge {
       };
     }
   ];
-})
+});
+}

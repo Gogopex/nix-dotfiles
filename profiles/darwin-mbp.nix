@@ -1,4 +1,0 @@
-{ ... }:
-{
-  imports = [ ./darwin-workstation.nix ];
-}

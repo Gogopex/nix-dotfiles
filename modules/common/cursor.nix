@@ -9,9 +9,6 @@ let
       "editor.fontSize" = 18;
       "terminal.integrated.fontSize" = 18;
       "chat.editor.fontSize" = 16;
-      "extensions.experimental.affinity" = {
-        "asvetliakov.vscode-neovim" = 1;
-      };
       "cursor.composer.collapsePaneInputBoxPills" = true;
       "cursor.composer.renderPillsInsteadOfBlocks" = true;
       "git.confirmSync" = false;

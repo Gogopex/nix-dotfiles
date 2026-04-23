@@ -20,7 +20,6 @@ let
     ];
     specialArgs = {
       inherit inputs pkgs;
-      nixvim = inputs.nixvim;
     };
   };
 
@@ -34,7 +33,6 @@ in
     ../modules/common/editors.nix
     ../modules/common/editor-settings.nix
     ../modules/common/nix-config.nix
-    ../modules/common/shell-config.nix
   ]
   ++ sharedModules;
 

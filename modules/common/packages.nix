@@ -9,7 +9,6 @@ let
   inherit (lib)
     attrValues
     mkOption
-    optionalAttrs
     types
     ;
 
@@ -125,17 +124,6 @@ let
 
   profilePackages = if config.packages.profile == "full" then fullPackages else corePackages;
 
-  desktopPackages = optionalAttrs config.isDesktop {
-    inherit (pkgs)
-      maccy
-      obsidian
-      zotero
-      ;
-  };
-
-  desktopEditorPackages = optionalAttrs config.isDesktop {
-    inherit (pkgs) zed-editor;
-  };
 in
 {
   options = {
@@ -151,7 +139,22 @@ in
   config = {
     home-manager.sharedModules = [
       {
-        home.packages = attrValues (profilePackages // desktopPackages // desktopEditorPackages);
+        home.packages = attrValues profilePackages;
+
+        programs.zoxide.enable = true;
+
+        programs.direnv = {
+          enable = true;
+          nix-direnv.enable = true;
+        };
+
+        programs.btop = {
+          enable = true;
+          settings = {
+            vim_keys = true;
+            rounded_corners = true;
+          };
+        };
       }
     ];
   };

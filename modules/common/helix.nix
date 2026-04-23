@@ -1,8 +1,6 @@
 { config, lib, ... }:
 let
-  inherit (lib) enabled merge mkIf;
-  copyToClipboardShell =
-    "copy_to_clipboard() { if command -v pbcopy >/dev/null 2>&1; then pbcopy; elif command -v wl-copy >/dev/null 2>&1; then wl-copy; elif command -v xclip >/dev/null 2>&1; then xclip -selection clipboard; elif command -v xsel >/dev/null 2>&1; then xsel --clipboard --input; else exit 127; fi; }";
+  inherit (lib) copyToClipboardShell enabled merge mkIf;
 in
 mkIf config.editors.helix.enable (merge {
   home-manager.sharedModules = [
