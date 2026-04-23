@@ -9,7 +9,6 @@ let
   inherit (lib)
     attrValues
     mkOption
-    optionalAttrs
     types
     ;
 
@@ -75,12 +74,7 @@ let
       nodejs_24
       bun
       deno
-      typescript-language-server
       vscode-js-debug
-
-      prettier
-      vscode-langservers-extracted
-      yaml-language-server
 
       python311
       poetry
@@ -125,23 +119,12 @@ let
       vault
       argocd
 
-      biome
       ast-grep
       ;
   };
 
   profilePackages = if config.packages.profile == "full" then fullPackages else corePackages;
 
-  desktopPackages = optionalAttrs config.isDesktop {
-    inherit (pkgs)
-      obsidian
-      zotero
-      ;
-  };
-
-  desktopEditorPackages = optionalAttrs config.isDesktop {
-    inherit (pkgs) zed-editor;
-  };
 in
 {
   options = {
@@ -157,11 +140,22 @@ in
   config = {
     home-manager.sharedModules = [
       {
-        home.packages = attrValues (
-          profilePackages
-          // desktopPackages
-          // desktopEditorPackages
-        );
+        home.packages = attrValues profilePackages;
+
+        programs.zoxide.enable = true;
+
+        programs.direnv = {
+          enable = true;
+          nix-direnv.enable = true;
+        };
+
+        programs.btop = {
+          enable = true;
+          settings = {
+            vim_keys = true;
+            rounded_corners = true;
+          };
+        };
       }
     ];
   };

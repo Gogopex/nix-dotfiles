@@ -20,6 +20,7 @@
 !hosts/**
 !profiles/
 !profiles/**
+profiles/package/
 !scripts/
 !scripts/**
 !secrets/

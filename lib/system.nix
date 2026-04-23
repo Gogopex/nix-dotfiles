@@ -31,7 +31,10 @@ let
     "default"
   ];
 
-  inputOverlays = [ (import ../overlays) ] ++ collectInputs [
+  inputOverlays = [
+    (import ../overlays)
+  ]
+  ++ collectInputs [
     "overlays"
     "default"
   ];
@@ -85,8 +88,7 @@ in
       username ? "ludwig",
       homeDirectory ? "/home/${username}",
       module,
-      commonModules
-        ? (filter (m: m != ../modules/common/home-manager.nix) modulesCommon),
+      commonModules ? (filter (m: m != ../modules/common/home-manager.nix) modulesCommon),
     }:
     let
       pkgs = import inputs.nixpkgs {
@@ -126,9 +128,9 @@ in
     }:
     let
       excludedModulePaths = map builtins.toString excludedModules;
-      filteredModulePaths = filter (
-        path: !(builtins.elem (builtins.toString path) excludedModulePaths)
-      ) (self.concatMap collectNix modulePaths);
+      filteredModulePaths = filter (path: !(builtins.elem (builtins.toString path) excludedModulePaths)) (
+        self.concatMap collectNix modulePaths
+      );
 
       hmEval = self.evalModules {
         modules =
@@ -140,12 +142,10 @@ in
             }
           ];
 
-        specialArgs =
-          {
-            inherit inputs pkgs;
-            nixvim = inputs.nixvim;
-          }
-          // extraSpecialArgs;
+        specialArgs = {
+          inherit inputs pkgs;
+        }
+        // extraSpecialArgs;
       };
     in
     hmEval.config.home-manager.sharedModules or [ ];

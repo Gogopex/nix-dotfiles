@@ -68,7 +68,10 @@ in
     ];
 
     casks = [
+      "hyperkey"
       "orbstack"
+      "sublime-text"
+      "superwhisper"
     ];
 
     brews = [

@@ -39,7 +39,7 @@ mkIf isNushell (merge {
             | prepend /etc/profiles/per-user/${config.user.name}/bin
             | prepend /run/current-system/sw/bin
             | prepend /nix/var/nix/profiles/default/bin
-            | prepend ~/.local/bin
+            | prepend $"($env.HOME)/.local/bin"
             | append ~/.cargo/bin
             | append ~/.modular/bin
             | append /Applications/WezTerm.app/Contents/MacOS
@@ -51,11 +51,9 @@ mkIf isNushell (merge {
           $env.EDITOR = "${config.user.editor}"
           $env.PHP_VERSION = "8.3"
           $env.NPM_CONFIG_PREFIX = $"($env.HOME)/.local"
-
-          if (($"($env.HOME)/.volta" | path exists)) {
-            $env.PATH = ($env.PATH | prepend $"($env.HOME)/.volta/bin")
-            $env.VOLTA_HOME = $"($env.HOME)/.volta"
-          }
+          $env.VOLTA_HOME = $"($env.HOME)/.volta"
+          $env.VOLTA_FEATURE_PNPM = "1"
+          $env.PATH = ($env.PATH | prepend $"($env.VOLTA_HOME)/bin" | uniq)
 
           # API keys from agenix
           for key in [anthropic openai gemini deepseek openrouter groq glm kimi zai] {

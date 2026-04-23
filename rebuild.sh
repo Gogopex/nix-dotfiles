@@ -268,6 +268,12 @@ if [[ -n "$PROFILE" ]]; then
 EOF
 fi
 
+COMMON_NIX_OPTS=(
+    "--extra-experimental-features" "nix-command flakes pipe-operators"
+    "--option" "accept-flake-config" "true"
+    "--option" "eval-cache" "true"
+)
+
 if command -v nh &> /dev/null && [[ "$USE_NH" == "true" ]]; then
     print_info "Using nh for rebuild (better UX)..."
 
@@ -278,21 +284,16 @@ if command -v nh &> /dev/null && [[ "$USE_NH" == "true" ]]; then
     else
         NH_ARGS=("home" "switch" ".#homeConfigurations.$HOST.activationPackage")
     fi
-    
+
     if [[ "$ASK_FLAG" == "true" ]]; then
         NH_ARGS+=("--ask")
     fi
-    
-    NIX_ARGS=(
-        "--extra-experimental-features" "pipe-operators"
-        "--option" "accept-flake-config" "true"
-        "--option" "eval-cache" "true"
-    )
-    
+
+    NIX_ARGS=("${COMMON_NIX_OPTS[@]}")
     if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
         NIX_ARGS+=("${EXTRA_ARGS[@]}")
     fi
-    
+
     export NH_FLAKE="$SCRIPT_DIR"
     if nh "${NH_ARGS[@]}" -- "${NIX_ARGS[@]}"; then
         print_success "Configuration rebuilt successfully with nh!"
@@ -313,16 +314,10 @@ else
             "--flake" ".#$HOST"
             "-b" "backup"
         )
-
         if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
             HM_ARGS+=("${EXTRA_ARGS[@]}")
         fi
-
-        HM_ARGS+=(
-            "--extra-experimental-features" "pipe-operators"
-            "--option" "accept-flake-config" "true"
-            "--option" "eval-cache" "true"
-        )
+        HM_ARGS+=("${COMMON_NIX_OPTS[@]}")
 
         if home-manager "${HM_ARGS[@]}"; then
             print_success "Home Manager configuration rebuilt successfully!"
@@ -341,12 +336,7 @@ else
             "--flake" ".#$HOST"
         )
 
-        NIX_ARGS=(
-            "--option" "accept-flake-config" "true"
-            "--option" "eval-cache" "true"
-            "--option" "experimental-features" "nix-command flakes pipe-operators"
-        )
-
+        NIX_ARGS=("${COMMON_NIX_OPTS[@]}")
         if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
             NIX_ARGS+=("${EXTRA_ARGS[@]}")
         fi
@@ -385,16 +375,10 @@ else
             "--flake" ".#$HOST"
             "-b" "backup"
         )
-
         if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
             HM_ARGS+=("${EXTRA_ARGS[@]}")
         fi
-
-        HM_ARGS+=(
-            "--extra-experimental-features" "pipe-operators"
-            "--option" "accept-flake-config" "true"
-            "--option" "eval-cache" "true"
-        )
+        HM_ARGS+=("${COMMON_NIX_OPTS[@]}")
 
         if home-manager "${HM_ARGS[@]}"; then
             print_success "Home Manager configuration rebuilt successfully!"
