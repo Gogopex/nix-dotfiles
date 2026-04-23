@@ -39,9 +39,8 @@ mkIf isNushell (merge {
             | prepend /etc/profiles/per-user/${config.user.name}/bin
             | prepend /run/current-system/sw/bin
             | prepend /nix/var/nix/profiles/default/bin
-            | append ~/.npm-global/bin
+            | prepend ~/.local/bin
             | append ~/.cargo/bin
-            | append ~/.local/bin
             | append ~/.modular/bin
             | append /Applications/WezTerm.app/Contents/MacOS
             | append $"($env.HOME)/.cache/lm-studio/bin"
@@ -51,6 +50,7 @@ mkIf isNushell (merge {
           # Environment variables
           $env.EDITOR = "${config.user.editor}"
           $env.PHP_VERSION = "8.3"
+          $env.NPM_CONFIG_PREFIX = $"($env.HOME)/.local"
 
           if (($"($env.HOME)/.volta" | path exists)) {
             $env.PATH = ($env.PATH | prepend $"($env.HOME)/.volta/bin")

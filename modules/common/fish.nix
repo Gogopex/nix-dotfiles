@@ -53,19 +53,19 @@ mkIf isFish (merge {
             end
 
             if status is-interactive
+              fish_add_path -g -m -p ~/.local/bin
               fish_add_path -g /opt/homebrew/bin
               fish_add_path -g ~/.nix-profile/bin
               fish_add_path -g /etc/profiles/per-user/${config.user.name}/bin
               fish_add_path -g /run/current-system/sw/bin
               fish_add_path -g /nix/var/nix/profiles/default/bin
-              fish_add_path ~/.npm-global/bin
               fish_add_path ~/.cargo/bin
               set -l cache_root (__dotfiles_cache_root)
               if test -d $cache_root/cargo/bin
                 fish_add_path $cache_root/cargo/bin
               end
               fish_add_path ~/go/bin
-              fish_add_path ~/.local/bin ~/.modular/bin \
+              fish_add_path ~/.modular/bin \
                              /Applications/WezTerm.app/Contents/MacOS \
                              $HOME/.cache/lm-studio/bin
               fish_add_path ~/Downloads/google-cloud-sdk/bin
@@ -103,9 +103,11 @@ access-tokens = github.com=$gh_token"
             set -gx GOMODCACHE $cache_root/go-mod
             set -gx UV_CACHE_DIR $cache_root/uv
             set -gx NPM_CONFIG_CACHE $cache_root/npm
+            set -gx NPM_CONFIG_PREFIX $HOME/.local
             set -gx PIP_CACHE_DIR $cache_root/pip
             set -gx HOMEBREW_CACHE $cache_root/homebrew
             set -gx HF_HOME $cache_root/huggingface
+            fish_add_path -g -m -p $NPM_CONFIG_PREFIX/bin
 
             if test -d ~/.volta
               set -gx VOLTA_HOME ~/.volta
