@@ -44,8 +44,8 @@ usage() {
     echo ""
     echo "Examples:"
     echo "  $0                      # Build current host"
-    echo "  $0 mbp-old              # Build specific host"
-    echo "  $0 mbp                  # Build the new Mac host"
+    echo "  $0 m1p                  # Build the M1 Pro MacBook host"
+    echo "  $0 m5m                  # Build the M5 Max MacBook host"
     echo "  $0 --ask                # Preview changes before applying"
     echo "  $0 --profile full       # Switch package profile and rebuild"
     echo "  $0 -- --show-trace      # Pass extra args to rebuild tool"
@@ -130,6 +130,15 @@ list_hosts() {
 find_host_config() {
     local hostname="$1"
 
+    case "$hostname" in
+        mbp)
+            hostname="m5m"
+            ;;
+        mbp-old|macbook)
+            hostname="m1p"
+            ;;
+    esac
+
     if host_config_exists "$hostname"; then
         echo "$hostname"
         return 0
@@ -207,11 +216,11 @@ if [[ -z "$HOST" ]]; then
         done
     fi
 
-    if [[ -z "$HOST" ]] && [[ "$SYSTEM_TYPE" == "darwin" ]] && host_config_exists "mbp-old"; then
+    if [[ -z "$HOST" ]] && [[ "$SYSTEM_TYPE" == "darwin" ]] && host_config_exists "m1p"; then
         for DETECTED_HOST in "${DETECTED_HOSTS[@]}"; do
             if [[ "$DETECTED_HOST" == *"MacBook"* ]]; then
-                HOST="mbp-old"
-                print_info "Falling back to old MacBook Pro host configuration: $HOST"
+                HOST="m1p"
+                print_info "Falling back to M1 Pro MacBook host configuration: $HOST"
                 break
             fi
         done
