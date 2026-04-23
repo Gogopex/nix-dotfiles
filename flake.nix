@@ -75,8 +75,8 @@
         |> mapAttrs' (name: _: nameValuePair (removeSuffix ".nix" name) <| import ./hosts/${name} lib);
 
       darwinHomeHosts = [
-        "mbp"
-        "mbp-old"
+        "m5m"
+        "m1p"
       ];
 
       # Separate hosts by type
