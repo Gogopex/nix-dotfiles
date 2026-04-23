@@ -133,6 +133,7 @@ let
 
   desktopPackages = optionalAttrs config.isDesktop {
     inherit (pkgs)
+      maccy
       obsidian
       zotero
       ;
