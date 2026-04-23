@@ -1,8 +1,13 @@
-{ config, lib, inputs, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   sharedModules = lib.homeManagerSharedModules' {
     inherit pkgs;
-    modulePaths = [ ../../modules/common ];
+    modulePaths = [ ../modules/common ];
     extraModules = [
       {
         type = "server";
@@ -13,21 +18,21 @@ let
   };
 in
 {
-  imports =
-    [
-      ../../modules/common/system.nix
-      ../../modules/common/user.nix
-      ../../modules/common/theme.nix
-      ../../modules/common/editors.nix
-      ../../modules/common/editor-settings.nix
-      ../../modules/common/nix-config.nix
-      ../../modules/common/shell-config.nix
-    ]
-    ++ sharedModules;
+  imports = [
+    ../modules/common/system.nix
+    ../modules/common/user.nix
+    ../modules/common/theme.nix
+    ../modules/common/editors.nix
+    ../modules/common/editor-settings.nix
+    ../modules/common/nix-config.nix
+    ../modules/common/shell-config.nix
+  ]
+  ++ sharedModules;
 
   type = "server";
   nixConfig.manage = false;
 
+  home.stateVersion = "24.11";
   programs.home-manager.enable = true;
   manual.manpages.enable = false;
   manual.html.enable = false;

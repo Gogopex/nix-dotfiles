@@ -18,6 +18,8 @@
 !lib/**
 !hosts/
 !hosts/**
+!profiles/
+!profiles/**
 !scripts/
 !scripts/**
 !secrets/

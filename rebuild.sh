@@ -44,7 +44,7 @@ usage() {
     echo ""
     echo "Examples:"
     echo "  $0                      # Build current host"
-    echo "  $0 macbook              # Build specific host"
+    echo "  $0 mbp-old              # Build specific host"
     echo "  $0 mbp                  # Build the new Mac host"
     echo "  $0 --ask                # Preview changes before applying"
     echo "  $0 --profile full       # Switch package profile and rebuild"
@@ -112,24 +112,36 @@ if [[ -n "$PROFILE" ]] && [[ "$PROFILE" != "core" ]] && [[ "$PROFILE" != "full" 
     exit 1
 fi
 
-find_host_dir() {
+host_config_exists() {
     local hostname="$1"
-    
-    if [[ -d "hosts/$hostname" ]]; then
+
+    [[ -f "$SCRIPT_DIR/hosts/$hostname.nix" ]]
+}
+
+list_hosts() {
+    local file=""
+
+    for file in "$SCRIPT_DIR"/hosts/*.nix; do
+        [[ -e "$file" ]] || continue
+        basename "$file" .nix
+    done | sort -u
+}
+
+find_host_config() {
+    local hostname="$1"
+
+    if host_config_exists "$hostname"; then
         echo "$hostname"
         return 0
     fi
-    
-    for dir in hosts/*/; do
-        if [[ -d "$dir" ]]; then
-            basename_dir=$(basename "$dir")
-            if [[ "$hostname" == "$basename_dir"* ]] || [[ "$basename_dir" == "$hostname"* ]]; then
-                echo "$basename_dir"
-                return 0
-            fi
+
+    while IFS= read -r candidate; do
+        if [[ "$hostname" == "$candidate"* ]] || [[ "$candidate" == "$hostname"* ]]; then
+            echo "$candidate"
+            return 0
         fi
-    done
-    
+    done < <(list_hosts)
+
     return 1
 }
 
@@ -178,14 +190,14 @@ if [[ -z "$HOST" ]]; then
     done < <(collect_detected_hosts)
 
     for DETECTED_HOST in "${DETECTED_HOSTS[@]}"; do
-        if HOST_DIR=$(find_host_dir "$DETECTED_HOST"); then
-            HOST="$HOST_DIR"
+        if HOST_CONFIG=$(find_host_config "$DETECTED_HOST"); then
+            HOST="$HOST_CONFIG"
             print_info "Auto-detected host configuration: $HOST"
             break
         fi
     done
 
-    if [[ -z "$HOST" ]] && [[ -d "hosts/quietbox" ]]; then
+    if [[ -z "$HOST" ]] && host_config_exists "quietbox"; then
         for DETECTED_HOST in "${DETECTED_HOSTS[@]}"; do
             if [[ "$DETECTED_HOST" == "archlinux" ]]; then
                 HOST="quietbox"
@@ -195,11 +207,11 @@ if [[ -z "$HOST" ]]; then
         done
     fi
 
-    if [[ -z "$HOST" ]] && [[ "$SYSTEM_TYPE" == "darwin" ]] && [[ -d "hosts/macbook" ]]; then
+    if [[ -z "$HOST" ]] && [[ "$SYSTEM_TYPE" == "darwin" ]] && host_config_exists "mbp-old"; then
         for DETECTED_HOST in "${DETECTED_HOSTS[@]}"; do
             if [[ "$DETECTED_HOST" == *"MacBook"* ]]; then
-                HOST="macbook"
-                print_info "Falling back to legacy macOS host configuration: $HOST"
+                HOST="mbp-old"
+                print_info "Falling back to old MacBook Pro host configuration: $HOST"
                 break
             fi
         done
@@ -209,26 +221,18 @@ if [[ -z "$HOST" ]]; then
         DETECTED_HOST="${DETECTED_HOSTS[0]:-unknown}"
         print_error "Could not auto-detect host configuration for: $DETECTED_HOST"
         print_info "Available hosts:"
-        for dir in hosts/*/; do
-            if [[ -d "$dir" ]]; then
-                echo "  - $(basename "$dir")"
-            fi
-        done
+        list_hosts | sed 's/^/  - /'
         exit 1
     fi
 else
-    if [[ ! -d "hosts/$HOST" ]]; then
-        if HOST_DIR=$(find_host_dir "$HOST"); then
-            HOST="$HOST_DIR"
+    if ! host_config_exists "$HOST"; then
+        if HOST_CONFIG=$(find_host_config "$HOST"); then
+            HOST="$HOST_CONFIG"
             print_info "Found matching host configuration: $HOST"
         else
-            print_error "Host configuration not found: hosts/$HOST"
+            print_error "Host configuration not found: $HOST"
             print_info "Available hosts:"
-            for dir in hosts/*/; do
-                if [[ -d "$dir" ]]; then
-                    echo "  - $(basename "$dir")"
-                fi
-            done
+            list_hosts | sed 's/^/  - /'
             exit 1
         fi
     fi
@@ -253,8 +257,9 @@ if [[ "$HOME_ONLY" == "true" ]]; then
 fi
 
 if [[ -n "$PROFILE" ]]; then
-    PROFILE_FILE="$SCRIPT_DIR/hosts/$HOST/profile.nix"
+    PROFILE_FILE="$SCRIPT_DIR/profiles/package/$HOST.nix"
     print_info "Setting package profile for $HOST to $PROFILE"
+    mkdir -p "$(dirname "$PROFILE_FILE")"
     cat > "$PROFILE_FILE" <<EOF
 { ... }:
 {

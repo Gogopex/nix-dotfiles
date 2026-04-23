@@ -53,10 +53,12 @@
     let
       inherit (builtins) readDir;
       inherit (nixpkgs.lib)
-        const
         filterAttrs
         genAttrs
-        mapAttrs
+        hasSuffix
+        mapAttrs'
+        nameValuePair
+        removeSuffix
         ;
 
       lib' = nixpkgs.lib.extend (_: _: nix-darwin.lib);
@@ -64,8 +66,13 @@
 
       hosts =
         readDir ./hosts
-        |> filterAttrs (_: type: type == "directory")
-        |> mapAttrs (name: const <| import ./hosts/${name} lib);
+        |> filterAttrs (name: type: type == "regular" && hasSuffix ".nix" name)
+        |> mapAttrs' (name: _: nameValuePair (removeSuffix ".nix" name) <| import ./hosts/${name} lib);
+
+      darwinHomeHosts = [
+        "mbp"
+        "mbp-old"
+      ];
 
       # Separate hosts by type
       isDarwin = _: host: host ? config && host ? system;
@@ -75,13 +82,16 @@
       baseHomeConfigurations = hosts |> lib.filterAttrs isHomeManager;
       homeConfigurations =
         baseHomeConfigurations
-        // genAttrs [ "macbook" "mbp" ] (host: lib.homeManagerConfiguration' {
+        // genAttrs darwinHomeHosts (
+          host:
+          lib.homeManagerConfiguration' {
             system = "aarch64-darwin";
             username = "ludwig";
             homeDirectory = "/Users/ludwig";
             commonModules = [ ];
-            module = import ./hosts/${host}/home.nix;
-          });
+            module = import ./profiles/darwin-home.nix;
+          }
+        );
 
       systems = [
         "aarch64-darwin"
