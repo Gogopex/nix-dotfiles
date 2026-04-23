@@ -35,6 +35,16 @@
       inputs.home-manager.follows = "home-manager";
     };
 
+    dispatch = {
+      url = "github:Gogopex/dispatch";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    recall = {
+      url = "github:Gogopex/recall";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     zjstatus.url = "github:dj95/zjstatus";
   };
 

@@ -42,6 +42,26 @@
         "type": "github"
       }
     },
+    "dispatch": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1776952459,
+        "narHash": "sha256-XmZMU9rZT1yqgi+BYXR92DUWtkAm7TaFCdmA93ejz80=",
+        "owner": "Gogopex",
+        "repo": "dispatch",
+        "rev": "41742a40d752e4b74e3a9f8dcb616c63643e74b8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Gogopex",
+        "repo": "dispatch",
+        "type": "github"
+      }
+    },
     "flake-utils": {
       "inputs": {
         "systems": "systems_2"
@@ -134,12 +154,34 @@
         "type": "github"
       }
     },
+    "recall": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1776952483,
+        "narHash": "sha256-N5zAIm3ScSZxqrBvr4YWOn2FBD7QW0pxrM9iPZ5vjcE=",
+        "owner": "Gogopex",
+        "repo": "recall",
+        "rev": "e66493c206cd8d28fb5c37c0eadf59480a14ceea",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Gogopex",
+        "repo": "recall",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "dispatch": "dispatch",
         "home-manager": "home-manager",
         "nix-darwin": "nix-darwin",
         "nixpkgs": "nixpkgs",
+        "recall": "recall",
         "zjstatus": "zjstatus"
       }
     },
