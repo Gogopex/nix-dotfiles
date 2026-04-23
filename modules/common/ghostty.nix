@@ -63,6 +63,7 @@ merge
             minus = "decrease_font_size:1";
           })
           ++ (mapAttrsToList (name: value: "super+${name}=${value}") {
+            f = "unbind";
             h = "unbind";
             l = "unbind";
             t = "unbind";

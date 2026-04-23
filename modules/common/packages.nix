@@ -73,6 +73,7 @@ let
       sourcekit-lsp
       swift-format
 
+      nodejs_24
       bun
       deno
       vscode-js-debug

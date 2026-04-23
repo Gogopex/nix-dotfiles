@@ -50,6 +50,7 @@ mkIf isNushell (merge {
           # Environment variables
           $env.EDITOR = "${config.user.editor}"
           $env.PHP_VERSION = "8.3"
+          $env.NPM_CONFIG_PREFIX = $"($env.HOME)/.local"
           $env.VOLTA_HOME = $"($env.HOME)/.volta"
           $env.VOLTA_FEATURE_PNPM = "1"
           $env.PATH = ($env.PATH | prepend $"($env.VOLTA_HOME)/bin" | uniq)

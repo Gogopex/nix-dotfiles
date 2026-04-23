@@ -113,9 +113,11 @@ in
             set -gx GOMODCACHE $cache_root/go-mod
             set -gx UV_CACHE_DIR $cache_root/uv
             set -gx NPM_CONFIG_CACHE $cache_root/npm
+            set -gx NPM_CONFIG_PREFIX $HOME/.local
             set -gx PIP_CACHE_DIR $cache_root/pip
             set -gx HOMEBREW_CACHE $cache_root/homebrew
             set -gx HF_HOME $cache_root/huggingface
+            fish_add_path -g -m -p $NPM_CONFIG_PREFIX/bin
 
             fish_vi_key_bindings
             setup_enhanced_vi_mode

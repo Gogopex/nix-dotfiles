@@ -6,7 +6,6 @@
 let
   disabledSymbolicHotKey = keyCode: modifiers: {
     enabled = false;
-    # Fresh macOS installs need the full payload to override built-in shortcuts.
     value = {
       parameters = [
         65535
@@ -159,7 +158,6 @@ in
     CustomUserPreferences = {
       "com.apple.symbolichotkeys" = {
         AppleSymbolicHotKeys = {
-          # Disable Finder search window (`opt+cmd+space`).
           "65" = disabledSymbolicHotKey 49 1572864;
         };
       };
